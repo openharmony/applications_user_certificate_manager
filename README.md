@@ -1,41 +1,55 @@
-# applications_user_certificate_manager
+# 用户证书管理
 
-#### 介绍
-用户证书管理应用是OpenHarmony中预置的系统应用，主要的功能包含：
-1、系统预置CA证书的查看功能；
-2、用户CA证书的安装、查看、启用禁用与卸载功能；
-3、用户证书凭据的安装、查看、授权管理与卸载
-4、系统证书凭据（Wlan/vpn证书凭据）的安装、查看、卸载功能
+## 简介<a name="section11660541593"></a>
 
-#### 软件架构
-软件架构说明
+用户证书管理是OpenHarmony中预置的系统应用，主要的功能包含系统根证书查看与启用禁用，用户根证书的安装、查看、启用禁用与卸载，公共业务证书的安装、查看、授权管理与卸载，私有业务证书的查看等功能。
+应用架构如图1所示。
 
+图1 用户证书管理架构图
 
-#### 安装教程
-
-1.  xxxx
-2.  xxxx
-3.  xxxx
-
-#### 使用说明
-
-1.  xxxx
-2.  xxxx
-3.  xxxx
-
-#### 参与贡献
-
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
+![](doc/image/image-20220727141455437.png)
 
 
-#### 特技
+## 目录<a name="section161941989596"></a>
 
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+```
+├── AppScope								# 应用配置
+└── entry
+    └── src
+        └── main
+            ├── ets							# 代码目录
+            │   ├── Application				# AbilityStage类实现
+            │   ├── MainAbility				# Ability类实现
+            │   ├── model					# model层功能类实现
+            │   ├── pages					# 页面展示实现
+            │   ├── presenter				# 页面presenter层功能类实现
+            └── resources					# 资源文件目录
+```
+
+## 说明<a name="section1312121216216"></a>
+
+### 使用说明<a name="section1551164914237"></a>
+
+三方应用拉起用户证书管理应用并执行申请应用授权，使用方法如下：
+
+```
+//拉起应用申请应用授权
+globalThis.context.startAbilityForResult(
+{
+    bundleName: "com.ohos.certmanager",
+    abilityName: "MainAbility",
+    uri: "requestAuthorize",
+    parameters: {
+    	appUid: appUid,		//传入申请应用的appUid
+    }
+})
+.then((data) => {
+	if (!data.resultCode) {
+    	this.authUri = data.want.parameters.authUri;	//授权成功后获取返回的authUri
+    }
+})
+```
+
+## 相关仓<a name="section1371113476307"></a>
+
+**security_certificate_manager**
