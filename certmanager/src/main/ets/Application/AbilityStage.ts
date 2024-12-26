@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,9 +13,10 @@
  * limitations under the License.
  */
 
-import { appTasks } from '@ohos/hvigor-ohos-plugin';
+import AbilityStage from '@ohos.app.ability.AbilityStage';
 
-export default {
-    system: appTasks,  /* Built-in plugin of Hvigor. It cannot be modified. */
-    plugins:[]         /* Custom plugin to extend the functionality of Hvigor. */
+export default class MyAbilityStage extends AbilityStage {
+  onCreate(): void {
+    console.info('[CertManager] MyAbilityStage onCreate');
+  }
 }
