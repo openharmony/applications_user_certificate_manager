@@ -14,7 +14,7 @@
 
 ```
 ├── AppScope								# 应用配置
-└── entry
+└── certmanager
     └── src
         └── main
             ├── ets							# 代码目录

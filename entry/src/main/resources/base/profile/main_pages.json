@@ -1,12 +1,5 @@
 {
   "src": [
-    "pages/certManagerFa",
-    "pages/certPwdInput",
-    "pages/trustedCa",
-    "pages/cerEvidenceFa",
-    "pages/requestAuth",
-    "pages/certInstallFromStorage",
-    "pages/CertificateInstallPage",
-    "pages/picker/CertManagerSheetFa"
+    "pages/index"
   ]
 }

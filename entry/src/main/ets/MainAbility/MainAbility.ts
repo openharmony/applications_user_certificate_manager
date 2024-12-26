@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+/*
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,63 +13,20 @@
  * limitations under the License.
  */
 
-import Ability from '@ohos.app.ability.UIAbility';
-import type Want from '@ohos.app.ability.Want';
-import type Window from '@ohos.window';
-import { GlobalContext, PwdStore } from '../common/GlobalContext';
+import UIAbility from '@ohos.app.ability.UIAbility';
 
-export default class MainAbility extends Ability {
-  onCreate(want: Want, launchParam): void {
-    console.info('[CertManager] MainAbility onCreate');
+export default class MainAbility extends UIAbility {
+  onCreate(want, launchParam): void {}
 
-    if (want === null || want === undefined) {
-      console.error('[CertManager] invalid want param');
-      return;
-    }
-    let pwdStore = new PwdStore();
-    GlobalContext.getContext().setCmContext(this.context);
-    GlobalContext.getContext().setPwdStore(pwdStore);
-    GlobalContext.getContext().setAbilityWant(want);
-    GlobalContext.getContext().setFlag(false);
+  onDestroy(): void {}
+
+  onWindowStageCreate(windowStage): void {
+    windowStage.setUIContent(this.context, 'pages/index', null);
   }
 
-  onDestroy(): void {
-    console.info('[CertManager] MainAbility onDestroy');
-  }
+  onWindowStageDestroy(): void {}
 
-  onWindowStageCreate(windowStage: Window.WindowStage): void {
-    // Main window is created, set main page for this ability
-    console.info('[CertManager] MainAbility onWindowStageCreate');
-    windowStage.loadContent('pages/certManagerFa', (err, data) => {
-      if (err.code) {
-        console.error('onWindowStageCreate failed, cause:' + JSON.stringify(err));
-        return;
-      }
-    });
-  }
+  onForeground(): void {}
 
-  onWindowStageDestroy(): void {
-    // Main window is destroyed, release UI related resources
-    console.info('[CertManager] MainAbility onWindowStageDestroy');
-  }
-
-  onForeground(): void {
-    // Ability has brought to foreground
-    console.info('[CertManager] MainAbility onForeground');
-  }
-
-  onBackground(): void {
-    // Ability has back to background
-    console.info('[CertManager] MainAbility onBackground');
-  }
-
-  onNewWant(want: Want): void {
-    console.info('[CertManager] MainAbility onNewWant');
-
-    if (want === null || want === undefined) {
-      console.error('[CertManager] invalid want param');
-      return;
-    }
-    GlobalContext.getContext().setAbilityWant(want);
-  }
+  onBackground(): void {}
 };

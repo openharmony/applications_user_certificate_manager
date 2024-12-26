@@ -13,10 +13,17 @@
  * limitations under the License.
  */
 
-import abilityTest from './Ability.test';
-import indexTest from './index.test'
+@Entry
+@Component
+struct Index {
 
-export default function testsuite() {
-  abilityTest();
-  indexTest()
+  build() {
+    Row() {
+      Column() {
+        Text()
+      }
+      .width('100%')
+    }
+    .height('100%')
+  }
 }
