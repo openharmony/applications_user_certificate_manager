@@ -13,42 +13,33 @@
  * limitations under the License.
  */
 {
-  "app": {
-    "products": [
-      {
-        "name": "default",
-        "signingConfig": "default",
-        "compileSdkVersion": 16,
-        "compatibleSdkVersion": 16,
-        "targetSdkVersion": 16,
-        "runtimeOS": "OpenHarmony",
-      }
-    ]
+  "apiType": "stageMode",
+  "buildOption": {
   },
-  "modules": [
+  "entryModules": [
+    "entry"
+  ],
+  "buildOptionSet": [
     {
-      "name": "entry",
-      "srcPath": "./entry",
-      "targets": [
-        {
-          "name": "default",
-          "applyToProducts": [
-            "default"
-          ]
+      "name": "release",
+      "arkOptions": {
+        "obfuscation": {
+          "ruleOptions": {
+            "enable": false,
+            "files": [
+              "./obfuscation-rules.txt"
+            ]
+          }
         }
-      ]
+      }
+    }
+  ],
+  "targets": [
+    {
+      "name": "default",
     },
     {
-      "name": "CertManager",
-      "srcPath": "./certmanager",
-      "targets": [
-        {
-          "name": "default",
-          "applyToProducts": [
-            "default"
-          ]
-        }
-      ]
+      "name": "ohosTest",
     }
   ]
 }
