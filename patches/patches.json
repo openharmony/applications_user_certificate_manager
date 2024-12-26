@@ -1,0 +1,14 @@
+{
+    "patches": [
+        {
+            "project":"productdefine_common",
+            "path":"productdefine/common",
+            "pr_url":"https://gitee.com/openharmony/productdefine_common/pulls/952"
+        },
+        {
+            "project":"applications_hap",
+            "path":"applications/standard/hap",
+            "pr_url":"https://gitee.com/openharmony/applications_hap/pulls/2756"
+        }
+    ]
+}

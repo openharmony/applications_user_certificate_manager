@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2024-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,9 +12,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 {
-  "hvigorVersion": "3.0.2",
-  "dependencies": {
-    "@ohos/hvigor-ohos-plugin": "3.0.2"
-  }
+  "license": "",
+  "devDependencies": {},
+  "name": "CertManager",
+  "ohos": {
+    "org": "huawei",
+    "directoryLevel": "module",
+    "buildTool": "hvigor"
+  },
+  "description": "example description",
+  "repository": {},
+  "version": "1.0.0",
+  "dependencies": {}
 }
