@@ -420,7 +420,8 @@
       "name": "cert_install_failed",
       "value": "安装失败"
     },
-    { "name": "cert_install_tip",
+    {
+      "name": "cert_install_tip",
       "value": "“%s”请求安装CA 证书"
     },
     {
