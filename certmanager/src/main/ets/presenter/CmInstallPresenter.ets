@@ -43,8 +43,8 @@ export default class CmInstallPresenter {
 
   aboutToDisappear(): void {
     this.optType = CMModelOptType.CM_MODEL_OPT_UNKNOWN;
-    AppStorage.setOrCreate('installUserCred',false);
-    AppStorage.setOrCreate('installSystemCred',false);
+    AppStorage.setOrCreate('installUserCred', false);
+    AppStorage.setOrCreate('installSystemCred', false);
   }
 
   updateCertFileType(suffix: string): void {
