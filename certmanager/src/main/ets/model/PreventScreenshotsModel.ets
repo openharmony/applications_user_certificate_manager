@@ -47,7 +47,7 @@ export default class PreventScreenshotsModel {
 
     window.getLastWindow(context).then((window) => {
       windowClass = window;
-      console.info(TAG,'Success in obtaining the top window data');
+      console.info(TAG, 'Success in obtaining the top window data');
       windowClass.setWindowPrivacyMode(isPrivacyMode).catch((err: BusinessError) => {
         console.error(TAG, 'setWindowPrivacyMode failed: ' + JSON.stringify(err));
       })

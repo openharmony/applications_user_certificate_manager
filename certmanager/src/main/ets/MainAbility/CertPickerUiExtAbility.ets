@@ -67,7 +67,7 @@ export default class CertPickerUiExtAbility extends UIExtensionAbility {
   }
 
   private isStartToInstall(parameters: Record<string, Object> | undefined): boolean {
-    if(parameters === undefined) {
+    if (parameters === undefined) {
       return false;
     }
     return parameters['pageType'] === PAGE_CA_INSTALL;
