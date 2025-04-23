@@ -277,7 +277,7 @@ export struct CertInstallFromStorage {
                       .onClick(() => {
                         this.installCertFlag = false;
                         AppStorage.setOrCreate('installSystemCred', true);
-                        AppStorage.setOrCreate('installUserCred',false);
+                        AppStorage.setOrCreate('installUserCred', false);
                         if (this.isStartBySheet) {
                           this.startInstallEvidenceBySheet();
                         } else {
@@ -312,7 +312,7 @@ export struct CertInstallFromStorage {
                       .onClick(() => {
                         this.installCertFlag = false;
                         AppStorage.setOrCreate('installUserCred', true);
-                        AppStorage.setOrCreate('installSystemCred',false);
+                        AppStorage.setOrCreate('installSystemCred', false);
                         if (this.isStartBySheet) {
                           this.startInstallEvidenceBySheet();
                         } else {
