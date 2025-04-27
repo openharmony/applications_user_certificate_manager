@@ -104,7 +104,6 @@ export struct CredPwdInputPage {
             top: $r('app.float.distance_16'),
             bottom: $r('app.float.distance_24')
           })
-          .enabled(this.certPwd !== undefined && this.certPwd.length > 0)
           .onClick(() => {
             if (this.credFile === undefined || this.credFile === null) {
               console.error(TAG + 'Cred file is undefined');
