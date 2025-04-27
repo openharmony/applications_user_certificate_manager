@@ -30,6 +30,8 @@ import { RouterFileVo } from '../model/CertManagerVo/RouterInfoVo';
 import { CredPwdInputParam } from './detail/CredPwdInputPage';
 import { SheetParam } from '../common/util/SheetParam';
 import FilterParams from '../common/constants/FileFilterParams';
+import { UIContext } from '@kit.ArkUI';
+import { common } from '@kit.AbilityKit';
 
 const COPIES_NUM: number = 12;
 
@@ -164,7 +166,8 @@ export struct CertInstallFromStorage {
     FileIoModel.getMediaFileSuffix(fileUri, (suffix: string | undefined) => {
       if (suffix !== undefined) {
         console.debug(TAG, 'suffix = ', suffix);
-        if ((suffix === 'cer') || (suffix === 'pem') || (suffix === 'crt') || (suffix === 'der')) {
+        if ((suffix === 'cer') || (suffix === 'pem') || (suffix === 'crt') || (suffix === 'der') ||
+            (suffix === 'p7b') || (suffix === 'spc')) {
           CmInstallPresenter.getInstance().installCert(fileUri, '', suffix, false);
         } else {
           this.mFaPresenter.unrecognizedFileTips();
@@ -317,6 +320,7 @@ export struct CertInstallFromStorage {
                           this.startInstallEvidenceBySheet();
                         } else {
                           this.mFaPresenter.startInstallEvidence(this.context);
+                          new UIContext().getHostContext() as common.Context;
                         }
                       })
                     }
