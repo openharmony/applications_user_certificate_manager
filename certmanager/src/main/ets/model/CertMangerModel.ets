@@ -34,7 +34,8 @@ export enum CMModelErrorCode {
   CM_MODEL_ERROR_MAX_QUANTITY_REACHED = -7,
   CM_MODEL_ERROR_ALIAS_LENGTH_REACHED_LIMIT = -8,
   CM_MODEL_ERROR_PASSWORD_ERR = -9,
-  CM_MODEL_ERROR_ADVANCED_SECURITY = -10
+  CM_MODEL_ERROR_ADVANCED_SECURITY = -10,
+  CM_MODEL_ERROR_
 }
 
 export enum CMModelOptType {
@@ -44,6 +45,7 @@ export enum CMModelOptType {
   CM_MODEL_OPT_APP_CRED = 3,
   CM_MODEL_OPT_PRIVATE_CRED = 4,
   CM_MODEL_OPT_SYSTEM_CRED = 5,
+  CM_MODEL_OPT_USER_CA_P7B = 6,
 }
 
 export enum CertManagerStore {
@@ -259,7 +261,12 @@ export class CertMangerModel {
     console.info(TAG + 'installCertOrCred start');
     switch (optType) {
       case CMModelOptType.CM_MODEL_OPT_USER_CA:
-        this.installUserCertificate(data, alias, (errCode: CMModelErrorCode, uri: string) => {
+        this.installUserCertificate(data, alias, optType, (errCode: CMModelErrorCode, uri: string) => {
+          callback(errCode, uri);
+        });
+        break;
+      case CMModelOptType.CM_MODEL_OPT_USER_CA_P7B:
+        this.installUserCertificate(data, alias, optType, (errCode: CMModelErrorCode, uri: string) => {
           callback(errCode, uri);
         });
         break;
@@ -664,7 +671,7 @@ export class CertMangerModel {
     }
   }
 
-  private async installUserCertificate(data: Uint8Array, alias: string, callback: Function): Promise<void> {
+  private async installUserCertificate(data: Uint8Array, alias: string, optType: CMModelOptType, callback: Function): Promise<void> {
     console.info(TAG + 'installUserCertificate start');
     if ((data === undefined) || (data.length === 0)) {
       callback(CMModelErrorCode.CM_MODEL_ERROR_INCORRECT_FORMAT);
@@ -672,9 +679,15 @@ export class CertMangerModel {
       return;
     }
     try {
+      let certFormat: CertManager.CertFileFormat = CertManager.CertFileFormat.PEM_DER;
+      if (optType == CMModelOptType.CM_MODEL_OPT_USER_CA_P7B) {
+        certFormat = CertManager.CertFileFormat.P7B;
+      }
       let result = await CertManager.installUserTrustedCertificate({
         inData: data,
-        alias: alias
+        alias: alias,
+        certFormat: certFormat,
+        certScope: CertManager.CertScope.CURRENT_USER
       });
       console.info(TAG + 'installUserCertificate end');
       callback(CMModelErrorCode.CM_MODEL_ERROR_SUCCESS, result.uri);
