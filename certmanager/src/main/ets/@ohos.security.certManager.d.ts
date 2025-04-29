@@ -148,21 +148,9 @@ declare namespace CertManagerFunc {
         keyUri: string;
     }
 
-    export enum CertFileFormat {
-        PEM_DER = 0,
-        P7B = 1,
-    }
-
-    export enum CertScope {
-        CURRENT_USER = 1,
-        GLOBAL_USER = 2
-    }
-
     export interface CertBlob {
         inData: Uint8Array;
         alias: string;
-        certFormat? : CertFileFormat;
-        certScope? : CertScope;
     }
 
     export interface CMResult {
