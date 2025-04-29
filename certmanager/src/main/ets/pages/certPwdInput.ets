@@ -135,6 +135,7 @@ struct CertPwdInput {
             left: $r('app.float.distance_16'),
             right: $r('app.float.distance_24'),
           })
+          .enabled(this.certPwd !== undefined && this.certPwd.length > 0)
           .onClick(() => {
             let fileInfo: RouterFileVo = router.getParams() as RouterFileVo;
             this.isPasswordError = false;

@@ -37,7 +37,7 @@ export default class MainExtensionAbility extends UIExtensionAbility {
     let param: Record<string, Object> = {
       'session': session,
       'want': want
-    };
+    }
     let storage: LocalStorage = new LocalStorage(param);
     let pullType: string = want.parameters.pullType as string;
 
