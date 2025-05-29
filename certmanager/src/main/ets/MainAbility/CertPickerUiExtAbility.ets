@@ -20,6 +20,7 @@ import UIExtensionAbility from '@ohos.app.ability.UIExtensionAbility';
 import { BusinessError } from '@ohos.base';
 
 const PAGE_CA_INSTALL = 5;
+const PAGE_REQUEST_AUTHORIZE = 6;
 const TAG = 'CertPickerUiExtAbility';
 
 export default class CertPickerUiExtAbility extends UIExtensionAbility {
@@ -46,6 +47,8 @@ export default class CertPickerUiExtAbility extends UIExtensionAbility {
     try {
       if (this.isStartToInstall(want.parameters)) {
         session.loadContent('pages/CertificateInstallPage', storage);
+      } else if (this.isStartToAuthorize(want.parameters)) {
+        session.loadContent('pages/RequestAuthSheet', storage);
       } else {
         session.loadContent('pages/picker/CertManagerSheetFa', storage);
         let pwdStore = new PwdStore();
@@ -71,6 +74,13 @@ export default class CertPickerUiExtAbility extends UIExtensionAbility {
       return false;
     }
     return parameters['pageType'] === PAGE_CA_INSTALL;
+  }
+
+  private isStartToAuthorize(parameters: Record<string, Object> | undefined): boolean {
+    if (parameters === undefined) {
+      return false;
+    }
+    return parameters['pageType'] === PAGE_REQUEST_AUTHORIZE;
   }
   onSessionDestroy(): void {
     // Main window is destroyed, release UI related resources
