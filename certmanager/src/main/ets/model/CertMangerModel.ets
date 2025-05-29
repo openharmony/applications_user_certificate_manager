@@ -48,6 +48,12 @@ export enum CMModelOptType {
   CM_MODEL_OPT_USER_CA_P7B = 6,
 }
 
+export enum DialogErrorCode {
+  DIALOG_ERROR_INTERNAL = -1000,
+  DIALOG_OPERATION_CANCELS = -1001,
+  DIALOG_ERROR_PARAM_INVALID = -1010,
+}
+
 export enum CertManagerStore {
   /* credential certificate store for end entity certificates. */
   CERT_MANAGER_CREDENTIAL_STORE = 0,
@@ -496,7 +502,7 @@ export class CertMangerModel {
     try {
       let result = await CertManager.getAllPublicCertificates();
       let credList: CredentialAbstractVo[] = [];
-      if (result.credentialList !== undefined) {
+      if (result && result.credentialList !== undefined) {
         for (let i = 0; i < result.credentialList.length; i++) {
           credList.push(new CredentialAbstractVo(String(result.credentialList[i].type),
             String(result.credentialList[i].alias), String(result.credentialList[i].keyUri)));
