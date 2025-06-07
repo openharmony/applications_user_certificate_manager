@@ -63,7 +63,7 @@ export default class CmAppCredAuthPresenter {
     }
   }
 
-  updateAppCredList(): void {
+  updateAppCredList(callback?: Function): void {
     certManagerModel.getCertOrCredList(CMModelOptType.CM_MODEL_OPT_APP_CRED,
       (errCode: CMModelErrorCode, credList: Array<CredentialAbstractVo>) => {
       if (errCode === CMModelErrorCode.CM_MODEL_ERROR_SUCCESS) {
@@ -72,7 +72,16 @@ export default class CmAppCredAuthPresenter {
       } else {
         console.error('updateAppCredList failed');
       }
+      callback?.(errCode);
     });
+  }
+
+  sheetRequestAuthorize(uri: string, appUid: string, callback: Function): void {
+    if (appUid == null || appUid.length === 0 || uri == null || uri.length === 0) {
+      callback(CMModelErrorCode.CM_MODEL_ERROR_FAILED);
+      return;
+    }
+    certManagerModel.setAppAuth(CMModelOptType.CM_MODEL_OPT_APP_CRED, uri, appUid, true, callback);
   }
 
   requestAuthorize(uri: string, appUid: string): void {
