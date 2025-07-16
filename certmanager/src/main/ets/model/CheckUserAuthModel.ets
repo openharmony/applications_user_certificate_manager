@@ -15,18 +15,47 @@
 
 import userAuth from '@ohos.userIAM.userAuth';
 import { BusinessError } from '@ohos.base';
+import { cryptoFramework } from '@kit.CryptoArchitectureKit';
+import hilog from '@ohos.hilog'
+
+const RANDOM_DATA_LENGTH = 16;
+const DOMAIN = 0x0000;
+const TAG = 'CheckUserAuthModel';
+function hilogInfo(message: string): void {
+  hilog.info(DOMAIN, TAG, message);
+}
+function hilogError(message: string): void {
+  hilog.error(DOMAIN, TAG, message);
+}
 
 export class CheckUserAuthModel {
   public isAuthTypeSupported(authType: userAuth.UserAuthType): boolean {
     try {
       userAuth.getAvailableStatus(authType, userAuth.AuthTrustLevel.ATL1);
-      console.info('[CM&CheckUserAuthModel]: ' + 'userAuthType' + authType + 'is supported');
+      hilogInfo('[CM&CheckUserAuthModel]: ' + 'userAuthType' + authType + 'is supported');
       return true;
     } catch (error) {
       let err: BusinessError = error as BusinessError;
-      console.error(`[CM&CheckUserAuthModel]: userAuthType ${authType} is not supported, message is ${err?.message}`);
+      hilogError(`[CM&CheckUserAuthModel]: userAuthType ${authType} is not supported, message is ${err?.message}`);
       return false;
     }
+  }
+
+  /**
+   * Generate a 16-byte random data.
+   * @throws { Error } - getRandomData failed.
+   */
+  private getRandomData(): Uint8Array {
+    let randData: Uint8Array;
+    try {
+      const rand: cryptoFramework.Random =  cryptoFramework.createRandom();
+      const dataBlob: cryptoFramework.DataBlob = rand.generateRandomSync(RANDOM_DATA_LENGTH);
+      randData = dataBlob.data;
+    } catch (err) {
+      hilogInfo('generate random failed');
+      throw new Error('getRandomData failed.');
+    }
+    return randData;
   }
 
   public auth(titleStr: string, callback: (authResult: boolean) => void): void {
@@ -46,8 +75,16 @@ export class CheckUserAuthModel {
       return;
     }
 
+    let randomData: Uint8Array;
+    try {
+      randomData = this.getRandomData();
+    } catch (err) {
+      callback(false);
+      return;
+    }
+
     const authParam: userAuth.AuthParam = {
-      challenge: new Uint8Array([49, 49, 49, 49, 49, 49]),
+      challenge: randomData,
       authType: authTypeArray,
       authTrustLevel: userAuth.AuthTrustLevel.ATL1
     }
@@ -57,7 +94,7 @@ export class CheckUserAuthModel {
 
     try {
       let userAuthInstance = userAuth.getUserAuthInstance(authParam, widgetParam);
-      console.info('[CM&CheckUserAuthModel]: get userAuth instance success');
+      hilogInfo('get userAuth instance success');
       userAuthInstance.start();
 
       userAuthInstance.on('result', {
@@ -75,7 +112,7 @@ export class CheckUserAuthModel {
       })
     } catch (error) {
       let err: BusinessError = error as BusinessError;
-      console.error(`[CM&CheckUserAuthModel]: auth catch error. code is ${err?.code}, message is ${err?.message}`);
+      hilogError(`auth catch error. code is ${err?.code}, message is ${err?.message}`);
     }
   }
 }
