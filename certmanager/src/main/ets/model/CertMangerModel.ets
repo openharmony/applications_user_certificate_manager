@@ -325,6 +325,47 @@ export class CertMangerModel {
     }
   }
 
+  private setSubjectName(result: CertManager.CMResult, subjectNameMap: Map<string, string>) {
+    if (result.certInfo === undefined) {
+      return;
+    }
+    if (result.certInfo.subjectName.length !== 0) {
+      let regex1: RegExp = new RegExp('(?<=CN=).*?(?=,)', 'g');
+      let regex2: RegExp = new RegExp('(?<=OU=).*?(?=,)', 'g');
+      let regex3: RegExp = new RegExp('(?<=O=).*', 'g');
+      let subjectNameCN = result.certInfo.subjectName.match(regex1);
+      console.info('subjectNameCN is:' + subjectNameCN);
+      let subjectNameOU = result.certInfo.subjectName.match(regex2);
+      console.info('subjectNameOU is:' + subjectNameOU);
+      let subjectNameO = result.certInfo.subjectName.match(regex3);
+      console.info('subjectNameO is:' + subjectNameO);
+      subjectNameMap.set('常用名称:', String(subjectNameCN));
+      subjectNameMap.set('组织:', String(subjectNameO));
+      subjectNameMap.set('组织单位:', String(subjectNameOU));
+      subjectNameMap.set('序列号:', String(result.certInfo.serial));
+    }
+  }
+
+  private setIssuerName(result: CertManager.CMResult, issuerNameMap: Map<string, string>) {
+    if (result.certInfo === undefined) {
+      return;
+    }
+    if (result.certInfo.issuerName.length !== 0) {
+      let regex1: RegExp = new RegExp('(?<=CN=).*?(?=,)', 'g');
+      let regex2: RegExp = new RegExp('(?<=OU=).*?(?=,)', 'g');
+      let regex3: RegExp = new RegExp('(?<=O=).*', 'g');
+      let issuerNameCN = result.certInfo.issuerName.match(regex1);
+      console.info('issuerNameCN is:' + issuerNameCN);
+      let issuerNameOU = result.certInfo.issuerName.match(regex2);
+      console.info('issuerNameOU is:' + issuerNameOU);
+      let issuerNameO = result.certInfo.issuerName.match(regex3);
+      console.info('issuerNameO is:' + issuerNameO);
+      issuerNameMap.set('常用名称:', String(issuerNameCN));
+      issuerNameMap.set('组织:', String(issuerNameO));
+      issuerNameMap.set('组织单位:', String(issuerNameOU));
+    }
+  }
+
   private async getSystemTrustedCertificate(certUri: string, callback: Function): Promise<void> {
     console.info(TAG + 'getSystemTrustedCertificate start');
     try {
@@ -332,34 +373,10 @@ export class CertMangerModel {
       let subjectNameMap: Map<string, string> = new Map();
       let issuerNameMap: Map<string, string> = new Map();
       let dateMap: Map<string, string> = new Map();
-      let regex1: RegExp = new RegExp('(?<=CN=).*?(?=,)', 'g');
-      let regex2: RegExp = new RegExp('(?<=OU=).*?(?=,)', 'g');
-      let regex3: RegExp = new RegExp('(?<=O=).*', 'g');
 
       if (result.certInfo !== undefined) {
-        if (result.certInfo.subjectName.length !== 0) {
-          let subjectNameCN = result.certInfo.subjectName.match(regex1);
-          console.info('subjectNameCN is:' + subjectNameCN);
-          let subjectNameOU = result.certInfo.subjectName.match(regex2);
-          console.info('subjectNameOU is:' + subjectNameOU);
-          let subjectNameO = result.certInfo.subjectName.match(regex3);
-          console.info('subjectNameO is:' + subjectNameO);
-          subjectNameMap.set('常用名称:', String(subjectNameCN));
-          subjectNameMap.set('组织:', String(subjectNameO));
-          subjectNameMap.set('组织单位:', String(subjectNameOU));
-          subjectNameMap.set('序列号:', String(result.certInfo.serial));
-        }
-        if (result.certInfo.issuerName.length !== 0) {
-          let issuerNameCN = result.certInfo.issuerName.match(regex1);
-          console.info('issuerNameCN is:' + issuerNameCN);
-          let issuerNameOU = result.certInfo.issuerName.match(regex2);
-          console.info('issuerNameOU is:' + issuerNameOU);
-          let issuerNameO = result.certInfo.issuerName.match(regex3);
-          console.info('issuerNameO is:' + issuerNameO);
-          issuerNameMap.set('常用名称:', String(issuerNameCN));
-          issuerNameMap.set('组织:', String(issuerNameO));
-          issuerNameMap.set('组织单位:', String(issuerNameOU));
-        }
+        this.setSubjectName(result, subjectNameMap);
+        this.setIssuerName(result, issuerNameMap);
         dateMap.set('颁发时间:', String(result.certInfo.notBefore));
         dateMap.set('有效期至:', String(result.certInfo.notAfter));
 
@@ -426,29 +443,8 @@ export class CertMangerModel {
       let regex3: RegExp = new RegExp('(?<=O=).*', 'g');
 
       if (result.certInfo !== undefined) {
-        if (result.certInfo.subjectName.length !== 0) {
-          let subjectNameCN = result.certInfo.subjectName.match(regex1);
-          console.info('subjectNameCN is:' + subjectNameCN);
-          let subjectNameOU = result.certInfo.subjectName.match(regex2);
-          console.info('subjectNameOU is:' + subjectNameOU);
-          let subjectNameO = result.certInfo.subjectName.match(regex3);
-          console.info('SubjectNameO is:' + subjectNameO);
-          subjectNameMap.set('常用名称:', String(subjectNameCN));
-          subjectNameMap.set('组织:', String(subjectNameO));
-          subjectNameMap.set('组织单位:', String(subjectNameOU));
-          subjectNameMap.set('序列号:', String(result.certInfo.serial));
-        }
-        if (result.certInfo.issuerName.length !== 0) {
-          let issuerNameCN = result.certInfo.issuerName.match(regex1);
-          console.info('issuerNameCN is:' + issuerNameCN);
-          let issuerNameOU = result.certInfo.issuerName.match(regex2);
-          console.info('issuerNameOU is:' + issuerNameOU);
-          let issuerNameO = result.certInfo.issuerName.match(regex3);
-          console.info('issuerNameO is:' + issuerNameO);
-          issuerNameMap.set('常用名称:', String(issuerNameCN));
-          issuerNameMap.set('组织:', String(issuerNameO));
-          issuerNameMap.set('组织单位:', String(issuerNameOU));
-        }
+        this.setSubjectName(result, subjectNameMap);
+        this.setIssuerName(result, issuerNameMap);
         dateMap.set('颁发时间:', String(result.certInfo.notBefore));
         dateMap.set('有效期至:', String(result.certInfo.notAfter));
         let certData: Uint8Array = result.certInfo.cert;

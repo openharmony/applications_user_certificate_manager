@@ -32,6 +32,7 @@ import {
   DialogIssuerComponent,
   DialogSubjectComponent
 } from './detail/CaSystemDetailPage';
+import { AlignUtils } from '../common/util/AlignUtils';
 
 const COPIES_NUM: number = 12;
 
@@ -59,7 +60,10 @@ struct ComponentSystem {
       contentBuilder: () => {
         this.systemDetailContent();
       },
-      contentAreaPadding: { right: $r('app.float.wh_value_0') },
+      contentAreaPadding: {
+        left: $r('app.float.wh_value_0'),
+        right: $r('app.float.wh_value_0')
+      },
       buttons: [{
         value: $r('app.string.CustomDialogExample_Button_text'),
         buttonStyle: ButtonStyleMode.TEXTUAL,
@@ -80,9 +84,9 @@ struct ComponentSystem {
         .height($r('app.float.wh_value_56'))
         .margin({
           bottom: $r('app.float.wh_value_8'),
-          right: $r('app.float.wh_value_24')
         })
         .alignSelf(ItemAlign.Start)
+        .textAlign(AlignUtils.isRtl() ? TextAlign.End : TextAlign.Start)
 
       Text(this.setStatus.certInfo.certAlias)
         .fontSize($r('sys.float.ohos_id_text_size_body1'))
@@ -90,17 +94,22 @@ struct ComponentSystem {
         .fontWeight(FontWeight.Medium)
         .margin({
           bottom: $r('app.float.wh_value_24'),
-          right: $r('app.float.wh_value_24')
         })
         .alignSelf(ItemAlign.Start)
+        .textAlign(AlignUtils.isRtl() ? TextAlign.End : TextAlign.Start)
 
       Scroll(this.sysCaScroller) {
         List() {
           ListItem() {
-            Text($r('app.string.CustomDialogExample_firListItem_text'))
-              .fontSize($r('sys.float.ohos_id_text_size_body1'))
-              .fontColor($r('sys.color.ohos_id_color_text_primary'))
-              .fontWeight(FontWeight.Medium)
+            Column() {
+              Text($r('app.string.CustomDialogExample_firListItem_text'))
+                .fontSize($r('sys.float.ohos_id_text_size_body1'))
+                .fontColor($r('sys.color.ohos_id_color_text_primary'))
+                .fontWeight(FontWeight.Medium)
+                .textAlign(AlignUtils.isRtl() ? TextAlign.End : TextAlign.Start)
+            }
+            .width(ComponentConfig.WH_100_100)
+            .alignItems(HorizontalAlign.Start)
           }.width(ComponentConfig.WH_100_100).align(Alignment.Start)
 
           ListItem() {
@@ -108,10 +117,15 @@ struct ComponentSystem {
           }.width(ComponentConfig.WH_100_100).align(Alignment.Start)
 
           ListItem() {
-            Text($r('app.string.CustomDialogExample_secListItem_text'))
-              .fontSize($r('sys.float.ohos_id_text_size_body1'))
-              .fontColor($r('sys.color.ohos_id_color_text_primary'))
-              .fontWeight(FontWeight.Medium)
+            Column() {
+              Text($r('app.string.CustomDialogExample_secListItem_text'))
+                .fontSize($r('sys.float.ohos_id_text_size_body1'))
+                .fontColor($r('sys.color.ohos_id_color_text_primary'))
+                .fontWeight(FontWeight.Medium)
+                .textAlign(AlignUtils.isRtl() ? TextAlign.End : TextAlign.Start)
+            }
+            .width(ComponentConfig.WH_100_100)
+            .alignItems(HorizontalAlign.Start)
           }.width(ComponentConfig.WH_100_100).align(Alignment.Start)
           .margin({
             top: $r('app.float.wh_value_24')
@@ -122,10 +136,15 @@ struct ComponentSystem {
           }.width(ComponentConfig.WH_100_100).align(Alignment.Start)
 
           ListItem() {
-            Text($r('app.string.CustomDialogExample_thdListItem_text'))
-              .fontSize($r('sys.float.ohos_id_text_size_body1'))
-              .fontColor($r('sys.color.ohos_id_color_text_primary'))
-              .fontWeight(FontWeight.Medium)
+            Column() {
+              Text($r('app.string.CustomDialogExample_thdListItem_text'))
+                .fontSize($r('sys.float.ohos_id_text_size_body1'))
+                .fontColor($r('sys.color.ohos_id_color_text_primary'))
+                .fontWeight(FontWeight.Medium)
+                .textAlign(AlignUtils.isRtl() ? TextAlign.End : TextAlign.Start)
+            }
+            .width(ComponentConfig.WH_100_100)
+            .alignItems(HorizontalAlign.Start)
           }.width(ComponentConfig.WH_100_100).align(Alignment.Start)
           .margin({
             top: $r('app.float.wh_value_24')
@@ -136,10 +155,15 @@ struct ComponentSystem {
           }.width(ComponentConfig.WH_100_100).align(Alignment.Start)
 
           ListItem() {
-            Text($r('app.string.CustomDialogExample_fouListItem_text'))
-              .fontSize($r('sys.float.ohos_id_text_size_body1'))
-              .fontColor($r('sys.color.ohos_id_color_text_primary'))
-              .fontWeight(FontWeight.Medium)
+            Column() {
+              Text($r('app.string.CustomDialogExample_fouListItem_text'))
+                .fontSize($r('sys.float.ohos_id_text_size_body1'))
+                .fontColor($r('sys.color.ohos_id_color_text_primary'))
+                .fontWeight(FontWeight.Medium)
+                .textAlign(AlignUtils.isRtl() ? TextAlign.End : TextAlign.Start)
+            }
+            .width(ComponentConfig.WH_100_100)
+            .alignItems(HorizontalAlign.Start)
           }.width(ComponentConfig.WH_100_100).align(Alignment.Start)
           .margin({
             top: $r('app.float.wh_value_24')
@@ -149,7 +173,6 @@ struct ComponentSystem {
             DialogFingerPrintComponent({ fingerprintSha256: this.setStatus.certInfo.fingerprintSha256 });
           }.width(ComponentConfig.WH_100_100).align(Alignment.Start)
         }
-        .margin({ right: $r('app.float.wh_value_24') })
         .scrollBar(BarState.Off)
       }
       .scrollable(ScrollDirection.Vertical)
@@ -158,6 +181,7 @@ struct ComponentSystem {
     }
     .padding({
       left: $r('app.float.wh_value_24'),
+      right: $r('app.float.wh_value_24')
     })
     .width(WidthPercent.WH_100_100)
     .borderRadius($r('app.float.user_list_divider_borderRadius_value'))
@@ -269,7 +293,10 @@ struct ComponentUser {
       contentBuilder: () => {
         this.userDetailContent(this.setStatus.certList[this.indexNum].status);
       },
-      contentAreaPadding: { right: $r('app.float.wh_value_0') },
+      contentAreaPadding: {
+        left: $r('app.float.wh_value_0'),
+        right: $r('app.float.wh_value_0')
+      },
       buttons: [
         {
           value: $r('app.string.CustomDialogExampleUser_Flex_firButton_text'),
@@ -392,9 +419,9 @@ struct ComponentUser {
         .height($r('app.float.wh_value_56'))
         .margin({
           bottom: $r('app.float.wh_value_8'),
-          right: $r('app.float.wh_value_24')
         })
         .alignSelf(ItemAlign.Start)
+        .textAlign(AlignUtils.isRtl() ? TextAlign.End : TextAlign.Start)
 
       Flex({ justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
         Column() {
@@ -402,6 +429,7 @@ struct ComponentUser {
             .fontSize($r('sys.float.ohos_id_text_size_body1'))
             .fontColor($r('sys.color.ohos_id_color_text_primary'))
             .fontWeight(FontWeight.Medium)
+            .textAlign(AlignUtils.isRtl() ? TextAlign.End : TextAlign.Start)
         }.alignItems(HorizontalAlign.Start);
 
         Toggle({ type: ToggleType.Switch, isOn: $$ })
@@ -425,13 +453,18 @@ struct ComponentUser {
       Scroll(this.userCaScroller) {
         List() {
           ListItem() {
-            Text($r('app.string.CustomDialogExample_firListItem_text'))
-              .fontSize($r('sys.float.ohos_id_text_size_body1'))
-              .fontColor($r('sys.color.ohos_id_color_text_primary'))
-              .fontWeight(FontWeight.Medium)
-              .margin({
-                top: $r('app.float.wh_value_24')
-              })
+            Column() {
+              Text($r('app.string.CustomDialogExample_firListItem_text'))
+                .fontSize($r('sys.float.ohos_id_text_size_body1'))
+                .fontColor($r('sys.color.ohos_id_color_text_primary'))
+                .fontWeight(FontWeight.Medium)
+                .margin({
+                  top: $r('app.float.wh_value_24')
+                })
+                .textAlign(AlignUtils.isRtl() ? TextAlign.End : TextAlign.Start)
+            }
+            .width(ComponentConfig.WH_100_100)
+            .alignItems(HorizontalAlign.Start)
           }.width(ComponentConfig.WH_100_100).align(Alignment.Start)
 
           ListItem() {
@@ -439,13 +472,18 @@ struct ComponentUser {
           }.width(ComponentConfig.WH_100_100).align(Alignment.Start)
 
           ListItem() {
-            Text($r('app.string.CustomDialogExample_secListItem_text'))
-              .fontSize($r('sys.float.ohos_id_text_size_body1'))
-              .fontColor($r('sys.color.ohos_id_color_text_primary'))
-              .fontWeight(FontWeight.Medium)
-              .margin({
-                top: $r('app.float.wh_value_24')
-              })
+            Column() {
+              Text($r('app.string.CustomDialogExample_secListItem_text'))
+                .fontSize($r('sys.float.ohos_id_text_size_body1'))
+                .fontColor($r('sys.color.ohos_id_color_text_primary'))
+                .fontWeight(FontWeight.Medium)
+                .margin({
+                  top: $r('app.float.wh_value_24')
+                })
+                .textAlign(AlignUtils.isRtl() ? TextAlign.End : TextAlign.Start)
+            }
+            .width(ComponentConfig.WH_100_100)
+            .alignItems(HorizontalAlign.Start)
           }.width(ComponentConfig.WH_100_100).align(Alignment.Start)
 
           ListItem() {
@@ -453,13 +491,18 @@ struct ComponentUser {
           }.width(ComponentConfig.WH_100_100).align(Alignment.Start)
 
           ListItem() {
-            Text($r('app.string.CustomDialogExample_thdListItem_text'))
-              .fontSize($r('sys.float.ohos_id_text_size_body1'))
-              .fontColor($r('sys.color.ohos_id_color_text_primary'))
-              .fontWeight(FontWeight.Medium)
-              .margin({
-                top: $r('app.float.wh_value_24')
-              })
+            Column() {
+              Text($r('app.string.CustomDialogExample_thdListItem_text'))
+                .fontSize($r('sys.float.ohos_id_text_size_body1'))
+                .fontColor($r('sys.color.ohos_id_color_text_primary'))
+                .fontWeight(FontWeight.Medium)
+                .margin({
+                  top: $r('app.float.wh_value_24')
+                })
+                .textAlign(AlignUtils.isRtl() ? TextAlign.End : TextAlign.Start)
+            }
+            .width(ComponentConfig.WH_100_100)
+            .alignItems(HorizontalAlign.Start)
           }.width(ComponentConfig.WH_100_100).align(Alignment.Start)
 
           ListItem() {
@@ -467,13 +510,18 @@ struct ComponentUser {
           }.width(ComponentConfig.WH_100_100).align(Alignment.Start)
 
           ListItem() {
-            Text($r('app.string.CustomDialogExample_fouListItem_text'))
-              .fontSize($r('sys.float.ohos_id_text_size_body1'))
-              .fontColor($r('sys.color.ohos_id_color_text_primary'))
-              .fontWeight(FontWeight.Medium)
-              .margin({
-                top: $r('app.float.wh_value_24')
-              })
+            Column(){
+              Text($r('app.string.CustomDialogExample_fouListItem_text'))
+                .fontSize($r('sys.float.ohos_id_text_size_body1'))
+                .fontColor($r('sys.color.ohos_id_color_text_primary'))
+                .fontWeight(FontWeight.Medium)
+                .margin({
+                  top: $r('app.float.wh_value_24')
+                })
+                .textAlign(AlignUtils.isRtl() ? TextAlign.End : TextAlign.Start)
+            }
+            .width(ComponentConfig.WH_100_100)
+            .alignItems(HorizontalAlign.Start)
           }.width(ComponentConfig.WH_100_100).align(Alignment.Start)
 
           ListItem() {
@@ -482,9 +530,6 @@ struct ComponentUser {
             });
           }.width(ComponentConfig.WH_100_100).align(Alignment.Start)
         }
-        .margin({
-          right: $r('app.float.wh_value_24')
-        })
         .scrollBar(BarState.Off)
       }
       .height($r('app.float.CustomDialogExample_list_height_value'))
@@ -492,7 +537,8 @@ struct ComponentUser {
       .scrollBarWidth('3vp')
     }
     .padding({
-      left: $r('app.float.wh_value_24')
+      left: $r('app.float.wh_value_24'),
+      right: $r('app.float.wh_value_24')
     })
     .width(WidthPercent.WH_100_100)
     .borderRadius($r('app.float.user_list_divider_borderRadius_value'))
