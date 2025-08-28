@@ -283,8 +283,6 @@ struct DeleteAll {
         })
         .height(WidthPercent.WH_100_100)
         .borderRadius($r('app.float.radius_20'))
-        .width(WidthPercent.WH_100_100)
-        .textAlign(TextAlign.Start);
     }
     .padding($r('app.float.distance_4'))
     .height($r('app.float.wh_value_56'))
