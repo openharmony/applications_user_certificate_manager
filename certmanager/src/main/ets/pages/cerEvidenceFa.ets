@@ -28,6 +28,7 @@ import { CredSystemDetailParam } from './detail/CredSystemDetailPage';
 import { CredUserDetailParam } from './detail/CredUserDetailPage';
 import { SheetParam } from '../common/util/SheetParam';
 import { DialogComponent } from './detail/AuthorizedAppManagementPage';
+import { AlignUtils } from '../common/util/AlignUtils';
 
 const COPIES_NUM: number = 12;
 
@@ -111,7 +112,10 @@ export struct componentPublic {
       contentBuilder: () => {
         this.credDetailContent();
       },
-      contentAreaPadding: { right: $r('app.float.wh_value_0') },
+      contentAreaPadding: {
+        left: $r('app.float.wh_value_0'),
+        right: $r('app.float.wh_value_0')
+      },
       buttons: [
         {
           value: $r('app.string.publicDetailsCancel'),
@@ -219,20 +223,12 @@ export struct componentPublic {
         .fontSize($r('sys.float.ohos_id_text_size_dialog_tittle'))
         .fontColor($r('sys.color.ohos_id_color_text_primary'))
         .fontWeight(FontWeight.Medium)
-        .margin({
-          left: $r('app.float.wh_value_24'),
-          right: $r('app.float.wh_value_24')
-        })
         .alignSelf(ItemAlign.Start)
 
       Text(this.mShowAppCaPresenter.credInfo.alias)
         .fontSize($r('sys.float.ohos_id_text_size_body1'))
         .fontColor($r('sys.color.ohos_id_color_text_primary'))
         .fontWeight(FontWeight.Medium)
-        .margin({
-          left: $r('app.float.wh_value_24'),
-          right: $r('app.float.wh_value_24')
-        })
         .alignSelf(ItemAlign.Start)
 
       Text($r('app.string.entryContains'))
@@ -241,8 +237,6 @@ export struct componentPublic {
         .fontWeight(FontWeight.Regular)
         .margin({
           top: $r('app.float.wh_value_24'),
-          left: $r('app.float.wh_value_24'),
-          right: $r('app.float.wh_value_24')
         })
         .alignSelf(ItemAlign.Start)
 
@@ -289,12 +283,14 @@ export struct componentPublic {
       })
       .margin({
         top: $r('app.float.wh_value_12'),
-        left: $r('app.float.wh_value_24'),
-        right: $r('app.float.wh_value_24')
       })
       .height('48vp')
     }
     .width(WidthPercent.WH_100_100)
+    .padding({
+      left: $r('app.float.wh_value_24'),
+      right: $r('app.float.wh_value_24')
+    })
     .borderRadius($r('app.float.user_list_divider_borderRadius_value'))
     .backgroundColor($r('sys.color.ohos_id_color_dialog_bg'))
   }
@@ -311,7 +307,6 @@ export struct componentPublic {
           left: $r('app.float.wh_value_24'),
           right: $r('app.float.wh_value_24')
         })
-        .alignSelf(ItemAlign.Start)
 
       Text($r('app.string.warning_message'))
         .fontSize($r('sys.float.ohos_id_text_size_body1'))
@@ -322,9 +317,10 @@ export struct componentPublic {
           left: $r('app.float.wh_value_24'),
           right: $r('app.float.wh_value_24')
         })
-        .alignSelf(ItemAlign.Start)
+        .textAlign(AlignUtils.isRtl() ? TextAlign.End : TextAlign.Start)
     }
     .width(WidthPercent.WH_100_100)
+    .alignItems(HorizontalAlign.Start)
     .borderRadius($r('app.float.user_list_divider_borderRadius_value'))
     .backgroundColor($r('sys.color.ohos_id_color_dialog_bg'))
   }
@@ -461,20 +457,12 @@ export struct componentSystem {
         .fontSize($r('sys.float.ohos_id_text_size_dialog_tittle'))
         .fontColor($r('sys.color.ohos_id_color_text_primary'))
         .fontWeight(FontWeight.Medium)
-        .margin({
-          left: $r('app.float.wh_value_24'),
-          right: $r('app.float.wh_value_24')
-        })
         .alignSelf(ItemAlign.Start)
 
       Text(this.systemCredPresenter.credInfo.alias)
         .fontSize($r('sys.float.ohos_id_text_size_body1'))
         .fontColor($r('sys.color.ohos_id_color_text_primary'))
         .fontWeight(FontWeight.Medium)
-        .margin({
-          left: $r('app.float.wh_value_24'),
-          right: $r('app.float.wh_value_24')
-        })
         .alignSelf(ItemAlign.Start)
 
       Text($r('app.string.entryContains'))
@@ -483,8 +471,6 @@ export struct componentSystem {
         .fontWeight(FontWeight.Regular)
         .margin({
           top: $r('app.float.wh_value_24'),
-          left: $r('app.float.wh_value_24'),
-          right: $r('app.float.wh_value_24')
         })
         .alignSelf(ItemAlign.Start)
 
@@ -511,6 +497,10 @@ export struct componentSystem {
         .alignSelf(ItemAlign.Start)
     }
     .width(WidthPercent.WH_100_100)
+    .padding({
+      left: $r('app.float.wh_value_24'),
+      right: $r('app.float.wh_value_24')
+    })
     .borderRadius($r('app.float.user_list_divider_borderRadius_value'))
     .backgroundColor($r('sys.color.ohos_id_color_dialog_bg'))
   }
@@ -527,7 +517,6 @@ export struct componentSystem {
           left: $r('app.float.wh_value_24'),
           right: $r('app.float.wh_value_24')
         })
-        .alignSelf(ItemAlign.Start)
 
       Text($r('app.string.warning_message'))
         .fontSize($r('sys.float.ohos_id_text_size_body1'))
@@ -538,9 +527,10 @@ export struct componentSystem {
           left: $r('app.float.wh_value_24'),
           right: $r('app.float.wh_value_24')
         })
-        .alignSelf(ItemAlign.Start)
+        .textAlign(AlignUtils.isRtl() ? TextAlign.End : TextAlign.Start)
     }
     .width(WidthPercent.WH_100_100)
+    .alignItems(HorizontalAlign.Start)
     .borderRadius($r('app.float.user_list_divider_borderRadius_value'))
     .backgroundColor($r('sys.color.ohos_id_color_dialog_bg'))
   }
