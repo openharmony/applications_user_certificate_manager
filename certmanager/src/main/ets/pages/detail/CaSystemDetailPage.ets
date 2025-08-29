@@ -18,6 +18,7 @@ import { NavEntryKey } from '../../common/NavEntryKey';
 import { WidthPercent } from '../../common/util/ConfigData';
 import CmShowSysCaPresenter from '../../presenter/CmShowSysCaPresenter';
 import { SheetParam } from '../../common/util/SheetParam';
+import { AlignUtils } from '../../common/util/AlignUtils';
 
 @Component
 export struct DialogSubjectComponent {
@@ -60,10 +61,12 @@ export struct DialogSubjectComponent {
         .margin({
           top: $r('app.float.sys_elements_margin_vertical_l')
         })
+        .textAlign(AlignUtils.isRtl() ? TextAlign.End : TextAlign.Start)
       Text(this.subjectNameCN)
         .fontSize($r('sys.float.ohos_id_text_size_body2'))
         .fontColor($r('sys.color.ohos_id_color_text_primary'))
         .fontWeight(FontWeight.Regular)
+        .textAlign(AlignUtils.isRtl() ? TextAlign.End : TextAlign.Start)
       Text($r('app.string.DialogSubjectComponent_secText'))
         .fontSize($r('sys.float.ohos_id_text_size_body2'))
         .fontColor($r('sys.color.ohos_id_color_text_primary'))
@@ -71,10 +74,12 @@ export struct DialogSubjectComponent {
         .margin({
           top: $r('app.float.sys_elements_margin_vertical_m')
         })
+        .textAlign(AlignUtils.isRtl() ? TextAlign.End : TextAlign.Start)
       Text(this.subjectNameO)
         .fontSize($r('sys.float.ohos_id_text_size_body2'))
         .fontColor($r('sys.color.ohos_id_color_text_primary'))
         .fontWeight(FontWeight.Regular)
+        .textAlign(AlignUtils.isRtl() ? TextAlign.End : TextAlign.Start)
       Text($r('app.string.DialogSubjectComponent_thdText'))
         .fontSize($r('sys.float.ohos_id_text_size_body2'))
         .fontColor($r('sys.color.ohos_id_color_text_primary'))
@@ -82,10 +87,12 @@ export struct DialogSubjectComponent {
         .margin({
           top: $r('app.float.sys_elements_margin_vertical_m')
         })
+        .textAlign(AlignUtils.isRtl() ? TextAlign.End : TextAlign.Start)
       Text(this.subjectNameOU)
         .fontSize($r('sys.float.ohos_id_text_size_body2'))
         .fontColor($r('sys.color.ohos_id_color_text_primary'))
         .fontWeight(FontWeight.Regular)
+        .textAlign(AlignUtils.isRtl() ? TextAlign.End : TextAlign.Start)
       Text($r('app.string.DialogSubjectComponent_fouText'))
         .fontSize($r('sys.float.ohos_id_text_size_body2'))
         .fontColor($r('sys.color.ohos_id_color_text_primary'))
@@ -93,11 +100,15 @@ export struct DialogSubjectComponent {
         .margin({
           top: $r('app.float.sys_elements_margin_vertical_m')
         })
+        .textAlign(AlignUtils.isRtl() ? TextAlign.End : TextAlign.Start)
       Text(this.serial)
         .fontSize($r('sys.float.ohos_id_text_size_body2'))
         .fontColor($r('sys.color.ohos_id_color_text_primary'))
         .fontWeight(FontWeight.Regular)
-    }.alignItems(HorizontalAlign.Start);
+        .textAlign(AlignUtils.isRtl() ? TextAlign.End : TextAlign.Start)
+    }
+    .width('100%')
+    .alignItems(HorizontalAlign.Start);
   }
 }
 
@@ -136,10 +147,12 @@ export struct DialogIssuerComponent {
         .margin({
           top: $r('app.float.sys_elements_margin_vertical_l')
         })
+        .textAlign(AlignUtils.isRtl() ? TextAlign.End : TextAlign.Start)
       Text(this.issuerNameCN)
         .fontSize($r('sys.float.ohos_id_text_size_body2'))
         .fontColor($r('sys.color.ohos_id_color_text_primary'))
         .fontWeight(FontWeight.Regular)
+        .textAlign(AlignUtils.isRtl() ? TextAlign.End : TextAlign.Start)
       Text($r('app.string.DialogSubjectComponent_secText'))
         .fontSize($r('sys.float.ohos_id_text_size_body2'))
         .fontColor($r('sys.color.ohos_id_color_text_primary'))
@@ -147,10 +160,12 @@ export struct DialogIssuerComponent {
         .margin({
           top: $r('app.float.sys_elements_margin_vertical_m')
         })
+        .textAlign(AlignUtils.isRtl() ? TextAlign.End : TextAlign.Start)
       Text(this.issuerNameO)
         .fontSize($r('sys.float.ohos_id_text_size_body2'))
         .fontColor($r('sys.color.ohos_id_color_text_primary'))
         .fontWeight(FontWeight.Regular)
+        .textAlign(AlignUtils.isRtl() ? TextAlign.End : TextAlign.Start)
       Text($r('app.string.DialogSubjectComponent_thdText'))
         .fontSize($r('sys.float.ohos_id_text_size_body2'))
         .fontColor($r('sys.color.ohos_id_color_text_primary'))
@@ -158,11 +173,15 @@ export struct DialogIssuerComponent {
         .margin({
           top: $r('app.float.sys_elements_margin_vertical_m')
         })
+        .textAlign(AlignUtils.isRtl() ? TextAlign.End : TextAlign.Start)
       Text(this.issuerNameOU)
         .fontSize($r('sys.float.ohos_id_text_size_body2'))
         .fontColor($r('sys.color.ohos_id_color_text_primary'))
         .fontWeight(FontWeight.Regular)
-    }.alignItems(HorizontalAlign.Start);
+        .textAlign(AlignUtils.isRtl() ? TextAlign.End : TextAlign.Start)
+    }
+    .width('100%')
+    .alignItems(HorizontalAlign.Start);
   }
 }
 
@@ -195,10 +214,12 @@ export struct DialogDateComponent {
         .margin({
           top: $r('app.float.sys_elements_margin_vertical_l')
         })
+        .textAlign(AlignUtils.isRtl() ? TextAlign.End : TextAlign.Start)
       Text(this.notBefore)
         .fontSize($r('sys.float.ohos_id_text_size_body2'))
         .fontColor($r('sys.color.ohos_id_color_text_primary'))
         .fontWeight(FontWeight.Regular)
+        .textAlign(AlignUtils.isRtl() ? TextAlign.End : TextAlign.Start)
       Text($r('app.string.DialogSubjectComponent_sixText'))
         .fontSize($r('sys.float.ohos_id_text_size_body2'))
         .fontColor($r('sys.color.ohos_id_color_text_primary'))
@@ -206,11 +227,15 @@ export struct DialogDateComponent {
         .margin({
           top: $r('app.float.sys_elements_margin_vertical_m')
         })
+        .textAlign(AlignUtils.isRtl() ? TextAlign.End : TextAlign.Start)
       Text(this.notAfter)
         .fontSize($r('sys.float.ohos_id_text_size_body2'))
         .fontColor($r('sys.color.ohos_id_color_text_primary'))
         .fontWeight(FontWeight.Regular)
-    }.alignItems(HorizontalAlign.Start);
+        .textAlign(AlignUtils.isRtl() ? TextAlign.End : TextAlign.Start)
+    }
+    .width('100%')
+    .alignItems(HorizontalAlign.Start);
   }
 }
 
@@ -227,14 +252,15 @@ export struct DialogFingerPrintComponent {
         .margin({
           top: $r('app.float.sys_elements_margin_vertical_l')
         })
+        .textAlign(AlignUtils.isRtl() ? TextAlign.End : TextAlign.Start)
       Text(this.fingerprintSha256)
         .fontSize($r('sys.float.ohos_id_text_size_body2'))
         .fontColor($r('sys.color.ohos_id_color_text_primary'))
         .fontWeight(FontWeight.Regular)
-        .margin({
-          right: $r('app.float.wh_value_24')
-        })
-    }.alignItems(HorizontalAlign.Start);
+        .textAlign(AlignUtils.isRtl() ? TextAlign.End : TextAlign.Start)
+    }
+    .width('100%')
+    .alignItems(HorizontalAlign.Start);
   }
 }
 
