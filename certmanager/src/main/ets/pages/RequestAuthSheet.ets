@@ -140,7 +140,7 @@ struct RequestAuthSheet {
   }
 
   @Builder
-  private buildSheetContent() {
+  private buildSheetContentComp() {
     Column() {
       Scroll() {
         Column() {
@@ -266,7 +266,7 @@ struct RequestAuthSheet {
     Column() {
       Column() {
       }
-      .bindSheet(this.isDisplaySheet, this.buildSheetContent, {
+      .bindSheet(this.isDisplaySheet, this.buildSheetContentComp, {
         height: '100%',
         title: this.buildSheetTitle,
         showClose: true,
