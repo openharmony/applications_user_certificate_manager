@@ -90,7 +90,7 @@ export struct CredUserDetailPage {
 
           Column() {
             Scroll() {
-              this.buildContent()
+              this.buildContentComp()
             }
             .align(Alignment.Top)
             .scrollable(ScrollDirection.Vertical)
@@ -151,7 +151,7 @@ export struct CredUserDetailPage {
   }
 
   @Builder
-  private buildContent() {
+  private buildContentComp() {
     Column() {
       Text(this.presenter.credInfo.alias)
         .fontSize($r('sys.float.ohos_id_text_size_body1'))

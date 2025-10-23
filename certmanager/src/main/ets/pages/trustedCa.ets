@@ -58,7 +58,7 @@ struct ComponentSystem {
     alignment: DialogAlignment.Center,
     builder: CustomContentDialog({
       contentBuilder: () => {
-        this.systemDetailContent();
+        this.buildSystemDetailContentComp();
       },
       contentAreaPadding: {
         left: $r('app.float.wh_value_0'),
@@ -75,7 +75,7 @@ struct ComponentSystem {
   })
 
   @Builder
-  systemDetailContent(): void {
+  buildSystemDetailContentComp(): void {
     Column() {
       Text($r('app.string.CustomDialogExample_firText'))
         .fontSize($r('sys.float.ohos_id_text_size_dialog_tittle'))
@@ -291,7 +291,7 @@ struct ComponentUser {
     },
     builder: CustomContentDialog({
       contentBuilder: () => {
-        this.userDetailContent(this.setStatus.certList[this.indexNum].status);
+        this.buildUserDetailContentComp(this.setStatus.certList[this.indexNum].status);
       },
       contentAreaPadding: {
         left: $r('app.float.wh_value_0'),
@@ -410,7 +410,7 @@ struct ComponentUser {
   }
 
   @Builder
-  userDetailContent($$: boolean): void {
+  buildUserDetailContentComp($$: boolean): void {
     Column() {
       Text($r('app.string.CustomDialogExample_firText'))
         .fontSize($r('sys.float.ohos_id_text_size_dialog_tittle'))

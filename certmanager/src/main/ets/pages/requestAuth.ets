@@ -33,7 +33,7 @@ struct RadioAuth {
     },
     builder: CustomContentDialog({
       contentBuilder: () => {
-        this.dialogControllerContent();
+        this.buildDialogControllerContentComp();
       },
       contentAreaPadding: {right: $r('app.float.wh_value_0')},
       buttons: [
@@ -65,7 +65,7 @@ struct RadioAuth {
   })
 
   @Builder
-  dialogControllerContent(): void {
+  buildDialogControllerContentComp(): void {
     Column() {
       Text($r('app.string.pickCredToAuth'))
         .fontSize($r('sys.float.ohos_id_text_size_dialog_tittle'))

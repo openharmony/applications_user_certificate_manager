@@ -127,7 +127,7 @@ export struct CaUserDetailPage {
 
           Stack({ alignContent: Alignment.TopEnd }) {
             Scroll() {
-              this.buildContent()
+              this.buildContentComp()
             }
             .padding({
               left: 16, right: 16
@@ -189,7 +189,7 @@ export struct CaUserDetailPage {
   }
 
   @Builder
-  private buildContent() {
+  private buildContentComp() {
     Column() {
       Flex({ justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
         Column() {
