@@ -83,7 +83,7 @@ export struct componentPublic {
   appDialogController: CustomDialogController = new CustomDialogController({
     builder: CustomContentDialog({
       contentBuilder: () => {
-        this.appControllerContent();
+        this.buildAppControllerContentComp();
       },
       contentAreaPadding: { right: $r('app.float.wh_value_0') },
       buttons: [
@@ -110,7 +110,7 @@ export struct componentPublic {
   credDetailsDialog: CustomDialogController = new CustomDialogController({
     builder: CustomContentDialog({
       contentBuilder: () => {
-        this.credDetailContent();
+        this.buildCredDetailContentComp();
       },
       contentAreaPadding: {
         left: $r('app.float.wh_value_0'),
@@ -137,7 +137,7 @@ export struct componentPublic {
   })
 
   @Builder
-  appControllerContent(): void {
+  buildAppControllerContentComp(): void {
     Column() {
       Text($r('app.string.managerAuthApp'))
         .height($r('app.float.wh_value_56'))
@@ -216,7 +216,7 @@ export struct componentPublic {
   }
 
   @Builder
-  credDetailContent(): void {
+  buildCredDetailContentComp(): void {
     Column() {
       Text($r('app.string.evidenceDetails'))
         .height($r('app.float.wh_value_56'))
