@@ -715,7 +715,7 @@ export struct TrustedEvidence {
                     Stack({ alignContent: Alignment.TopEnd }) {
                       Scroll(this.sysCaScroller) {
                         List() {
-                          ForEach(this.mShowSysCaPresenter.certList, (item: CertAbstractVo) => {
+                          LazyForEach(this.mShowSysCaPresenter.certDataSource, (item: CertAbstractVo) => {
                             ListItem() {
                               ComponentSystem({
                                 certAlias: item.certAlias,
@@ -727,8 +727,9 @@ export struct TrustedEvidence {
                                 } : undefined
                               })
                             }
-                          }, (item: CertAbstractVo) => JSON.stringify(item))
+                          }, (item: CertAbstractVo) => item.uri)
                         }
+                        .cacheCount(10)
                         .borderRadius($r('sys.float.padding_level10'))
                         .backgroundColor($r('sys.color.ohos_id_color_card_bg'))
                         .scrollBar(BarState.Off)
