@@ -729,7 +729,7 @@ export struct TrustedEvidence {
                             }
                           }, (item: CertAbstractVo) => item.uri)
                         }
-                        .cacheCount(10)
+                        .cachedCount(10)
                         .borderRadius($r('sys.float.padding_level10'))
                         .backgroundColor($r('sys.color.ohos_id_color_card_bg'))
                         .scrollBar(BarState.Off)
