@@ -17,6 +17,7 @@ import certManagerModel from '../model/CertMangerModel';
 import { CMModelErrorCode, CMModelOptType } from '../model/CertMangerModel';
 import { CertAbstractVo } from '../model/CertManagerVo/CertAbstractVo';
 import { CertInfoVo } from '../model/CertManagerVo/CertInfoVo';
+import { CmCertDataSource } from './CmCertDataSource';
 
 const TAG = 'CMShowSysCa Presenter: ';
 
@@ -25,6 +26,7 @@ export default class CmShowSysCaPresenter {
   public certList: CertAbstractVo[] = [];
   public certInfo: CertInfoVo = new CertInfoVo('', '', false, '', '', '', '', '', '',
     new Uint8Array(), new Map(), new Map(), new Map());
+  public certDataSource: CmCertDataSource = new CmCertDataSource();
 
   public static getInstance(): CmShowSysCaPresenter {
     if (CmShowSysCaPresenter.sInstance == null) {
@@ -57,6 +59,7 @@ export default class CmShowSysCaPresenter {
           }
         });
         this.certList = certList;
+        this.certDataSource.reloadData(this.certList);
       } else {
         console.error(TAG + 'updateSystemTrustedCertificateList fail,errCode is' + errCode);
         this.certList = [];
