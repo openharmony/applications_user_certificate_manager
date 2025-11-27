@@ -21,6 +21,7 @@ import { BusinessError } from '@ohos.base';
 
 const PAGE_CA_INSTALL = 5;
 const PAGE_REQUEST_AUTHORIZE = 6;
+const PAGE_UKEY_AUTH = 7;
 const TAG = 'CertPickerUiExtAbility';
 
 export default class CertPickerUiExtAbility extends UIExtensionAbility {
@@ -49,6 +50,8 @@ export default class CertPickerUiExtAbility extends UIExtensionAbility {
         session.loadContent('pages/CertificateInstallPage', storage);
       } else if (this.isStartToAuthorize(want.parameters)) {
         session.loadContent('pages/RequestAuthSheet', storage);
+      } else if (this.isStartToUkeyAuth(want.parameters)) {
+        session.loadContent('pages/UKeyAuthSheet', storage);
       } else {
         session.loadContent('pages/picker/CertManagerSheetFa', storage);
         let pwdStore = new PwdStore();
@@ -82,6 +85,14 @@ export default class CertPickerUiExtAbility extends UIExtensionAbility {
     }
     return parameters['pageType'] === PAGE_REQUEST_AUTHORIZE;
   }
+
+  private isStartToUkeyAuth(parameters: Record<string, Object> | undefined): boolean {
+    if (parameters === undefined) {
+      return false;
+    }
+    return parameters['pageType'] === PAGE_UKEY_AUTH;
+  }
+
   onSessionDestroy(): void {
     // Main window is destroyed, release UI related resources
     GlobalContext.getContext().clearSession();
