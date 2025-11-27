@@ -277,7 +277,7 @@ struct RequestAuthSheet {
         contentPadding: { start: LengthMetrics.vp(12), end: LengthMetrics.vp(12) },
       })
       List() {
-        ForEach(this.credList, (item: CredentialAbstractVo) => {
+        ForEach(credList, (item: CredentialAbstractVo) => {
           ListItem() {
             Column() {
               Flex({ justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
