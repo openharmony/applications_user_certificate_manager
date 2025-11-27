@@ -277,7 +277,7 @@ struct RequestAuthSheet {
         contentPadding: { start: LengthMetrics.vp(12), end: LengthMetrics.vp(12) },
       })
       List() {
-        ForEach(this.mAppCredAuthPresenter.credList, (item: CredentialAbstractVo) => {
+        ForEach(this.credList, (item: CredentialAbstractVo) => {
           ListItem() {
             Column() {
               Flex({ justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
@@ -383,7 +383,7 @@ struct RequestAuthSheet {
             this.buildCredListComp(this.installCredList, $r('app.string.installed_certs'))
           }
           if (this.ukeyCredList.length > 0) {
-            this.buildCredListComp(this.installCredList, $r('app.string.ukey_certs'))
+            this.buildCredListComp(this.ukeyCredList, $r('app.string.ukey_certs'))
           }
         }
         .width('100%')
