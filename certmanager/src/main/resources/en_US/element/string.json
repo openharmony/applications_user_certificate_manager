@@ -431,6 +431,14 @@
     {
       "name":"cert_install_warning",
       "value":"Enabling this certificate for a website will allow third parties to view any private data sent to the website."
+    },
+    {
+      "name":"installed_certs",
+      "value":"Installed certificates"
+    },
+    {
+      "name":"ukey_certs",
+      "value":"USB Key"
     }
   ]
 }
