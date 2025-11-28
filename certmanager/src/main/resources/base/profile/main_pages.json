@@ -8,6 +8,7 @@
     "pages/certInstallFromStorage",
     "pages/CertificateInstallPage",
     "pages/picker/CertManagerSheetFa",
-    "pages/RequestAuthSheet"
+    "pages/RequestAuthSheet",
+    "pages/UKeyAuthSheet"
   ]
 }
