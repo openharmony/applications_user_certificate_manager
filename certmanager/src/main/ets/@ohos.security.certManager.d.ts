@@ -174,6 +174,7 @@ declare namespace CertManagerFunc {
         uri?: string;
         outData?: Uint8Array;
         isAuth?: boolean;
+        credentialDetailList?: Array<Credential>;
     }
 
     export interface CMKeyProperties {
@@ -209,6 +210,21 @@ declare namespace CertManagerFunc {
         CM_ERROR_NO_AUTHORIZATION = 17500005,
         CM_ERROR_ALIAS_LENGTH_REACHED_LIMIT = 17500006,
         CM_ERROR_PASSWORD_IS_ERR = 17500008
+    }
+
+    export enum CertificatePurpose {
+        PURPOSE_DEFAULT = 0,
+        PURPOSE_ALL = 1,
+        PURPOSE_SIGN = 2,
+        PURPOSE_ENCRYPT = 3,
+    }
+
+    export function getAllAppPrivateCertificatesByUid(appUid: number): Promise<CMResult>;
+    export function getUkeyCertificateList(ukeyProvidor: string, ukeyInfo: UkeyInfo): Promise<CMResult>;
+    export function getUkeyCertificate(keyUri: string, ukeyInfo: UkeyInfo): Promise<CMResult>;
+
+    export interface UkeyInfo {
+        certPurpose?: CertificatePurpose;
     }
 }
 

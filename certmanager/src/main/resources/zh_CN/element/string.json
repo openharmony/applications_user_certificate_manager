@@ -431,6 +431,14 @@
     {
       "name":"cert_install_warning",
       "value":"为网站启用此证书将允许第三方查看发送给网站的任何私人数据。"
+    },
+    {
+      "name":"installed_certs",
+      "value":"已安装的证书"
+    },
+    {
+      "name":"ukey_certs",
+      "value":"USB Key"
     }
   ]
 }

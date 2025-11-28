@@ -13,14 +13,18 @@
  * limitations under the License.
  */
 
+import certMgrDialog from '@ohos.security.certManagerDialog';
+
 export class CredentialAbstractVo {
   public credType: string;
   public alias: string;
   public keyUri: string;
+  public certType?: certMgrDialog.CertificateType;
 
-  constructor(credType: string, alias: string, keyUri: string) {
+  constructor(credType: string, alias: string, keyUri: string, certType?: certMgrDialog.CertificateType) {
     this.credType = credType;
     this.alias = alias;
     this.keyUri = keyUri;
+    this.certType = certType;
   }
 }
