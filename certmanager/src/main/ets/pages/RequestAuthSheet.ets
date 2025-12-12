@@ -25,6 +25,7 @@ import certMgr from '@ohos.security.certManager'
 
 const DOMAIN = 0x0000;
 const TAG = 'RequestAuthSheet';
+const SYSCAP_HUKS_CRYPTO_EXTENTION: string = 'SystemCapability.Security.Huks.CryptoExtension';
 
 function hilogInfo(message: string): void {
   hilog.info(DOMAIN, TAG, message);
