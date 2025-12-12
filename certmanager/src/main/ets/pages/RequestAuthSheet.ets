@@ -174,6 +174,8 @@ struct RequestAuthSheet {
         certMgrDialog.CertificateType[];
       this.mAppCredAuthPresenter.updateAppNameFromUid(this.appUid);
 
+      hilogInfo(`certTypes: ${JSON.stringify(this.certTypes)}`);
+
       await this.getCredList();
       if ((this.installCredList.length + this.ukeyCredList.length) > 0) {
         this.isDisplaySheet = true;
