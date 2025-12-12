@@ -168,8 +168,8 @@ struct RequestAuthSheet {
       this.session.terminateSelfWithResult({resultCode: DialogErrorCode.DIALOG_ERROR_PARAM_INVALID});
     }
     try {
-      this.version = parameters['certTypes'] ? RequestAuthPageVersion.VERSION_DEFAULT :
-        RequestAuthPageVersion.VERSION_WITH_CERT_TYPES;
+      this.version = parameters['certTypes'] ? RequestAuthPageVersion.VERSION_WITH_CERT_TYPES :
+        RequestAuthPageVersion.VERSION_DEFAULT;
       this.certTypes = (parameters['certTypes'] ?? [certMgrDialog.CertificateType.CREDENTIAL_USER]) as
         certMgrDialog.CertificateType[];
       this.mAppCredAuthPresenter.updateAppNameFromUid(this.appUid);
