@@ -20,6 +20,7 @@ import { DialogErrorCode } from '../model/CertMangerModel';
 
 const DOMAIN = 0x0000;
 const TAG = 'UKeyAuthSheet';
+const SYSCAP_HUKS_CRYPTO_EXTENTION: string = 'SystemCapability.Security.Huks.CryptoExtension';
 
 function hilogInfo(message: string): void {
   hilog.info(DOMAIN, TAG, message);
@@ -45,6 +46,12 @@ struct UKeyAuthSheet {
     let parameters = this.want.parameters;
     if (parameters === undefined || parameters === null) {
       hilogError(`parameters is undefinde`);
+      this.session.terminateSelfWithResult({resultCode: DialogErrorCode.DIALOG_ERROR_PARAM_INVALID});
+      return;
+    }
+
+    if (!canIUse(SYSCAP_HUKS_CRYPTO_EXTENTION)) {
+      this.session.terminateSelfWithResult({resultCode: DialogErrorCode.DIALOG_ERROR_CAPACITY_NOT_SUPPORT});
       return;
     }
 

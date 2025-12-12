@@ -98,6 +98,12 @@ struct RequestAuthSheet {
   getUkeyList(): Promise<void> {
     return new Promise<void>(async (resolve, reject) => {
       try {
+        if (!canIUse(SYSCAP_HUKS_CRYPTO_EXTENTION)) {
+          if (this.certTypes.length === 1) {
+            this.session.terminateSelfWithResult({resultCode: DialogErrorCode.DIALOG_ERROR_CAPACITY_NOT_SUPPORT});
+          }
+          return resolve();
+        }
         let credList = await certMangerModel.getUkeyCertificateList(this.certPurpose);
         this.installCredList = this.installCredList.concat(credList);
         return resolve();
