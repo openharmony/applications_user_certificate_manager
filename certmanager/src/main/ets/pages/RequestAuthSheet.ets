@@ -100,6 +100,8 @@ struct RequestAuthSheet {
     return new Promise<void>(async (resolve, reject) => {
       try {
         if (!canIUse(SYSCAP_HUKS_CRYPTO_EXTENTION)) {
+          // When the certificate type specific only ukey, 
+          // an error code indicating that the device is not supported is returned.
           if (this.certTypes.length === 1) {
             this.session.terminateSelfWithResult({resultCode: DialogErrorCode.DIALOG_ERROR_CAPACITY_NOT_SUPPORT});
           }
