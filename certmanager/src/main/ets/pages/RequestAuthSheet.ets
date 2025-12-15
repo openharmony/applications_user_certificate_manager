@@ -22,6 +22,7 @@ import hilog from '@ohos.hilog';
 import certMgrDialog from '@ohos.security.certManagerDialog';
 import { BusinessError } from '@ohos.base';
 import certMgr from '@ohos.security.certManager'
+import { SYSCAP_HUKS_CRYPTO_EXTENTION } from '../common/constants/CertManagerConstants';
 
 const DOMAIN = 0x0000;
 const TAG = 'RequestAuthSheet';
@@ -98,6 +99,14 @@ struct RequestAuthSheet {
   getUkeyList(): Promise<void> {
     return new Promise<void>(async (resolve, reject) => {
       try {
+        if (!canIUse(SYSCAP_HUKS_CRYPTO_EXTENTION)) {
+          // When the certificate type specific only ukey, 
+          // an error code indicating that the device is not supported is returned.
+          if (this.certTypes.length === 1) {
+            this.session.terminateSelfWithResult({resultCode: DialogErrorCode.DIALOG_ERROR_CAPACITY_NOT_SUPPORT});
+          }
+          return resolve();
+        }
         let credList = await certMangerModel.getUkeyCertificateList(this.certPurpose);
         this.installCredList = this.installCredList.concat(credList);
         return resolve();
@@ -161,11 +170,13 @@ struct RequestAuthSheet {
       this.session.terminateSelfWithResult({resultCode: DialogErrorCode.DIALOG_ERROR_PARAM_INVALID});
     }
     try {
-      this.version = parameters['certTypes'] ? RequestAuthPageVersion.VERSION_DEFAULT :
-        RequestAuthPageVersion.VERSION_WITH_CERT_TYPES;
+      this.version = parameters['certTypes'] ? RequestAuthPageVersion.VERSION_WITH_CERT_TYPES :
+        RequestAuthPageVersion.VERSION_DEFAULT;
       this.certTypes = (parameters['certTypes'] ?? [certMgrDialog.CertificateType.CREDENTIAL_USER]) as
         certMgrDialog.CertificateType[];
       this.mAppCredAuthPresenter.updateAppNameFromUid(this.appUid);
+
+      hilogInfo(`certTypes: ${JSON.stringify(this.certTypes)}`);
 
       await this.getCredList();
       if ((this.installCredList.length + this.ukeyCredList.length) > 0) {

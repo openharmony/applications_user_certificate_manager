@@ -17,6 +17,7 @@ import hilog from '@ohos.hilog';
 import { StringUtil } from '../common/util/StringUtil';
 import { UIExtensionContentSession } from '@kit.AbilityKit';
 import { DialogErrorCode } from '../model/CertMangerModel';
+import { SYSCAP_HUKS_CRYPTO_EXTENTION } from '../common/constants/CertManagerConstants';
 
 const DOMAIN = 0x0000;
 const TAG = 'UKeyAuthSheet';
@@ -45,6 +46,12 @@ struct UKeyAuthSheet {
     let parameters = this.want.parameters;
     if (parameters === undefined || parameters === null) {
       hilogError(`parameters is undefinde`);
+      this.session.terminateSelfWithResult({resultCode: DialogErrorCode.DIALOG_ERROR_PARAM_INVALID});
+      return;
+    }
+
+    if (!canIUse(SYSCAP_HUKS_CRYPTO_EXTENTION)) {
+      this.session.terminateSelfWithResult({resultCode: DialogErrorCode.DIALOG_ERROR_CAPACITY_NOT_SUPPORT});
       return;
     }
 
