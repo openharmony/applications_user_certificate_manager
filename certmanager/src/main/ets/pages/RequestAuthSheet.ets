@@ -22,10 +22,10 @@ import hilog from '@ohos.hilog';
 import certMgrDialog from '@ohos.security.certManagerDialog';
 import { BusinessError } from '@ohos.base';
 import certMgr from '@ohos.security.certManager'
+import { SYSCAP_HUKS_CRYPTO_EXTENTION } from '../common/constants/CertManagerConstants';
 
 const DOMAIN = 0x0000;
 const TAG = 'RequestAuthSheet';
-const SYSCAP_HUKS_CRYPTO_EXTENTION: string = 'SystemCapability.Security.Huks.CryptoExtension';
 
 function hilogInfo(message: string): void {
   hilog.info(DOMAIN, TAG, message);

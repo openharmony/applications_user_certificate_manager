@@ -17,10 +17,10 @@ import hilog from '@ohos.hilog';
 import { StringUtil } from '../common/util/StringUtil';
 import { UIExtensionContentSession } from '@kit.AbilityKit';
 import { DialogErrorCode } from '../model/CertMangerModel';
+import { SYSCAP_HUKS_CRYPTO_EXTENTION } from '../common/constants/CertManagerConstants';
 
 const DOMAIN = 0x0000;
 const TAG = 'UKeyAuthSheet';
-const SYSCAP_HUKS_CRYPTO_EXTENTION: string = 'SystemCapability.Security.Huks.CryptoExtension';
 
 function hilogInfo(message: string): void {
   hilog.info(DOMAIN, TAG, message);
