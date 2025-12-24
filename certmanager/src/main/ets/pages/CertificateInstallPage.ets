@@ -45,10 +45,12 @@ struct CertificateInstallPage {
   @State callerName: string = '';
   @State resultCode: number = CMModelErrorCode.CM_MODEL_ERROR_FAILED;
   @State successUri: string = '';
-  ;
+  operationType: number = 0;
+  certType: number = 0;
   private session: UIExtensionContentSession =
     storage?.get<UIExtensionContentSession>('session') as UIExtensionContentSession;
   private want: Want = storage?.get<Want>('want') as Want;
+  private params: Record<string, object> = {};
 
   private context: Context = getContext(this);
 
@@ -124,23 +126,23 @@ struct CertificateInstallPage {
       this.session?.terminateSelf();
       return;
     }
-    let params = this.want.parameters;
-    if (params === undefinde) {
+    this.params = this.want.parameters ?? {};
+    if (this.params === undefined) {
       hilogError('check parameters undefined');
       this.session.terminateSelfWithResult({resultCode: DialogErrorCode.DIALOG_ERROR_PARAM_INVALID});
       return;
     }
-    let operationType = params['operationType'] as number;
-    let certType = params['certType'] as number;
-    if (operationType !== CmDialogOperationType.INSTALL) {
+    this.operationType = Number(this.params['operationType']);
+    this.certType = Number(this.params['certType']);
+    if (this.operationType !== CmDialogOperationType.INSTALL) {
       hilogError('check operation type unsupport');
       this.session.terminateSelfWithResult({resultCode: DialogErrorCode.DIALOG_ERROR_NOT_ENTERPRISE_DEVICE});
       return;
     }
-    if (certType === certMgrDialog.CertificateType.CA_CERT) {
+    if (this.certType === certMgrDialog.CertificateType.CA_CERT) {
       this.rootCertificateDialog.open();
-    } else if (certType === certMgrDialog.CertificateType.CREDENTIAL_USER ||
-      certType === certMgrDialog.CertificateType.CREDENTIAL_SYSTEM) {
+    } else if (this.certType === certMgrDialog.CertificateType.CREDENTIAL_USER ||
+      this.certType === certMgrDialog.CertificateType.CREDENTIAL_SYSTEM) {
       this.inputPwdDialog.open();
     } else {
       hilogError('check cert type invalid');
@@ -190,18 +192,17 @@ struct CertificateInstallPage {
   }
 
   installCred() {
-    let certType = this.want.parameters['certType'];
     let optType: CMModelOptType = CMModelOptType.CM_MODEL_OPT_UNKNOWN;
-    if (certType === certMgrDialog.CertificateType.CREDENTIAL_USER) {
+    if (this.certType === certMgrDialog.CertificateType.CREDENTIAL_USER) {
       optType = CMModelOptType.CM_MODEL_OPT_APP_CRED;
-    } else if (certType === certMgrDialog.CertificateType.CREDENTIAL_USER) {
+    } else if (this.certType === certMgrDialog.CertificateType.CREDENTIAL_USER) {
       optType = CMModelOptType.CM_MODEL_OPT_SYSTEM_CRED;
     } else {
       hilogError('check cert type unsupport');
       this.session.terminateSelfWithResult({resultCode: DialogErrorCode.DIALOG_ERROR_PARAM_INVALID});
       return;
     }
-    let credString: string = this.want.parameters['cert']?.toString() ?? '';
+    let credString: string = this.params['cert']?.toString() ?? '';
     let credData: Uint8Array = new util.Base64Helper().decodeSync(credString);
 
     certManagerModel.installCertOrCred(optType, '', credData,
@@ -279,10 +280,9 @@ struct CertificateInstallPage {
   }
 
   private getInstallCredSubtitle(): ResourceStr {
-    let certType = this.want.parameters['certType'];
-    if (certType === certMgrDialog.CertificateType.CREDENTIAL_USER) {
+    if (this.certType === certMgrDialog.CertificateType.CREDENTIAL_USER) {
       return $r('app.string.install_user_cred_subtitle', this.callerName);
-    } else if (certType === certMgrDialog.CertificateType.CREDENTIAL_SYSTEM) {
+    } else if (this.certType === certMgrDialog.CertificateType.CREDENTIAL_SYSTEM) {
       return $r('app.string.install_system_cred_subtitle', this.callerName);
     } else {
       return '';
@@ -310,17 +310,16 @@ struct CertificateInstallPage {
       hilogError('initData, want is undefined');
       return false;
     }
-    let parameters = this.want.parameters;
-    if (parameters === undefined || parameters === null) {
+    if (this.params === undefined || this.params === null) {
       hilogError('initData, parameters is undefined');
       return false;
     }
-    let callerName = parameters['bundleName'];
+    let callerName = this.params['bundleName']?.toString();
     if (callerName === undefined || callerName === null) {
       hilogError('getCallerName, callerName is undefined');
       return false;
     }
-    this.callerName = 'callerName as string';
+    this.callerName = callerName;
     return true;
   }
 
@@ -378,12 +377,11 @@ struct CertificateInstallPage {
       hilogError('initData, want is undefined');
       return;
     }
-    let parameters = this.want.parameters;
-    if (parameters === undefined || parameters === null) {
+    if (this.params === undefined || this.params === null) {
       hilogError('initData, parameters is undefined');
       return;
     }
-    this.getCertificateData(parameters).then(data => {
+    this.getCertificateData(this.params).then(data => {
       if (data === undefined) {
         hilogError('installCaCertificate, certificate data is undefined');
         this.session?.terminateSelf();
