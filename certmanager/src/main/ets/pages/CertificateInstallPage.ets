@@ -14,16 +14,28 @@
  */
 
 import { CustomContentDialog, AlertDialog } from '@ohos.arkui.advanced.Dialog';
-import { CMModelErrorCode, CMModelOptType } from '../model/CertMangerModel';
+import { CMModelErrorCode, CMModelOptType, DialogErrorCode, CmDialogOperationType } from '../model/CertMangerModel';
 import checkUserAuthModel from '../model/CheckUserAuthModel';
 import { BusinessError } from '@ohos.base';
 import UIExtensionContentSession from '@ohos.app.ability.UIExtensionContentSession';
 import certManagerModel from '../model/CertMangerModel';
 import util from '@ohos.util';
+import certMgrDialog from '@ohos.security.certManagerDialog';
+import { Want } from '@kit.AbilityKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { deviceInfo } from '@kit.BasicServicesKit';
 
 /* instrument ignore file */
 
 const TAG = 'CertificateInstallPage';
+const DOMAIN = 0x0000;
+function hilogInfo(message: string): void {
+  hilog.info(DOMAIN, TAG, message);
+}
+function hilogError(message: string): void {
+  hilog.error(DOMAIN, TAG, message);
+}
+
 let storage = LocalStorage.getShared();
 
 @Entry(storage)
@@ -92,14 +104,14 @@ struct CertificateInstallPage {
       primaryButton: {
         value: $r('app.string.root_certificate_cancel'),
         action: () => {
-          console.info(TAG, 'USER_CA_STATUS_CONFIRM cancel');
+          hilogInfo('USER_CA_STATUS_CONFIRM cancel');
           this.session?.terminateSelf();
         }
       },
       secondaryButton: {
         value: $r('app.string.root_certificate_continue'),
         action: () => {
-          console.info(TAG, 'USER_CA_STATUS_CONFIRM confirm');
+          hilogInfo('USER_CA_STATUS_CONFIRM confirm');
           this.checkUserAuth();
         }
       }
@@ -112,25 +124,200 @@ struct CertificateInstallPage {
       this.session?.terminateSelf();
       return;
     }
-    this.rootCertificateDialog.open();
+    let params = this.want.parameters;
+    if (params === undefinde) {
+      hilogError('check parameters undefined');
+      this.session.terminateSelfWithResult({resultCode: DialogErrorCode.DIALOG_ERROR_PARAM_INVALID});
+      return;
+    }
+    let operationType = params['operationType'] as number;
+    let certType = params['certType'] as number;
+    if (operationType !== CmDialogOperationType.INSTALL) {
+      hilogError('check operation type unsupport');
+      this.session.terminateSelfWithResult({resultCode: DialogErrorCode.DIALOG_ERROR_NOT_ENTERPRISE_DEVICE});
+      return;
+    }
+    if (certType === certMgrDialog.CertificateType.CA_CERT) {
+      this.rootCertificateDialog.open();
+    } else if (certType === certMgrDialog.CertificateType.CREDENTIAL_USER ||
+      certType === certMgrDialog.CertificateType.CREDENTIAL_SYSTEM) {
+      this.inputPwdDialog.open();
+    } else {
+      hilogError('check cert type invalid');
+      this.session.terminateSelfWithResult({resultCode: DialogErrorCode.DIALOG_ERROR_PARAM_INVALID});
+      return;
+    }
   }
+
+  textInputController: TextInputController = new TextInputController()
+  @State isPasswordError: boolean = false;
+  certPwd: string = '';
+
+  cancelInstallCred(): void {
+    hilogInfo('install cred cancel');
+    this.inputPwdDialog.close();
+    this.session.terminateSelfWithResult({resultCode: DialogErrorCode.DIALOG_OPERATION_CANCELS});
+    return;
+  }
+
+  private handleCredInstallResult(resultCode: CMModelErrorCode, uri: string) {
+    if (resultCode === CMModelErrorCode.CM_MODEL_ERROR_SUCCESS) {
+      this.session?.sendData({'uri': uri});
+      this.inputPwdDialog.close();
+    } else if (resultCode === CMModelErrorCode.CM_MODEL_ERROR_INCORRECT_FORMAT) {
+      hilogError('install cred data incorrect format');
+      this.inputPwdDialog.close();
+      this.resultCode = CMModelErrorCode.CM_MODEL_ERROR_INCORRECT_FORMAT;
+      this.installFailedDialogMessage = $r('app.string.Install_ERROR_INCORRECT_FORMAT');
+      this.installFailedDialog.open();
+    } else if (resultCode === CMModelErrorCode.CM_MODEL_ERROR_MAX_QUANTITY_REACHED) {
+      hilogError('install cred max quantity reached');
+      this.inputPwdDialog.close();
+      this.resultCode = CMModelErrorCode.CM_MODEL_ERROR_MAX_QUANTITY_REACHED;
+      this.installFailedDialogMessage = $r('app.string.Install_Error_MAX_QUANTITY_REACHED');
+      this.installFailedDialog.open();
+    } else if (resultCode === CMModelErrorCode.CM_MODEL_ERROR_PASSWORD_ERR) {
+      hilogInfo('install cred pwd incorrect');
+      this.isPasswordError = true;
+      this.textInputController.setTextSelection(0, this.certPwd.length, { menuPolicy: MenuPolicy.HIDE })
+    }else {
+      this.inputPwdDialog.close();
+      hilogError(`result code ${resultCode}, need not show result`);
+      this.session?.terminateSelfWithResult({
+        resultCode: resultCode
+      });
+    }
+  }
+
+  installCred() {
+    let certType = this.want.parameters['certType'];
+    let optType: CMModelOptType = CMModelOptType.CM_MODEL_OPT_UNKNOWN;
+    if (certType === certMgrDialog.CertificateType.CREDENTIAL_USER) {
+      optType = CMModelOptType.CM_MODEL_OPT_APP_CRED;
+    } else if (certType === certMgrDialog.CertificateType.CREDENTIAL_USER) {
+      optType = CMModelOptType.CM_MODEL_OPT_SYSTEM_CRED;
+    } else {
+      hilogError('check cert type unsupport');
+      this.session.terminateSelfWithResult({resultCode: DialogErrorCode.DIALOG_ERROR_PARAM_INVALID});
+      return;
+    }
+    let credString: string = this.want.parameters['cert']?.toString() ?? '';
+    let credData: Uint8Array = new util.Base64Helper().decodeSync(credString);
+
+    certManagerModel.installCertOrCred(optType, '', credData,
+      this.certPwd, (errCode: CMModelErrorCode, uri: string) => {
+        this.handleCredInstallResult(errCode, uri ?? '');
+      });
+  }
+
+  @Builder
+  buildInputPwdComp() {
+    Column() {
+      Row() {
+        TextInput({ controller: this.textInputController })
+          .type(InputType.Password)
+          .fontColor($r('sys.color.font_primary'))
+          .focusable(true)
+          .defaultFocus(true)
+          .border({
+            width: 1,
+            color: this.isPasswordError ? $r('sys.color.warning') : Color.Transparent
+          })
+          .onChange((value: string) => {
+            this.certPwd = value;
+          })
+          .onSubmit((eventKey: EnterKeyType, event: SubmitEvent) => {
+            this.installCred();
+            event.keepEditableState();
+          })
+      }
+
+      Row() {
+        Text(this.isPasswordError ? $r('app.string.Password_Message') : ' ')
+          .fontSize($r('sys.float.Body_M'))
+          .fontWeight(FontWeight.Regular)
+          .width('100%')
+          .textAlign(TextAlign.Center)
+          .fontColor($r('sys.color.warning'))
+          .margin({
+            top: 8
+          })
+      }
+
+      Row() {
+        GridRow({columns: 2, gutter: {x: 16}}) {
+          GridCol({span: 1}) {
+            Button($r('app.string.warning_cancel'))
+              .buttonStyle(ButtonStyleMode.NORMAL)
+              .type(ButtonType.ROUNDED_RECTANGLE)
+              .labelStyle({
+                maxLines: 1
+              })
+              .width('100%')
+              .onClick(() => {
+                this.cancelInstallCred();
+              })
+          }
+          GridCol({span: 1}) {
+            Button($r('app.string.inputConfirm'))
+              .buttonStyle(ButtonStyleMode.NORMAL)
+              .type(ButtonType.ROUNDED_RECTANGLE)
+              .labelStyle({
+                maxLines: 1
+              })
+              .width('100%')
+              .onClick(() => {
+                this.installCred();
+              })
+          }
+        }
+      }
+      .padding({
+        top: 16
+      })
+    }
+  }
+
+  private getInstallCredSubtitle(): ResourceStr {
+    let certType = this.want.parameters['certType'];
+    if (certType === certMgrDialog.CertificateType.CREDENTIAL_USER) {
+      return $r('app.string.install_user_cred_subtitle', this.callerName);
+    } else if (certType === certMgrDialog.CertificateType.CREDENTIAL_SYSTEM) {
+      return $r('app.string.install_system_cred_subtitle', this.callerName);
+    } else {
+      return '';
+    }
+  }
+
+  inputPwdDialog: CustomDialogController = new CustomDialogController({
+    alignment: DialogAlignment.Center,
+    showInSubWindow: false,
+    cancel: () => {
+      this.cancelInstallCred();
+    },
+    builder: CustomContentDialog({
+      primaryTitle: $r('app.string.certInputPassword'),
+      secondaryTitle: this.getInstallCredSubtitle(),
+      contentBuilder: () => { this.buildInputPwdComp() },
+    }),
+  })
 
   build() {
   }
 
   private getCallerName(): boolean {
     if (this.want === undefined || this.want === null) {
-      console.error(TAG, 'initData, want is undefined');
+      hilogError('initData, want is undefined');
       return false;
     }
     let parameters = this.want.parameters;
     if (parameters === undefined || parameters === null) {
-      console.error(TAG, 'initData, parameters is undefined');
+      hilogError('initData, parameters is undefined');
       return false;
     }
     let callerName = parameters['bundleName'];
     if (callerName === undefined || callerName === null) {
-      console.error(TAG, 'getCallerName, callerName is undefined');
+      hilogError('getCallerName, callerName is undefined');
       return false;
     }
     this.callerName = 'callerName as string';
@@ -150,7 +337,7 @@ struct CertificateInstallPage {
       this.installFailedDialogMessage = $r('app.string.Install_Error_MAX_QUANTITY_REACHED');
       this.installFailedDialog.open();
     } else {
-      console.debug(TAG, `result code ${resultCode}, need not show result`);
+      hilogInfo(`result code ${resultCode}, need not show result`);
       this.session?.terminateSelfWithResult({
         resultCode: resultCode
       });
@@ -161,11 +348,11 @@ struct CertificateInstallPage {
     let titleStr = this.context?.resourceManager.getStringSync($r('app.string.Identity_Authentication'));
     checkUserAuthModel.auth(titleStr, (authResult: boolean) => {
       if (!authResult) {
-        console.warn(TAG, 'userAuth cancel!');
+        hilogInfo('userAuth cancel!');
         this.session?.terminateSelf();
         return;
       }
-      console.info(TAG, 'userAuth success!');
+      hilogInfo('userAuth success!');
       this.installCaCertificate();
     })
   }
@@ -174,13 +361,13 @@ struct CertificateInstallPage {
     return new Promise<Uint8Array | undefined>(resolve => {
       let certificateDataObj = parameters['cert'];
       if (certificateDataObj === undefined || certificateDataObj === null) {
-        console.error(TAG, 'getCertificateData, certificate data is undefined');
+        hilogError('getCertificateData, certificate data is undefined');
         return resolve(undefined);
       }
       new util.Base64Helper().decode(certificateDataObj as string).then((value) => {
         return resolve(value);
       }).catch((error: BusinessError) => {
-        console.error(TAG, `decode certificate data err: ${error?.code}, msg: ${error?.message}`);
+        hilogError(`decode certificate data err: ${error?.code}, msg: ${error?.message}`);
         return resolve(undefined);
       });
     });
@@ -188,23 +375,23 @@ struct CertificateInstallPage {
 
   private installCaCertificate(): void {
     if (this.want === undefined || this.want === null) {
-      console.error(TAG, 'initData, want is undefined');
+      hilogError('initData, want is undefined');
       return;
     }
     let parameters = this.want.parameters;
     if (parameters === undefined || parameters === null) {
-      console.error(TAG, 'initData, parameters is undefined');
+      hilogError('initData, parameters is undefined');
       return;
     }
     this.getCertificateData(parameters).then(data => {
       if (data === undefined) {
-        console.error(TAG, 'installCaCertificate, certificate data is undefined');
+        hilogError('installCaCertificate, certificate data is undefined');
         this.session?.terminateSelf();
         return;
       }
       certManagerModel.installCertOrCred(CMModelOptType.CM_MODEL_OPT_USER_CA, '', data,
         '', (resultCode: CMModelErrorCode, uri: string) => {
-          console.info(TAG, `installCertOrCred result: ${resultCode}`);
+          hilogInfo(`installCertOrCred result: ${resultCode}`);
           this.handleInstallResult(resultCode, uri);
         });
     })

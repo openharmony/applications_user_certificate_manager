@@ -50,10 +50,17 @@ export enum CMModelOptType {
 export enum DialogErrorCode {
   DIALOG_ERROR_INTERNAL = -1000,
   DIALOG_OPERATION_CANCELS = -1001,
+  DIALOG_ERROR_NOT_ENTERPRISE_DEVICE = -1003,
   DIALOG_ERROR_SA_INTERNAL_ERROR = -1007,
   DIALOG_ERROR_PARAM_INVALID = -1010,
   DIALOG_ERROR_CAPACITY_NOT_SUPPORT = -1012,
   DIALOG_ERROR_NO_CERTS_AVAILIBLE = -1013,
+}
+
+export enum CmDialogOperationType {
+  INSTALL = 1,
+  UNINSTALL = 2,
+  SHOWDETAIL = 3
 }
 
 export enum CertManagerStore {
@@ -289,13 +296,13 @@ export class CertMangerModel {
         });
         break;
       case CMModelOptType.CM_MODEL_OPT_APP_CRED:
-        this.installPublicCertificate(data, alias, pwd, (errCode: CMModelErrorCode) => {
-          callback(errCode);
+        this.installPublicCertificate(data, alias, pwd, (errCode: CMModelErrorCode, uri: string) => {
+          callback(errCode, uri ?? '');
         });
         break;
       case CMModelOptType.CM_MODEL_OPT_SYSTEM_CRED:
-        this.installSystemAppCertificate(data, alias, pwd, (errCode: CMModelErrorCode) => {
-          callback(errCode);
+        this.installSystemAppCertificate(data, alias, pwd, (errCode: CMModelErrorCode, uri: string) => {
+          callback(errCode, uri ?? '');
         });
         break;
       case CMModelOptType.CM_MODEL_OPT_SYSTEM_CA:
@@ -728,22 +735,22 @@ export class CertMangerModel {
   ): Promise<void> {
     hilogInfo('installPublicCertificate start');
     try {
-      await CertManager.installPublicCertificate(data, pwd, alias);
+      let result: CertManager.CMResult = await CertManager.installPublicCertificate(data, pwd, alias);
       hilogInfo('installPublicCertificate end');
-      callback(CMModelErrorCode.CM_MODEL_ERROR_SUCCESS);
+      callback(CMModelErrorCode.CM_MODEL_ERROR_SUCCESS, result.uri ?? '');
     } catch (err) {
       let e: BusinessError = err as BusinessError;
       if (e.code === CertManager.CMErrorCode.CM_ERROR_INCORRECT_FORMAT) {
-        callback(CMModelErrorCode.CM_MODEL_ERROR_INCORRECT_FORMAT)
+        callback(CMModelErrorCode.CM_MODEL_ERROR_INCORRECT_FORMAT, '')
       } else if (e.code === CertManager.CMErrorCode.CM_ERROR_MAX_CERT_COUNT_REACHED) {
-        callback(CMModelErrorCode.CM_MODEL_ERROR_MAX_QUANTITY_REACHED)
+        callback(CMModelErrorCode.CM_MODEL_ERROR_MAX_QUANTITY_REACHED, '')
       } else if (e.code === CertManager.CMErrorCode.CM_ERROR_ALIAS_LENGTH_REACHED_LIMIT) {
-        callback(CMModelErrorCode.CM_MODEL_ERROR_ALIAS_LENGTH_REACHED_LIMIT)
+        callback(CMModelErrorCode.CM_MODEL_ERROR_ALIAS_LENGTH_REACHED_LIMIT, '')
       } else if (e.code === CertManager.CMErrorCode.CM_ERROR_PASSWORD_IS_ERR) {
-        callback(CMModelErrorCode.CM_MODEL_ERROR_PASSWORD_ERR);
+        callback(CMModelErrorCode.CM_MODEL_ERROR_PASSWORD_ERR, '');
       } else {
         hilogError('installPublicCertificate failed with err, message: ' + e.message + ', code: ' + e.code);
-        callback(CMModelErrorCode.CM_MODEL_ERROR_EXCEPTION);
+        callback(CMModelErrorCode.CM_MODEL_ERROR_EXCEPTION, '');
       }
     }
   }
@@ -756,22 +763,22 @@ export class CertMangerModel {
   ): Promise<void> {
     hilogInfo('installSystemAppCertificate start');
     try {
-      await CertManager.installSystemAppCertificate(data, pwd, alias);
+      let result: CertManager.CMResult = await CertManager.installSystemAppCertificate(data, pwd, alias);
       hilogInfo('installSystemAppCertificate end');
-      callback(CMModelErrorCode.CM_MODEL_ERROR_SUCCESS);
+      callback(CMModelErrorCode.CM_MODEL_ERROR_SUCCESS, result.uri ?? '');
     } catch (err) {
       let e: BusinessError = err as BusinessError;
       if (e.code === CertManager.CMErrorCode.CM_ERROR_INCORRECT_FORMAT) {
-        callback(CMModelErrorCode.CM_MODEL_ERROR_INCORRECT_FORMAT);
+        callback(CMModelErrorCode.CM_MODEL_ERROR_INCORRECT_FORMAT, '');
       } else if (e.code === CertManager.CMErrorCode.CM_ERROR_MAX_CERT_COUNT_REACHED) {
-        callback(CMModelErrorCode.CM_MODEL_ERROR_MAX_QUANTITY_REACHED);
+        callback(CMModelErrorCode.CM_MODEL_ERROR_MAX_QUANTITY_REACHED, '');
       } else if (e.code === CertManager.CMErrorCode.CM_ERROR_ALIAS_LENGTH_REACHED_LIMIT) {
-        callback(CMModelErrorCode.CM_MODEL_ERROR_ALIAS_LENGTH_REACHED_LIMIT);
+        callback(CMModelErrorCode.CM_MODEL_ERROR_ALIAS_LENGTH_REACHED_LIMIT, '');
       } else if (e.code === CertManager.CMErrorCode.CM_ERROR_PASSWORD_IS_ERR) {
-        callback(CMModelErrorCode.CM_MODEL_ERROR_PASSWORD_ERR);
+        callback(CMModelErrorCode.CM_MODEL_ERROR_PASSWORD_ERR, '');
       } else {
         hilogError('installSystemAppCertificate failed with err, message: ' + e.message + ', code: ' + e.code);
-        callback(CMModelErrorCode.CM_MODEL_ERROR_EXCEPTION);
+        callback(CMModelErrorCode.CM_MODEL_ERROR_EXCEPTION, '');
       }
     }
   }
