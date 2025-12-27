@@ -121,12 +121,17 @@ struct CertificateInstallPage {
   })
 
   aboutToAppear(): void {
+    if (this.want === undefined || this.want === null) {
+      hilogError('initData, want is undefined');
+      this.session?.terminateSelf();
+      return;
+    }
+    this.params = this.want.parameters ?? {};
     let isGranted = this.getCallerName();
     if (!isGranted) {
       this.session?.terminateSelf();
       return;
     }
-    this.params = this.want.parameters ?? {};
     if (this.params === undefined) {
       hilogError('check parameters undefined');
       this.session.terminateSelfWithResult({resultCode: DialogErrorCode.DIALOG_ERROR_PARAM_INVALID});
@@ -306,10 +311,6 @@ struct CertificateInstallPage {
   }
 
   private getCallerName(): boolean {
-    if (this.want === undefined || this.want === null) {
-      hilogError('initData, want is undefined');
-      return false;
-    }
     if (this.params === undefined || this.params === null) {
       hilogError('initData, parameters is undefined');
       return false;
@@ -319,7 +320,7 @@ struct CertificateInstallPage {
       hilogError('getCallerName, callerName is undefined');
       return false;
     }
-    this.callerName = callerName;
+    this.callerName = String(callerName);
     return true;
   }
 
