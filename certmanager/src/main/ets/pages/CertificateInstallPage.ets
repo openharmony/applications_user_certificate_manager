@@ -56,7 +56,7 @@ struct CertificateInstallPage {
 
   installFailedDialog: CustomDialogController = new CustomDialogController({
     alignment: DialogAlignment.Center,
-    showInSubWindow: true,
+    showInSubWindow: false,
     cancel: () => {
       this.session?.terminateSelfWithResult({
         resultCode: this.resultCode
