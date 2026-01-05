@@ -16,7 +16,7 @@
 import type Want from '@ohos.app.ability.Want';
 import type Window from '@ohos.window';
 import { GlobalContext, PwdStore } from '../common/GlobalContext';
-import { UIAbility } from '@kit.AbilityKit';
+import { ConfigurationConstant, UIAbility } from '@kit.AbilityKit';
 
 export default class MainAbility extends UIAbility {
   onCreate(want: Want, launchParam): void {
@@ -31,6 +31,7 @@ export default class MainAbility extends UIAbility {
     GlobalContext.getContext().setPwdStore(pwdStore);
     GlobalContext.getContext().setAbilityWant(want);
     GlobalContext.getContext().setFlag(false);
+    this.context.getApplicationContext().setColorMode(ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET)
   }
 
   onDestroy(): void {
