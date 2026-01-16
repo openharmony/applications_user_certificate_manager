@@ -174,13 +174,13 @@ struct CertificateInstallPage {
     } else if (resultCode === CMModelErrorCode.CM_MODEL_ERROR_INCORRECT_FORMAT) {
       hilogError('install cred data incorrect format');
       this.inputPwdDialog.close();
-      this.resultCode = CMModelErrorCode.CM_MODEL_ERROR_INCORRECT_FORMAT;
+      this.resultCode = DialogErrorCode.DIALOG_ERROR_INCORRECT_FORMAT;
       this.installFailedDialogMessage = $r('app.string.Install_ERROR_INCORRECT_FORMAT');
       this.installFailedDialog.open();
     } else if (resultCode === CMModelErrorCode.CM_MODEL_ERROR_MAX_QUANTITY_REACHED) {
       hilogError('install cred max quantity reached');
       this.inputPwdDialog.close();
-      this.resultCode = CMModelErrorCode.CM_MODEL_ERROR_MAX_QUANTITY_REACHED;
+      this.resultCode = DialogErrorCode.DIALOG_ERROR_MAX_QUANTITY_REACHED;
       this.installFailedDialogMessage = $r('app.string.Install_Error_MAX_QUANTITY_REACHED');
       this.installFailedDialog.open();
     } else if (resultCode === CMModelErrorCode.CM_MODEL_ERROR_PASSWORD_ERR) {
