@@ -439,6 +439,14 @@
     {
       "name":"ukey_certs",
       "value":"USB Key"
+    },
+    {
+      "name": "install_user_cred_subtitle",
+      "value": "%s has requested to install a user credential."
+    },
+    {
+      "name": "install_system_cred_subtitle",
+      "value": "%s has requested to install a system credential."
     }
   ]
 }

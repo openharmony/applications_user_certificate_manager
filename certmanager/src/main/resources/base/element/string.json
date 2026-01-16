@@ -439,6 +439,14 @@
     {
       "name":"ukey_certs",
       "value":"USB Key"
+    },
+    {
+      "name": "install_user_cred_subtitle",
+      "value": "“%s”请求安装用户凭据"
+    },
+    {
+      "name": "install_system_cred_subtitle",
+      "value": "“%s”请求安装系统凭据"
     }
   ]
 }

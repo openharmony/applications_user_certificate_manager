@@ -13,12 +13,12 @@
  * limitations under the License.
  */
 
-import Ability from '@ohos.app.ability.UIAbility';
 import type Want from '@ohos.app.ability.Want';
 import type Window from '@ohos.window';
 import { GlobalContext, PwdStore } from '../common/GlobalContext';
+import { ConfigurationConstant, UIAbility } from '@kit.AbilityKit';
 
-export default class MainAbility extends Ability {
+export default class MainAbility extends UIAbility {
   onCreate(want: Want, launchParam): void {
     console.info('[CertManager] MainAbility onCreate');
 
@@ -31,6 +31,7 @@ export default class MainAbility extends Ability {
     GlobalContext.getContext().setPwdStore(pwdStore);
     GlobalContext.getContext().setAbilityWant(want);
     GlobalContext.getContext().setFlag(false);
+    this.context.getApplicationContext().setColorMode(ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET)
   }
 
   onDestroy(): void {
