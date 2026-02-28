@@ -111,7 +111,7 @@ export struct CredPwdInputPage {
             }
             this.isPasswordError = false;
             GlobalContext.getContext().getPwdStore().setCertPwd(this.certPwd);
-            CmInstallPresenter.getInstance().installCert(this.credFile.uri, '', this.credFile.suffix, false).then((resultCode) => {
+            CmInstallPresenter.getInstance().installCert(this.credFile.uri, this.credFile.suffix, false).then((resultCode) => {
               this.passWordWarn = resultCode;
               console.log(TAG + 'install cred result code = ' + resultCode);
               if (resultCode === CMModelErrorCode.CM_MODEL_ERROR_PASSWORD_ERR) {
