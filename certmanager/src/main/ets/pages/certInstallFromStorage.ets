@@ -277,16 +277,6 @@ export struct CertInstallFromStorage {
                           .margin({ left: $r('app.float.wh_value_12') })
                           .textAlign(TextAlign.Start)
                       }
-                      .onClick(() => {
-                        this.installCertFlag = false;
-                        AppStorage.setOrCreate('installSystemCred', true);
-                        AppStorage.setOrCreate('installUserCred', false);
-                        if (this.isStartBySheet) {
-                          this.startInstallEvidenceBySheet();
-                        } else {
-                          this.mFaPresenter.startInstallEvidence(this.context);
-                        }
-                      })
                     }
                     .stateStyles({
                       normal: this.normalStyle,
@@ -294,6 +284,16 @@ export struct CertInstallFromStorage {
                     })
                     .constraintSize({
                       minHeight: $r('app.float.wh_value_48')
+                    })
+                    .onClick(() => {
+                      this.installCertFlag = false;
+                      AppStorage.setOrCreate('installSystemCred', true);
+                      AppStorage.setOrCreate('installUserCred', false);
+                      if (this.isStartBySheet) {
+                        this.startInstallEvidenceBySheet();
+                      } else {
+                        this.mFaPresenter.startInstallEvidence(this.context);
+                      }
                     })
 
                     Divider()
@@ -312,17 +312,6 @@ export struct CertInstallFromStorage {
                           .margin({ left: $r('app.float.wh_value_12') })
                           .textAlign(TextAlign.Start)
                       }
-                      .onClick(() => {
-                        this.installCertFlag = false;
-                        AppStorage.setOrCreate('installUserCred', true);
-                        AppStorage.setOrCreate('installSystemCred', false);
-                        if (this.isStartBySheet) {
-                          this.startInstallEvidenceBySheet();
-                        } else {
-                          this.mFaPresenter.startInstallEvidence(this.context);
-                          new UIContext().getHostContext() as common.Context;
-                        }
-                      })
                     }
                     .stateStyles({
                       normal: this.normalStyle,
@@ -330,6 +319,17 @@ export struct CertInstallFromStorage {
                     })
                     .constraintSize({
                       minHeight: $r('app.float.wh_value_48')
+                    })
+                    .onClick(() => {
+                      this.installCertFlag = false;
+                      AppStorage.setOrCreate('installUserCred', true);
+                      AppStorage.setOrCreate('installSystemCred', false);
+                      if (this.isStartBySheet) {
+                        this.startInstallEvidenceBySheet();
+                      } else {
+                        this.mFaPresenter.startInstallEvidence(this.context);
+                        new UIContext().getHostContext() as common.Context;
+                      }
                     })
                   }
                   .padding($r('app.float.wh_value_4'))
