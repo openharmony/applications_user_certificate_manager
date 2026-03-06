@@ -210,7 +210,7 @@ struct CertificateInstallPage {
     let credString: string = this.params['cert']?.toString() ?? '';
     let credData: Uint8Array = new util.Base64Helper().decodeSync(credString);
 
-    certManagerModel.installCertOrCred(optType, '', credData,
+    certManagerModel.installCertOrCred(optType, credData,
       this.certPwd, (errCode: CMModelErrorCode, uri: string) => {
         this.handleCredInstallResult(errCode, uri ?? '');
       });
@@ -388,7 +388,7 @@ struct CertificateInstallPage {
         this.session?.terminateSelf();
         return;
       }
-      certManagerModel.installCertOrCred(CMModelOptType.CM_MODEL_OPT_USER_CA, '', data,
+      certManagerModel.installCertOrCred(CMModelOptType.CM_MODEL_OPT_USER_CA, data,
         '', (resultCode: CMModelErrorCode, uri: string) => {
           hilogInfo(`installCertOrCred result: ${resultCode}`);
           this.handleInstallResult(resultCode, uri);

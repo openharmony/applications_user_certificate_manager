@@ -70,11 +70,11 @@ export default class CmInstallPresenter {
     });
   }
 
-  checkCertNameLength(uri: string, alias: string, suffix: string, pwd: string): Promise<number> {
+  checkCertNameLength(uri: string, suffix: string, pwd: string): Promise<number> {
     return new Promise((resolve) => {
       this.updateCertFileType(suffix);
       this.getFileDataFromUri(uri, (data: Uint8Array) => {
-        certManagerModel.installCertOrCred(this.optType, alias, data, pwd, (errCode: CMModelErrorCode) => {
+        certManagerModel.installCertOrCred(this.optType, data, pwd, (errCode: CMModelErrorCode) => {
           if (errCode === CMModelErrorCode.CM_MODEL_ERROR_ALIAS_LENGTH_REACHED_LIMIT) {
             resolve(errCode)
           } else {
@@ -150,11 +150,11 @@ export default class CmInstallPresenter {
     }
   }
 
-  installCert(uri: string, alias: string, suffix: string, isNeedJumpBack: boolean): Promise<CMModelErrorCode> {
+  installCert(uri: string, suffix: string, isNeedJumpBack: boolean): Promise<CMModelErrorCode> {
     return new Promise((resolve => {
       this.updateCertFileType(suffix);
       this.getFileDataFromUri(uri, (data: Uint8Array) => {
-        certManagerModel.installCertOrCred(this.optType, alias, data,
+        certManagerModel.installCertOrCred(this.optType, data,
           GlobalContext.getContext().getPwdStore().getCertPwd(), (errCode: CMModelErrorCode) => {
             GlobalContext.getContext().getPwdStore().clearCertPwd();
             this.handleInstallResult(errCode, isNeedJumpBack);

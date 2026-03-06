@@ -67,7 +67,7 @@ export default class CmFaPresenter {
         console.debug(TAG, 'suffix = ', suffix);
         if ((suffix === 'cer') || (suffix === 'pem') || (suffix === 'crt') || (suffix === 'der') ||
           (suffix === 'p7b') || (suffix === 'spc')) {
-          CmInstallPresenter.getInstance().installCert(fileUri, '', suffix, true);
+          CmInstallPresenter.getInstance().installCert(fileUri, suffix, true);
         } else {
           this.unrecognizedFileTips();
         }
