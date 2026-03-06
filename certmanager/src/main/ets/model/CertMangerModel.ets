@@ -284,26 +284,26 @@ export class CertMangerModel {
     }
   }
 
-  installCertOrCred(optType: CMModelOptType, alias: string, data: Uint8Array, pwd: string, callback: Function): void {
+  installCertOrCred(optType: CMModelOptType, data: Uint8Array, pwd: string, callback: Function): void {
     hilogInfo('installCertOrCred start');
     switch (optType) {
       case CMModelOptType.CM_MODEL_OPT_USER_CA:
-        this.installUserCertificate(data, alias, optType, (errCode: CMModelErrorCode, uri: string) => {
+        this.installUserCertificate(data, optType, (errCode: CMModelErrorCode, uri: string) => {
           callback(errCode, uri);
         });
         break;
       case CMModelOptType.CM_MODEL_OPT_USER_CA_P7B:
-        this.installUserCertificate(data, alias, optType, (errCode: CMModelErrorCode, uri: string) => {
+        this.installUserCertificate(data, optType, (errCode: CMModelErrorCode, uri: string) => {
           callback(errCode, uri);
         });
         break;
       case CMModelOptType.CM_MODEL_OPT_APP_CRED:
-        this.installPublicCertificate(data, alias, pwd, (errCode: CMModelErrorCode, uri: string) => {
+        this.installPublicCertificate(data, pwd, (errCode: CMModelErrorCode, uri: string) => {
           callback(errCode, uri ?? '');
         });
         break;
       case CMModelOptType.CM_MODEL_OPT_SYSTEM_CRED:
-        this.installSystemAppCertificate(data, alias, pwd, (errCode: CMModelErrorCode, uri: string) => {
+        this.installSystemAppCertificate(data, pwd, (errCode: CMModelErrorCode, uri: string) => {
           callback(errCode, uri ?? '');
         });
         break;
@@ -331,7 +331,7 @@ export class CertMangerModel {
             hilogInfo('subjectNameCN is:' + subjectNameCN);
           }
           certList.push(new CertAbstractVo(String(result.certList[i].uri), String(result.certList[i].certAlias),
-            Boolean(result.certList[i].status), String(result.certList[i].subjectName), String(subjectNameCN)));
+            Boolean(result.certList[i].state), String(result.certList[i].subjectName), String(subjectNameCN)));
         }
         hilogInfo('getSystemTrustedCertificateList end');
         callback(CMModelErrorCode.CM_MODEL_ERROR_SUCCESS, certList);
@@ -403,7 +403,7 @@ export class CertMangerModel {
 
         let certData: Uint8Array = result.certInfo.cert;
         let certInfo = new CertInfoVo(String(result.certInfo.uri), String(result.certInfo.certAlias),
-          Boolean(result.certInfo.status), String(result.certInfo.issuerName), String(result.certInfo.subjectName),
+          Boolean(result.certInfo.state), String(result.certInfo.issuerName), String(result.certInfo.subjectName),
           String(result.certInfo.serial), String(result.certInfo.notBefore),
           String(result.certInfo.notAfter), String(result.certInfo.fingerprintSha256),
           certData, subjectNameMap, issuerNameMap, dateMap);
@@ -436,7 +436,7 @@ export class CertMangerModel {
           }
           if (String(result.certList[i].uri).indexOf('u=0;') === -1) {
             certList.push(new CertAbstractVo(String(result.certList[i].uri), String(result.certList[i].certAlias),
-              Boolean(result.certList[i].status), String(result.certList[i].subjectName), String(subjectNameCN)));
+              Boolean(result.certList[i].state), String(result.certList[i].subjectName), String(subjectNameCN)));
           }
         }
         hilogInfo('getAllUserTrustedCertificates end');
@@ -470,7 +470,7 @@ export class CertMangerModel {
         dateMap.set('有效期至:', String(result.certInfo.notAfter));
         let certData: Uint8Array = result.certInfo.cert;
         let certInfo = new CertInfoVo(String(result.certInfo.uri), String(result.certInfo.certAlias),
-          Boolean(result.certInfo.status), String(result.certInfo.issuerName), String(result.certInfo.subjectName),
+          Boolean(result.certInfo.state), String(result.certInfo.issuerName), String(result.certInfo.subjectName),
           String(result.certInfo.serial), String(result.certInfo.notBefore),
           String(result.certInfo.notAfter), String(result.certInfo.fingerprintSha256),
           certData, subjectNameMap, issuerNameMap, dateMap);
@@ -490,7 +490,7 @@ export class CertMangerModel {
   private async deleteUserTrustedCertificate(certUri: string, callback: Function): Promise<void> {
     hilogInfo('deleteUserTrustedCertificate start');
     try {
-      await CertManager.uninstallUserTrustedCertificate(certUri);
+      CertManager.uninstallUserTrustedCertificateSync(certUri);
       hilogInfo('deleteUserTrustedCertificate end');
       callback(CMModelErrorCode.CM_MODEL_ERROR_SUCCESS);
     } catch (err) {
@@ -565,7 +565,7 @@ export class CertMangerModel {
     try {
       let result = await CertManager.getPublicCertificate(certUri);
       if (result.credential !== undefined) {
-        let certData: Uint8Array = result.credential.credData;
+        let certData: Uint8Array = result.credential.credentialData;
         let credInfo = new CredentialVo(String(result.credential.type), String(result.credential.alias),
           String(result.credential.keyUri), Number(result.credential.certNum),
           Number(result.credential.keyNum), certData);
@@ -587,7 +587,7 @@ export class CertMangerModel {
     try {
       let result = await CertManager.getSystemAppCertificate(certUri);
       if (result.credential !== undefined) {
-        let certData: Uint8Array = result.credential.credData;
+        let certData: Uint8Array = result.credential.credentialData;
         let credInfo = new CredentialVo(String(result.credential.type), String(result.credential.alias),
           String(result.credential.keyUri), Number(result.credential.certNum),
           Number(result.credential.keyNum), certData);
@@ -671,12 +671,13 @@ export class CertMangerModel {
 
   private async setAuthorizedAppStatus(
     uri: string,
-    appUid: string,
+    appUidStr: string,
     status: boolean,
     callback: Function
   ): Promise<void> {
     hilogInfo('setAuthorizedAppStatus start');
     try {
+      let appUid = Number(appUidStr);
       if (status) {
         let result = await CertManager.grantPublicCertificate(uri, appUid);
         hilogInfo('setAuthorizedAppStatus true end');
@@ -694,7 +695,7 @@ export class CertMangerModel {
     }
   }
 
-  private async installUserCertificate(data: Uint8Array, alias: string, optType: CMModelOptType, callback: Function): Promise<void> {
+  private async installUserCertificate(data: Uint8Array, optType: CMModelOptType, callback: Function): Promise<void> {
     hilogInfo('installUserCertificate start');
     if ((data === undefined) || (data.length === 0)) {
       callback(CMModelErrorCode.CM_MODEL_ERROR_INCORRECT_FORMAT);
@@ -707,8 +708,7 @@ export class CertMangerModel {
         certFormat = CertManager.CertFileFormat.P7B;
       }
       let result = await CertManager.installUserTrustedCertificate({
-        inData: data,
-        alias: alias,
+        certData: data,
         certFormat: certFormat,
         certScope: CertManager.CertScope.CURRENT_USER
       });
@@ -731,13 +731,12 @@ export class CertMangerModel {
 
   private async installPublicCertificate(
     data: Uint8Array,
-    alias: string,
     pwd: string,
     callback: Function
   ): Promise<void> {
     hilogInfo('installPublicCertificate start');
     try {
-      let result: CertManager.CMResult = await CertManager.installPublicCertificate(data, pwd, alias);
+      let result: CertManager.CMResult = await CertManager.installPublicCertificate(data, pwd);
       hilogInfo('installPublicCertificate end');
       callback(CMModelErrorCode.CM_MODEL_ERROR_SUCCESS, result.uri ?? '');
     } catch (err) {
@@ -759,13 +758,12 @@ export class CertMangerModel {
 
   private async installSystemAppCertificate(
     data: Uint8Array,
-    alias: string,
     pwd: string,
     callback: Function
   ): Promise<void> {
     hilogInfo('installSystemAppCertificate start');
     try {
-      let result: CertManager.CMResult = await CertManager.installSystemAppCertificate(data, pwd, alias);
+      let result: CertManager.CMResult = await CertManager.installSystemAppCertificate(data, pwd);
       hilogInfo('installSystemAppCertificate end');
       callback(CMModelErrorCode.CM_MODEL_ERROR_SUCCESS, result.uri ?? '');
     } catch (err) {
