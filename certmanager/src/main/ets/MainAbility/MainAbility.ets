@@ -16,14 +16,17 @@
 import type Want from '@ohos.app.ability.Want';
 import type Window from '@ohos.window';
 import { GlobalContext, PwdStore } from '../common/GlobalContext';
-import { ConfigurationConstant, UIAbility } from '@kit.AbilityKit';
+import { AbilityConstant, ConfigurationConstant, UIAbility } from '@kit.AbilityKit';
+import Logger from '../common/util/Logger';
+
+const logger: Logger = new Logger('');
 
 export default class MainAbility extends UIAbility {
-  onCreate(want: Want, launchParam): void {
-    console.info('[CertManager] MainAbility onCreate');
+  onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
+    logger.info('MainAbility onCreate');
 
     if (want === null || want === undefined) {
-      console.error('[CertManager] invalid want param');
+      logger.error('invalid want param');
       return;
     }
     let pwdStore = new PwdStore();
@@ -35,15 +38,15 @@ export default class MainAbility extends UIAbility {
   }
 
   onDestroy(): void {
-    console.info('[CertManager] MainAbility onDestroy');
+    logger.info('MainAbility onDestroy');
   }
 
   onWindowStageCreate(windowStage: Window.WindowStage): void {
     // Main window is created, set main page for this ability
-    console.info('[CertManager] MainAbility onWindowStageCreate');
+    logger.info('MainAbility onWindowStageCreate');
     windowStage.loadContent('pages/certManagerFa', (err, data) => {
       if (err.code) {
-        console.error('onWindowStageCreate failed, cause:' + JSON.stringify(err));
+        logger.error('onWindowStageCreate failed, cause:' + JSON.stringify(err));
         return;
       }
     });
@@ -51,24 +54,24 @@ export default class MainAbility extends UIAbility {
 
   onWindowStageDestroy(): void {
     // Main window is destroyed, release UI related resources
-    console.info('[CertManager] MainAbility onWindowStageDestroy');
+    logger.info('MainAbility onWindowStageDestroy');
   }
 
   onForeground(): void {
     // Ability has brought to foreground
-    console.info('[CertManager] MainAbility onForeground');
+    logger.info('MainAbility onForeground');
   }
 
   onBackground(): void {
     // Ability has back to background
-    console.info('[CertManager] MainAbility onBackground');
+    logger.info('MainAbility onBackground');
   }
 
   onNewWant(want: Want): void {
-    console.info('[CertManager] MainAbility onNewWant');
+    logger.info('MainAbility onNewWant');
 
     if (want === null || want === undefined) {
-      console.error('[CertManager] invalid want param');
+      logger.error('invalid want param');
       return;
     }
     GlobalContext.getContext().setAbilityWant(want);

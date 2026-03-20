@@ -36,8 +36,9 @@ import { SheetParam } from '../../common/util/SheetParam';
 import uiExtensionHost from '@ohos.uiExtensionHost';
 import { BusinessError } from '@ohos.base';
 import PreventScreenshotsPresenter from '../../model/PreventScreenshotsModel';
+import Logger from '../../common/util/Logger';
 
-const TAG: string = 'CertManagerSheetFa:';
+const logger: Logger = new Logger('CertManagerSheetFa');
 
 let storage = LocalStorage.getShared();
 
@@ -81,7 +82,7 @@ export struct CertManagerSheetFa {
       this.aiBarHeight = px2vp(avoidArea.area.bottomRect.height);
       this.updateSheetHeightLimit();
     } else {
-      console.warn(TAG + 'avoidAreaChangedCallback, sheet type is invalid:' + this.sheetParam.sheetType);
+      logger.warn('avoidAreaChangedCallback, sheet type is invalid:' + this.sheetParam.sheetType);
     }
   }
 
@@ -105,11 +106,11 @@ export struct CertManagerSheetFa {
     this.registerAvoidChangedListener();
     const parameters = this.want?.parameters;
     if (parameters === undefined || parameters[PAGE_TYPE] === undefined) {
-      console.warn(TAG + 'page type param is undefined');
+      logger.warn('page type param is undefined');
       return;
     }
     this.pageType = parameters[PAGE_TYPE] as number;
-    console.log(TAG + 'page type = ' + this.pageType);
+    logger.info('page type = ' + this.pageType);
   }
 
   aboutToDisappear(): void {
@@ -120,12 +121,12 @@ export struct CertManagerSheetFa {
     try {
       let avoidArea: window.AvoidArea = extWindow.getWindowAvoidArea(window.AvoidAreaType.TYPE_SYSTEM);
       if (avoidArea === undefined) {
-        console.warn(TAG + 'initStatusBarHeight, avoid area is undefined');
+        logger.warn('initStatusBarHeight, avoid area is undefined');
       }
       this.statusBarHeight = px2vp(avoidArea.topRect.height);
     } catch (err) {
       let error = err as BusinessError;
-      console.error(TAG + 'initStatusBarHeight, occur error:' + error?.code + ', msg:' + error?.message);
+      logger.error('initStatusBarHeight, occur error:' + error?.code + ', msg:' + error?.message);
     }
   }
 
@@ -133,12 +134,12 @@ export struct CertManagerSheetFa {
     try {
       let avoidArea: window.AvoidArea = extWindow.getWindowAvoidArea(window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR);
       if (avoidArea === undefined) {
-        console.warn(TAG + 'initAiBarHeight, avoid area is undefined');
+        logger.warn('initAiBarHeight, avoid area is undefined');
       }
       this.aiBarHeight = px2vp(avoidArea.bottomRect.height);
     } catch (err) {
       let error = err as BusinessError;
-      console.error(TAG + 'initAiBarHeight, occur error:' + error?.code + ', msg:' + error?.message);
+      logger.error('initAiBarHeight, occur error:' + error?.code + ', msg:' + error?.message);
     }
   }
 
@@ -146,7 +147,7 @@ export struct CertManagerSheetFa {
     try {
       let extWindow: uiExtensionHost.UIExtensionHostWindowProxy = this.sheetSession?.getUIExtensionHostWindowProxy();
       if (extWindow === undefined) {
-        console.error(TAG + 'registerAvoidChangedListener, get extra window is undefined');
+        logger.error('registerAvoidChangedListener, get extra window is undefined');
         return;
       }
       this.initStatusBarHeight(extWindow);
@@ -154,7 +155,7 @@ export struct CertManagerSheetFa {
       extWindow.on('avoidAreaChange', this.avoidAreaChangedCallback);
     } catch (err) {
       let error = err as BusinessError;
-      console.error(TAG + 'registerAvoidChangedListener, occur error:' + error?.code + ', msg:' + error?.message);
+      logger.error('registerAvoidChangedListener, occur error:' + error?.code + ', msg:' + error?.message);
     }
   }
 
@@ -162,13 +163,13 @@ export struct CertManagerSheetFa {
     try {
       let extWindow: uiExtensionHost.UIExtensionHostWindowProxy = this.sheetSession?.getUIExtensionHostWindowProxy();
       if (extWindow === undefined) {
-        console.error(TAG + 'unregisterAvoidChangedListener, get extra window is undefined');
+        logger.error('unregisterAvoidChangedListener, get extra window is undefined');
         return;
       }
       extWindow.off('avoidAreaChange', this.avoidAreaChangedCallback);
     } catch (err) {
       let error = err as BusinessError;
-      console.error(TAG + 'unregisterAvoidChangedListener, occur error:' + error?.code + ', msg:' + error?.message);
+      logger.error('unregisterAvoidChangedListener, occur error:' + error?.code + ', msg:' + error?.message);
     }
   }
 
@@ -184,7 +185,7 @@ export struct CertManagerSheetFa {
       this.maxSheetPageHeight = shortSide * CENTER_SHEET_MAX_PERCENT;
       this.sheetParam.sheetMinHeight = CENTER_SHEET_MIN_HEIGHT;
     } else {
-      console.warn(TAG + 'updateSheetHeightLimit, sheet type is invalid:' + this.sheetParam.sheetType);
+      logger.warn('updateSheetHeightLimit, sheet type is invalid:' + this.sheetParam.sheetType);
     }
   }
 
@@ -238,14 +239,14 @@ export struct CertManagerSheetFa {
         showClose: true,
         onTypeDidChange: (type) => {
           this.sheetParam.sheetType = type;
-          console.log(TAG + 'sheet type:' + this.sheetParam.sheetType);
+          logger.info('sheet type:' + this.sheetParam.sheetType);
           if (this.rootHeight === 0) {
             return;
           }
           this.updateSheetHeightLimit();
         },
         onDisappear: () => {
-          console.debug(TAG + 'Sheet page disappear, session is undefined?' + (this.sheetSession === undefined));
+          logger.debug('Sheet page disappear, session is undefined?' + (this.sheetSession === undefined));
           this.sheetSession?.sendData({'action': 'exit'})
         }
       })
@@ -292,7 +293,7 @@ export struct CertManagerSheetFa {
         sheetParam: this.sheetParam,
         selected: (path) => {
           if (path === undefined || path === null || path.length === 0) {
-            console.warn(TAG + 'buildHomePage, empty path');
+            logger.warn('buildHomePage, empty path');
             return;
           }
           this.stack.pushPath(new NavPathInfo(path, ''));
@@ -312,7 +313,7 @@ export struct CertManagerSheetFa {
         sheetParam: this.sheetParam,
         selected: (path, param) => {
           if (path === undefined || path === null || path.length === 0) {
-            console.warn(TAG + 'buildCaCertPage, empty path');
+            logger.warn('buildCaCertPage, empty path');
             return;
           }
           if (path === NavEntryKey.POP) {
@@ -336,7 +337,7 @@ export struct CertManagerSheetFa {
         sheetParam: this.sheetParam,
         selected: (path, param) => {
           if (path === undefined || path === null || path.length === 0) {
-            console.warn(TAG + 'buildCredListPage, empty path');
+            logger.warn('buildCredListPage, empty path');
             return;
           }
           if (path === NavEntryKey.POP) {
@@ -360,7 +361,7 @@ export struct CertManagerSheetFa {
         sheetParam: this.sheetParam,
         selected: (path, param) => {
           if (path === undefined || path === null || path.length === 0) {
-            console.warn(TAG + 'buildInstallPage, empty path');
+            logger.warn('buildInstallPage, empty path');
             return;
           }
           if (path === NavEntryKey.POP) {

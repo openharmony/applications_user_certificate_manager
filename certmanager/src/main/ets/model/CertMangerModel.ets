@@ -19,9 +19,8 @@ import { CredentialAbstractVo } from './CertManagerVo/CredentialAbstractVo';
 import { CredentialVo } from './CertManagerVo/CredentialVo';
 import { BusinessError } from '@ohos.base';
 import CertManager from '@ohos.security.certManager';
-import cert from '@ohos.security.cert';
-import hilog from '@ohos.hilog';
 import certMgrDialog from '@ohos.security.certManagerDialog';
+import Logger from '../common/util/Logger';
 
 export enum CMModelErrorCode {
   CM_MODEL_ERROR_SUCCESS = 0,
@@ -76,19 +75,11 @@ export enum CertManagerStore {
   CERT_MANAGER_APPLICATION_TRUSTED_STORE = 3,
 }
 
-const TAG = 'CertMangerModel';
-const DOMAIN = 0x0000;
-
-function hilogInfo(message: string): void {
-  hilog.info(DOMAIN, TAG, message);
-}
-function hilogError(message: string): void {
-  hilog.error(DOMAIN, TAG, message);
-}
+const logger: Logger = new Logger('CertMangerModel');
 
 export class CertMangerModel {
   getCertOrCredList(optType: CMModelOptType, callback: Function): void {
-    hilogInfo('getCertOrCredList start');
+    logger.info('getCertOrCredList start');
 
     switch (optType) {
       case CMModelOptType.CM_MODEL_OPT_SYSTEM_CA:
@@ -118,7 +109,7 @@ export class CertMangerModel {
   }
 
   getCertOrCred(optType: CMModelOptType, uri: string, callback: Function): void {
-    hilogInfo('getCertOrCred start');
+    logger.info('getCertOrCred start');
 
     switch (optType) {
       case CMModelOptType.CM_MODEL_OPT_SYSTEM_CA:
@@ -148,7 +139,7 @@ export class CertMangerModel {
   }
 
   deleteCertOrCred(optType: CMModelOptType, uri: string, callback: Function): void {
-    hilogInfo('deleteCertOrCred start');
+    logger.info('deleteCertOrCred start');
 
     switch (optType) {
       case CMModelOptType.CM_MODEL_OPT_USER_CA:
@@ -175,7 +166,7 @@ export class CertMangerModel {
   }
 
   setCertStatus(optType: CMModelOptType, uri: string, status: boolean, callback: Function): void {
-    hilogInfo('setCertStatus start');
+    logger.info('setCertStatus start');
 
     switch (optType) {
       case CMModelOptType.CM_MODEL_OPT_USER_CA:
@@ -201,7 +192,7 @@ export class CertMangerModel {
   }
 
   delAllCertOrCred(optType: CMModelOptType, callback: Function): void {
-    hilogInfo('delAllCertOrCred start');
+    logger.info('delAllCertOrCred start');
 
     switch (optType) {
       case CMModelOptType.CM_MODEL_OPT_USER_CA:
@@ -225,7 +216,7 @@ export class CertMangerModel {
   }
 
   getAuthAppList(optType: CMModelOptType, uri: string, callback: Function): void {
-    hilogInfo('getAuthAppList start');
+    logger.info('getAuthAppList start');
 
     switch (optType) {
       case CMModelOptType.CM_MODEL_OPT_APP_CRED:
@@ -245,7 +236,7 @@ export class CertMangerModel {
   }
 
   setAppAuthPromise(optType: CMModelOptType, uri: string, appUid: string, status: boolean): Promise<void> {
-    hilogInfo('setAppAuth start');
+    logger.info('setAppAuth start');
     switch (optType) {
       case CMModelOptType.CM_MODEL_OPT_APP_CRED:
         return new Promise((resolve, reject) => {
@@ -265,7 +256,7 @@ export class CertMangerModel {
   }
 
   setAppAuth(optType: CMModelOptType, uri: string, appUid: string, status: boolean, callback: Function): void {
-    hilogInfo('setAppAuth start');
+    logger.info('setAppAuth start');
 
     switch (optType) {
       case CMModelOptType.CM_MODEL_OPT_APP_CRED:
@@ -285,7 +276,7 @@ export class CertMangerModel {
   }
 
   installCertOrCred(optType: CMModelOptType, data: Uint8Array, pwd: string, callback: Function): void {
-    hilogInfo('installCertOrCred start');
+    logger.info('installCertOrCred start');
     switch (optType) {
       case CMModelOptType.CM_MODEL_OPT_USER_CA:
         this.installUserCertificate(data, optType, (errCode: CMModelErrorCode, uri: string) => {
@@ -317,7 +308,7 @@ export class CertMangerModel {
   }
 
   private async getSystemTrustedCertificateList(callback: Function): Promise<void> {
-    hilogInfo('getSystemTrustedCertificateList start');
+    logger.info('getSystemTrustedCertificateList start');
     try {
       let subjectNameCN: string = '';
       let result = await CertManager.getSystemTrustedCertificateList();
@@ -328,20 +319,20 @@ export class CertMangerModel {
           if (result.certList[i].subjectName.length !== 0) {
             let temp = result.certList[i].subjectName.match(regex);
             subjectNameCN = (temp !== undefined) ? String(temp) : '';
-            hilogInfo('subjectNameCN is:' + subjectNameCN);
+            logger.info('subjectNameCN is:' + subjectNameCN);
           }
           certList.push(new CertAbstractVo(String(result.certList[i].uri), String(result.certList[i].certAlias),
             Boolean(result.certList[i].state), String(result.certList[i].subjectName), String(subjectNameCN)));
         }
-        hilogInfo('getSystemTrustedCertificateList end');
+        logger.info('getSystemTrustedCertificateList end');
         callback(CMModelErrorCode.CM_MODEL_ERROR_SUCCESS, certList);
       } else {
-        hilogError('getSystemTrustedCertificateList failed, undefined');
+        logger.error('getSystemTrustedCertificateList failed, undefined');
         callback(CMModelErrorCode.CM_MODEL_ERROR_FAILED, undefined);
       }
     } catch (err) {
       let e: BusinessError = err as BusinessError;
-      hilogError('getSystemTrustedCertificateList err, message: ' + e.message + ', code: ' + e.code);
+      logger.error('getSystemTrustedCertificateList err, message: ' + e.message + ', code: ' + e.code);
       callback(CMModelErrorCode.CM_MODEL_ERROR_EXCEPTION, undefined);
     }
   }
@@ -355,11 +346,11 @@ export class CertMangerModel {
       let regex2: RegExp = new RegExp('(?<=OU=).*?(?=,)', 'g');
       let regex3: RegExp = new RegExp('(?<=O=).*', 'g');
       let subjectNameCN = result.certInfo.subjectName.match(regex1);
-      hilogInfo('subjectNameCN is:' + subjectNameCN);
+      logger.info('subjectNameCN is:' + subjectNameCN);
       let subjectNameOU = result.certInfo.subjectName.match(regex2);
-      hilogInfo('subjectNameOU is:' + subjectNameOU);
+      logger.info('subjectNameOU is:' + subjectNameOU);
       let subjectNameO = result.certInfo.subjectName.match(regex3);
-      hilogInfo('subjectNameO is:' + subjectNameO);
+      logger.info('subjectNameO is:' + subjectNameO);
       subjectNameMap.set('常用名称:', String(subjectNameCN));
       subjectNameMap.set('组织:', String(subjectNameO));
       subjectNameMap.set('组织单位:', String(subjectNameOU));
@@ -376,11 +367,11 @@ export class CertMangerModel {
       let regex2: RegExp = new RegExp('(?<=OU=).*?(?=,)', 'g');
       let regex3: RegExp = new RegExp('(?<=O=).*', 'g');
       let issuerNameCN = result.certInfo.issuerName.match(regex1);
-      hilogInfo('issuerNameCN is:' + issuerNameCN);
+      logger.info('issuerNameCN is:' + issuerNameCN);
       let issuerNameOU = result.certInfo.issuerName.match(regex2);
-      hilogInfo('issuerNameOU is:' + issuerNameOU);
+      logger.info('issuerNameOU is:' + issuerNameOU);
       let issuerNameO = result.certInfo.issuerName.match(regex3);
-      hilogInfo('issuerNameO is:' + issuerNameO);
+      logger.info('issuerNameO is:' + issuerNameO);
       issuerNameMap.set('常用名称:', String(issuerNameCN));
       issuerNameMap.set('组织:', String(issuerNameO));
       issuerNameMap.set('组织单位:', String(issuerNameOU));
@@ -388,7 +379,7 @@ export class CertMangerModel {
   }
 
   private async getSystemTrustedCertificate(certUri: string, callback: Function): Promise<void> {
-    hilogInfo('getSystemTrustedCertificate start');
+    logger.info('getSystemTrustedCertificate start');
     try {
       let result = await CertManager.getSystemTrustedCertificate(certUri);
       let subjectNameMap: Map<string, string> = new Map();
@@ -407,21 +398,21 @@ export class CertMangerModel {
           String(result.certInfo.serial), String(result.certInfo.notBefore),
           String(result.certInfo.notAfter), String(result.certInfo.fingerprintSha256),
           certData, subjectNameMap, issuerNameMap, dateMap);
-        hilogInfo('getSystemTrustedCertificate end');
+        logger.info('getSystemTrustedCertificate end');
         callback(CMModelErrorCode.CM_MODEL_ERROR_SUCCESS, certInfo);
       } else {
-        hilogError('getSystemTrustedCertificate failed, undefined');
+        logger.error('getSystemTrustedCertificate failed, undefined');
         callback(CMModelErrorCode.CM_MODEL_ERROR_FAILED, undefined);
       }
     } catch (err) {
       let e: BusinessError = err as BusinessError;
-      hilogError('getSystemTrustedCertificate err, message: ' + e.message + ', code: ' + e.code);
+      logger.error('getSystemTrustedCertificate err, message: ' + e.message + ', code: ' + e.code);
       callback(CMModelErrorCode.CM_MODEL_ERROR_EXCEPTION, undefined);
     }
   }
 
   private async getAllUserTrustedCertificates(callback: Function): Promise<void> {
-    hilogInfo('getAllUserTrustedCertificates start');
+    logger.info('getAllUserTrustedCertificates start');
     try {
       let subjectNameCN: string = '';
       let result = await CertManager.getAllUserTrustedCertificates();
@@ -432,28 +423,28 @@ export class CertMangerModel {
           if (result.certList[i].subjectName.length !== 0) {
             let temp = result.certList[i].subjectName.match(regex);
             subjectNameCN = (temp !== undefined) ? String(temp) : '';
-            hilogInfo('subjectNameCN is:' + subjectNameCN);
+            logger.info('subjectNameCN is:' + subjectNameCN);
           }
           if (String(result.certList[i].uri).indexOf('u=0;') === -1) {
             certList.push(new CertAbstractVo(String(result.certList[i].uri), String(result.certList[i].certAlias),
               Boolean(result.certList[i].state), String(result.certList[i].subjectName), String(subjectNameCN)));
           }
         }
-        hilogInfo('getAllUserTrustedCertificates end');
+        logger.info('getAllUserTrustedCertificates end');
         callback(CMModelErrorCode.CM_MODEL_ERROR_SUCCESS, certList);
       } else {
-        hilogError('getAllUserTrustedCertificates failed, undefined');
+        logger.error('getAllUserTrustedCertificates failed, undefined');
         callback(CMModelErrorCode.CM_MODEL_ERROR_FAILED, undefined);
       }
     } catch (err) {
       let e: BusinessError = err as BusinessError;
-      hilogError('getAllUserTrustedCertificates err, message: ' + e.message + ', code: ' + e.code);
+      logger.error('getAllUserTrustedCertificates err, message: ' + e.message + ', code: ' + e.code);
       callback(CMModelErrorCode.CM_MODEL_ERROR_EXCEPTION);
     }
   }
 
   private async getUserTrustedCertificate(certUri: string, callback: Function): Promise<void> {
-    hilogInfo('getUserTrustedCertificate start');
+    logger.info('getUserTrustedCertificate start');
     try {
       let result = await CertManager.getUserTrustedCertificate(certUri);
       let subjectNameMap: Map<string, string> = new Map();
@@ -474,48 +465,48 @@ export class CertMangerModel {
           String(result.certInfo.serial), String(result.certInfo.notBefore),
           String(result.certInfo.notAfter), String(result.certInfo.fingerprintSha256),
           certData, subjectNameMap, issuerNameMap, dateMap);
-        hilogInfo('getUserTrustedCertificate end');
+        logger.info('getUserTrustedCertificate end');
         callback(CMModelErrorCode.CM_MODEL_ERROR_SUCCESS, certInfo);
       } else {
-        hilogError('getUserTrustedCertificate failed, undefined');
+        logger.error('getUserTrustedCertificate failed, undefined');
         callback(CMModelErrorCode.CM_MODEL_ERROR_FAILED, undefined);
       }
     } catch (err) {
       let e: BusinessError = err as BusinessError;
-      hilogError('getUserTrustedCertificate err, message: ' + e.message + ', code: ' + e.code);
+      logger.error('getUserTrustedCertificate err, message: ' + e.message + ', code: ' + e.code);
       callback(CMModelErrorCode.CM_MODEL_ERROR_EXCEPTION, undefined);
     }
   }
 
   private async deleteUserTrustedCertificate(certUri: string, callback: Function): Promise<void> {
-    hilogInfo('deleteUserTrustedCertificate start');
+    logger.info('deleteUserTrustedCertificate start');
     try {
       CertManager.uninstallUserTrustedCertificateSync(certUri);
-      hilogInfo('deleteUserTrustedCertificate end');
+      logger.info('deleteUserTrustedCertificate end');
       callback(CMModelErrorCode.CM_MODEL_ERROR_SUCCESS);
     } catch (err) {
       let e: BusinessError = err as BusinessError;
-      hilogError('deleteUserTrustedCertificate err, message: ' + e.message + ', code: ' + e.code);
+      logger.error('deleteUserTrustedCertificate err, message: ' + e.message + ', code: ' + e.code);
       callback(CMModelErrorCode.CM_MODEL_ERROR_EXCEPTION);
     }
   }
 
   private async setCertificateStatus(certUri: string, store: number,
                                      status: boolean, callback: Function): Promise<void> {
-    hilogInfo('setCertificateStatus start');
+    logger.info('setCertificateStatus start');
     try {
       await CertManager.setCertificateStatus(certUri, store, status);
-      hilogInfo('setCertificateStatus end');
+      logger.info('setCertificateStatus end');
       callback(CMModelErrorCode.CM_MODEL_ERROR_SUCCESS);
     } catch (err) {
       let e: BusinessError = err as BusinessError;
-      hilogError('setCertificateStatus failed with err, message: ' + e.message + ', code: ' + e.code);
+      logger.error('setCertificateStatus failed with err, message: ' + e.message + ', code: ' + e.code);
       callback(CMModelErrorCode.CM_MODEL_ERROR_EXCEPTION);
     }
   }
 
   private async getAppCredList(callback: Function): Promise<void> {
-    hilogInfo('getAppCredList start');
+    logger.info('getAppCredList start');
     try {
       let result = await CertManager.getAllPublicCertificates();
       let credList: CredentialAbstractVo[] = [];
@@ -524,21 +515,21 @@ export class CertMangerModel {
           credList.push(new CredentialAbstractVo(String(result.credentialList[i].type),
             String(result.credentialList[i].alias), String(result.credentialList[i].keyUri)));
         }
-        hilogInfo('getAppCredList end');
+        logger.info('getAppCredList end');
         callback(CMModelErrorCode.CM_MODEL_ERROR_SUCCESS, credList);
       } else {
-        hilogError('getAppCredList failed, undefined.');
+        logger.error('getAppCredList failed, undefined.');
         callback(CMModelErrorCode.CM_MODEL_ERROR_FAILED, undefined);
       }
     } catch (err) {
       let e: BusinessError = err as BusinessError;
-      hilogError('getAppCredList failed with err, message: ' + e.message + ', code: ' + e.code);
+      logger.error('getAppCredList failed with err, message: ' + e.message + ', code: ' + e.code);
       callback(CMModelErrorCode.CM_MODEL_ERROR_EXCEPTION);
     }
   }
 
   private async getSystemCredList(callback: Function): Promise<void> {
-    hilogInfo('getSystemList start');
+    logger.info('getSystemList start');
     try {
       let result = await CertManager.getAllSystemAppCertificates();
       let credList: CredentialAbstractVo[] = [];
@@ -547,21 +538,21 @@ export class CertMangerModel {
           credList.push(new CredentialAbstractVo(String(result.credentialList[i].type),
             String(result.credentialList[i].alias), String(result.credentialList[i].keyUri)));
         }
-        hilogInfo('getSystemCredList end');
+        logger.info('getSystemCredList end');
         callback(CMModelErrorCode.CM_MODEL_ERROR_SUCCESS, credList);
       } else {
-        hilogError('getSystemCredList failed, undefined.');
+        logger.error('getSystemCredList failed, undefined.');
         callback(CMModelErrorCode.CM_MODEL_ERROR_FAILED, undefined)
       }
     } catch (err) {
       let e: BusinessError = err as BusinessError;
-      hilogError('getSystemCredList failed with err, message: ' + e.message + ', code: ' + e.code)
+      logger.error('getSystemCredList failed with err, message: ' + e.message + ', code: ' + e.code)
       callback(CMModelErrorCode.CM_MODEL_ERROR_EXCEPTION)
     }
   }
 
   private async getAppCredential(certUri: string, callback: Function): Promise<void> {
-    hilogInfo('getAppCredential start');
+    logger.info('getAppCredential start');
     try {
       let result = await CertManager.getPublicCertificate(certUri);
       if (result.credential !== undefined) {
@@ -569,21 +560,21 @@ export class CertMangerModel {
         let credInfo = new CredentialVo(String(result.credential.type), String(result.credential.alias),
           String(result.credential.keyUri), Number(result.credential.certNum),
           Number(result.credential.keyNum), certData);
-        hilogInfo('getAppCredential end');
+        logger.info('getAppCredential end');
         callback(CMModelErrorCode.CM_MODEL_ERROR_SUCCESS, credInfo);
       } else {
-        hilogError('getAppCredential failed, undefined');
+        logger.error('getAppCredential failed, undefined');
         callback(CMModelErrorCode.CM_MODEL_ERROR_FAILED, undefined);
       }
     } catch (err) {
       let e: BusinessError = err as BusinessError;
-      hilogError('getAppCredential failed with err, message: ' + e.message + ', code: ' + e.code);
+      logger.error('getAppCredential failed with err, message: ' + e.message + ', code: ' + e.code);
       callback(CMModelErrorCode.CM_MODEL_ERROR_EXCEPTION, undefined);
     }
   }
 
   private async getSystemCredential(certUri: string, callback: Function): Promise<void> {
-    hilogInfo('getSystemCredential start');
+    logger.info('getSystemCredential start');
     try {
       let result = await CertManager.getSystemAppCertificate(certUri);
       if (result.credential !== undefined) {
@@ -591,80 +582,80 @@ export class CertMangerModel {
         let credInfo = new CredentialVo(String(result.credential.type), String(result.credential.alias),
           String(result.credential.keyUri), Number(result.credential.certNum),
           Number(result.credential.keyNum), certData);
-        hilogInfo('getSystemCredential end');
+        logger.info('getSystemCredential end');
         callback(CMModelErrorCode.CM_MODEL_ERROR_SUCCESS, credInfo);
       } else {
-        hilogError('getSystemCredential failed, undefined');
+        logger.error('getSystemCredential failed, undefined');
         callback(CMModelErrorCode.CM_MODEL_ERROR_FAILED, undefined);
       }
     } catch (err) {
       let e: BusinessError = err as BusinessError;
-      hilogError('getSystemCredential failed with err, message: ' + e.message + ', code: ' + e.code);
+      logger.error('getSystemCredential failed with err, message: ' + e.message + ', code: ' + e.code);
       callback(CMModelErrorCode.CM_MODEL_ERROR_EXCEPTION, undefined);
     }
   }
 
   private async deleteAppCredential(certUri: string, callback: Function): Promise<void> {
-    hilogInfo('deleteAppCredential start');
+    logger.info('deleteAppCredential start');
     try {
       await CertManager.uninstallPublicCertificate(certUri);
-      hilogInfo('deleteAppCredential end');
+      logger.info('deleteAppCredential end');
       callback(CMModelErrorCode.CM_MODEL_ERROR_SUCCESS);
     } catch (err) {
       let e: BusinessError = err as BusinessError;
-      hilogError('deleteAppCredential failed with err, message: ' + e.message + ', code: ' + e.code);
+      logger.error('deleteAppCredential failed with err, message: ' + e.message + ', code: ' + e.code);
       callback(CMModelErrorCode.CM_MODEL_ERROR_EXCEPTION);
     }
   }
 
   private async deleteSystemCredential(certUri: string, callback: Function): Promise<void> {
-    hilogInfo('deleteSystemCredential start');
+    logger.info('deleteSystemCredential start');
     try {
       await CertManager.uninstallSystemAppCertificate(certUri);
-      hilogInfo('deleteSystemCredential end');
+      logger.info('deleteSystemCredential end');
       callback(CMModelErrorCode.CM_MODEL_ERROR_SUCCESS);
     } catch (err) {
       let e: BusinessError = err as BusinessError;
-      hilogError('deleteSystemCredential failed with err, message: ' + e.message + ', code: ' + e.code);
+      logger.error('deleteSystemCredential failed with err, message: ' + e.message + ', code: ' + e.code);
       callback(CMModelErrorCode.CM_MODEL_ERROR_EXCEPTION);
     }
   }
 
   private async delAllUserCertificate(callback: Function): Promise<void> {
-    hilogInfo('delAllUserCertificate start');
+    logger.info('delAllUserCertificate start');
     try {
       await CertManager.uninstallAllUserTrustedCertificate();
-      hilogInfo('delAllUserCertificate end');
+      logger.info('delAllUserCertificate end');
       callback(CMModelErrorCode.CM_MODEL_ERROR_SUCCESS);
     } catch (err) {
       let e: BusinessError = err as BusinessError;
-      hilogError('delAllUserCertificate failed with err, message: ' + e.message + ', code: ' + e.code);
+      logger.error('delAllUserCertificate failed with err, message: ' + e.message + ', code: ' + e.code);
       callback(CMModelErrorCode.CM_MODEL_ERROR_EXCEPTION);
     }
   }
 
   private async delAllAppCredential(callback: Function): Promise<void> {
-    hilogInfo('delAllAppCredential start');
+    logger.info('delAllAppCredential start');
     try {
       await CertManager.uninstallAllAppCertificate();
-      hilogInfo('delAllAppCredential end');
+      logger.info('delAllAppCredential end');
       callback(CMModelErrorCode.CM_MODEL_ERROR_SUCCESS);
     } catch (err) {
       let e: BusinessError = err as BusinessError;
-      hilogError('delAllAppCredential failed with err, message: ' + e.message + ', code: ' + e.code);
+      logger.error('delAllAppCredential failed with err, message: ' + e.message + ', code: ' + e.code);
       callback(CMModelErrorCode.CM_MODEL_ERROR_EXCEPTION);
     }
   }
 
   private async getAuthorizedAppList(uri: string, callback: Function): Promise<void> {
-    hilogInfo('getAuthorizedAppList start');
+    logger.info('getAuthorizedAppList start');
     try {
       let result = await CertManager.getAuthorizedAppList(uri);
-      hilogInfo('getAuthorizedAppList end');
+      logger.info('getAuthorizedAppList end');
       callback(CMModelErrorCode.CM_MODEL_ERROR_SUCCESS, result.appUidList);
     } catch (err) {
       let e: BusinessError = err as BusinessError;
-      hilogError('getAuthorizedAppList failed with err, message: ' + e.message + ', code: ' + e.code);
+      logger.error('getAuthorizedAppList failed with err, message: ' + e.message + ', code: ' + e.code);
       callback(CMModelErrorCode.CM_MODEL_ERROR_EXCEPTION, undefined);
     }
   }
@@ -675,31 +666,31 @@ export class CertMangerModel {
     status: boolean,
     callback: Function
   ): Promise<void> {
-    hilogInfo('setAuthorizedAppStatus start');
+    logger.info('setAuthorizedAppStatus start');
     try {
       let appUid = Number(appUidStr);
       if (status) {
         let result = await CertManager.grantPublicCertificate(uri, appUid);
-        hilogInfo('setAuthorizedAppStatus true end');
+        logger.info('setAuthorizedAppStatus true end');
         callback(CMModelErrorCode.CM_MODEL_ERROR_SUCCESS, result.uri);
       } else {
-        hilogInfo('appId:' + appUid + 'uri:' + uri);
+        logger.info('appId:' + appUid + 'uri:' + uri);
         await CertManager.removeGrantedPublicCertificate(uri, appUid);
-        hilogInfo('setAuthorizedAppStatus false end');
+        logger.info('setAuthorizedAppStatus false end');
         callback(CMModelErrorCode.CM_MODEL_ERROR_SUCCESS);
       }
     } catch (err) {
       let e: BusinessError = err as BusinessError;
-      hilogError('setAuthorizedAppStatus failed with err, message: ' + e.message + ', code: ' + e.code);
+      logger.error('setAuthorizedAppStatus failed with err, message: ' + e.message + ', code: ' + e.code);
       callback(CMModelErrorCode.CM_MODEL_ERROR_EXCEPTION);
     }
   }
 
   private async installUserCertificate(data: Uint8Array, optType: CMModelOptType, callback: Function): Promise<void> {
-    hilogInfo('installUserCertificate start');
+    logger.info('installUserCertificate start');
     if ((data === undefined) || (data.length === 0)) {
       callback(CMModelErrorCode.CM_MODEL_ERROR_INCORRECT_FORMAT);
-      hilogError('installUserCertificate data is empty.');
+      logger.error('installUserCertificate data is empty.');
       return;
     }
     try {
@@ -712,7 +703,7 @@ export class CertMangerModel {
         certFormat: certFormat,
         certScope: CertManager.CertScope.CURRENT_USER
       });
-      hilogInfo('installUserCertificate end');
+      logger.info('installUserCertificate end');
       callback(CMModelErrorCode.CM_MODEL_ERROR_SUCCESS, result.uri);
     } catch (err) {
       let e: BusinessError = err as BusinessError;
@@ -723,7 +714,7 @@ export class CertMangerModel {
       } else if (e.code === CertManager.CMErrorCode.CM_ERROR_ALIAS_LENGTH_REACHED_LIMIT) {
         callback(CMModelErrorCode.CM_MODEL_ERROR_ALIAS_LENGTH_REACHED_LIMIT)
       } else {
-        hilogError('installUserCertificate failed with err, message: ' + e.message + ', code: ' + e.code);
+        logger.error('installUserCertificate failed with err, message: ' + e.message + ', code: ' + e.code);
         callback(CMModelErrorCode.CM_MODEL_ERROR_EXCEPTION);
       }
     }
@@ -734,10 +725,10 @@ export class CertMangerModel {
     pwd: string,
     callback: Function
   ): Promise<void> {
-    hilogInfo('installPublicCertificate start');
+    logger.info('installPublicCertificate start');
     try {
       let result: CertManager.CMResult = await CertManager.installPublicCertificate(data, pwd);
-      hilogInfo('installPublicCertificate end');
+      logger.info('installPublicCertificate end');
       callback(CMModelErrorCode.CM_MODEL_ERROR_SUCCESS, result.uri ?? '');
     } catch (err) {
       let e: BusinessError = err as BusinessError;
@@ -750,7 +741,7 @@ export class CertMangerModel {
       } else if (e.code === CertManager.CMErrorCode.CM_ERROR_PASSWORD_IS_ERR) {
         callback(CMModelErrorCode.CM_MODEL_ERROR_PASSWORD_ERR, '');
       } else {
-        hilogError('installPublicCertificate failed with err, message: ' + e.message + ', code: ' + e.code);
+        logger.error('installPublicCertificate failed with err, message: ' + e.message + ', code: ' + e.code);
         callback(CMModelErrorCode.CM_MODEL_ERROR_EXCEPTION, '');
       }
     }
@@ -761,10 +752,10 @@ export class CertMangerModel {
     pwd: string,
     callback: Function
   ): Promise<void> {
-    hilogInfo('installSystemAppCertificate start');
+    logger.info('installSystemAppCertificate start');
     try {
       let result: CertManager.CMResult = await CertManager.installSystemAppCertificate(data, pwd);
-      hilogInfo('installSystemAppCertificate end');
+      logger.info('installSystemAppCertificate end');
       callback(CMModelErrorCode.CM_MODEL_ERROR_SUCCESS, result.uri ?? '');
     } catch (err) {
       let e: BusinessError = err as BusinessError;
@@ -772,12 +763,10 @@ export class CertMangerModel {
         callback(CMModelErrorCode.CM_MODEL_ERROR_INCORRECT_FORMAT, '');
       } else if (e.code === CertManager.CMErrorCode.CM_ERROR_MAX_CERT_COUNT_REACHED) {
         callback(CMModelErrorCode.CM_MODEL_ERROR_MAX_QUANTITY_REACHED, '');
-      } else if (e.code === CertManager.CMErrorCode.CM_ERROR_ALIAS_LENGTH_REACHED_LIMIT) {
-        callback(CMModelErrorCode.CM_MODEL_ERROR_ALIAS_LENGTH_REACHED_LIMIT, '');
       } else if (e.code === CertManager.CMErrorCode.CM_ERROR_PASSWORD_IS_ERR) {
         callback(CMModelErrorCode.CM_MODEL_ERROR_PASSWORD_ERR, '');
       } else {
-        hilogError('installSystemAppCertificate failed with err, message: ' + e.message + ', code: ' + e.code);
+        logger.error('installSystemAppCertificate failed with err, message: ' + e.message + ', code: ' + e.code);
         callback(CMModelErrorCode.CM_MODEL_ERROR_EXCEPTION, '');
       }
     }
@@ -789,7 +778,7 @@ export class CertMangerModel {
         let cmResult: CertManager.CMResult | undefined = await CertManager.getAllAppPrivateCertificatesByUid(appUid);
         let result: CredentialAbstractVo[] = [];
         if (cmResult === undefined) {
-          hilogInfo('The application does not have private credentials installed');
+          logger.info('The application does not have private credentials installed');
         }  else {
           let credAbsList: CertManager.CredentialAbstract[] = cmResult.credentialList ?? [];
           for (let i = 0; i < credAbsList.length; i++) {
@@ -798,11 +787,11 @@ export class CertMangerModel {
               certMgrDialog.CertificateType.CREDENTIAL_APP));
           }
         }
-        hilogInfo(`getAllAppPrivateCertificatesByUid end credList length: ${result.length}`);
+        logger.info(`getAllAppPrivateCertificatesByUid end credList length: ${result.length}`);
         return resolve(result);
       } catch(err) {
         let error = err as BusinessError;
-        hilogError(`getAllAppPrivateCertificatesByUid err, message: ${error.message}, code: ${error.code}`);
+        logger.error(`getAllAppPrivateCertificatesByUid err, message: ${error.message}, code: ${error.code}`);
         return reject({code: CMModelErrorCode.CM_MODEL_ERROR_EXCEPTION, message: 'getAllAppPrivateCertificatesByUid error'});
       }
     });
@@ -821,11 +810,11 @@ export class CertMangerModel {
               certMgrDialog.CertificateType.CREDENTIAL_UKEY));
           }
         }
-        hilogInfo(`getAllAppPrivateCertificatesByUid end credList length: ${result.length}`);
+        logger.info(`getAllAppPrivateCertificatesByUid end credList length: ${result.length}`);
         return resolve(result);
       } catch(err) {
         let error = err as BusinessError;
-        hilogError(`getAllAppPrivateCertificatesByUid err, message: ${error.message}, code: ${error.code}`);
+        logger.error(`getAllAppPrivateCertificatesByUid err, message: ${error.message}, code: ${error.code}`);
         return reject({code: CMModelErrorCode.CM_MODEL_ERROR_EXCEPTION, message: error.message});
       }
     });

@@ -14,25 +14,17 @@
  */
 import { WidthPercent } from '../common/util/ConfigData';
 import CmAppCredAuthPresenter from '../presenter/CmAppCredAuthPresenter';
-import { common, UIExtensionContentSession } from '@kit.AbilityKit';
+import { UIExtensionContentSession } from '@kit.AbilityKit';
 import certMangerModel, { CMModelErrorCode, DialogErrorCode } from '../model/CertMangerModel';
 import { CredentialAbstractVo } from '../model/CertManagerVo/CredentialAbstractVo';
 import { LengthMetrics, LengthUnit, SubHeader } from '@kit.ArkUI';
-import hilog from '@ohos.hilog';
 import certMgrDialog from '@ohos.security.certManagerDialog';
 import { BusinessError } from '@ohos.base';
 import certMgr from '@ohos.security.certManager'
 import { SYSCAP_HUKS_CRYPTO_EXTENTION } from '../common/constants/CertManagerConstants';
+import Logger from '../common/util/Logger';
 
-const DOMAIN = 0x0000;
-const TAG = 'RequestAuthSheet';
-
-function hilogInfo(message: string): void {
-  hilog.info(DOMAIN, TAG, message);
-}
-function hilogError(message: string): void {
-  hilog.error(DOMAIN, TAG, message);
-}
+const logger: Logger = new Logger('RequestAuthSheet');
 
 let storage = LocalStorage.getShared();
 
@@ -90,7 +82,7 @@ struct RequestAuthSheet {
         return resolve();
       } catch (e) {
         let err = e as BusinessError;
-        hilogError(`getAppCredLIstByUid err, message: ${err.message}, code: ${err.code}`);
+        logger.error(`getAppCredLIstByUid err, message: ${err.message}, code: ${err.code}`);
         return reject(err);
       }
     })
@@ -112,7 +104,7 @@ struct RequestAuthSheet {
         return resolve();
       } catch (e) {
         let err = e as BusinessError;
-        hilogError(`getUkeyList err, message: ${err.message}, code: ${err.code}`);
+        logger.error(`getUkeyList err, message: ${err.message}, code: ${err.code}`);
         return reject(err);
       }
     })
@@ -135,7 +127,7 @@ struct RequestAuthSheet {
       }
     } catch (e) {
       let err = e as BusinessError;
-      hilogError(`get certificateList failed, certType: ${certType}, errCode: ${err.code}`);
+      logger.error(`get certificateList failed, certType: ${certType}, errCode: ${err.code}`);
     }
   }
 
@@ -147,7 +139,7 @@ struct RequestAuthSheet {
         await this.getCredListByCertType(certType);
       } catch (e) {
         let err = e as BusinessError;
-        hilogError(`getCredList failed, certType: ${certType}, errCode: ${err.code}`);
+        logger.error(`getCredList failed, certType: ${certType}, errCode: ${err.code}`);
       }
     }
   }
@@ -155,18 +147,18 @@ struct RequestAuthSheet {
   async aboutToAppear() {
     let parameters = this.want.parameters;
     if (parameters === undefined || parameters === null) {
-      hilogError(`parameters is undefinde`);
+      logger.error(`parameters is undefinde`);
       return;
     }
     let callerBundleName: string = parameters['bundleName'] as string;
     if (callerBundleName == null || callerBundleName.length === 0) {
-      hilogError(`bundleName is empty`);
+      logger.error(`bundleName is empty`);
       return;
     }
-    hilogInfo(`USER_CERD_GRANT_APP ${callerBundleName}`);
+    logger.info(`USER_CERD_GRANT_APP ${callerBundleName}`);
     this.appUid = parameters['appUid'].toString();
     if (this.appUid == null || this.appUid.length === 0) {
-      hilogError(`request auth appear failed`);
+      logger.error(`request auth appear failed`);
       this.session.terminateSelfWithResult({resultCode: DialogErrorCode.DIALOG_ERROR_PARAM_INVALID});
     }
     try {
@@ -176,7 +168,7 @@ struct RequestAuthSheet {
         certMgrDialog.CertificateType[];
       this.mAppCredAuthPresenter.updateAppNameFromUid(this.appUid);
 
-      hilogInfo(`certTypes: ${JSON.stringify(this.certTypes)}`);
+      logger.info(`certTypes: ${JSON.stringify(this.certTypes)}`);
 
       await this.getCredList();
       if ((this.installCredList.length + this.ukeyCredList.length) > 0) {
@@ -196,7 +188,7 @@ struct RequestAuthSheet {
       }
     } catch (e) {
       let err = e as BusinessError;
-      hilogError(`getCredList failed, errCode: ${err.code}, message: ${err.message}`);
+      logger.error(`getCredList failed, errCode: ${err.code}, message: ${err.message}`);
       this.session?.terminateSelfWithResult({ resultCode: DialogErrorCode.DIALOG_ERROR_INTERNAL });
     }
   }
@@ -205,7 +197,7 @@ struct RequestAuthSheet {
     if (this.selectUri == null || this.selectUri.length === 0) {
       return;
     }
-    hilogInfo(`USER_CERD_GRANT_APP_SEL_CONFIRM authorize`);
+    logger.info(`USER_CERD_GRANT_APP_SEL_CONFIRM authorize`);
     if (this.selectCertType === certMgrDialog.CertificateType.CREDENTIAL_APP ||
       this.selectCertType === certMgrDialog.CertificateType.CREDENTIAL_UKEY) {
       this.session?.sendData({

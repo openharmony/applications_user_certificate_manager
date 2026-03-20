@@ -17,8 +17,9 @@ import certManagerModel from '../model/CertMangerModel';
 import { CMModelErrorCode, CMModelOptType } from '../model/CertMangerModel';
 import { CertAbstractVo } from '../model/CertManagerVo/CertAbstractVo';
 import { CertInfoVo } from '../model/CertManagerVo/CertInfoVo';
+import Logger from '../common/util/Logger';
 
-const TAG = 'CMFaShowUserCa Presenter: ';
+const logger: Logger = new Logger('CmShowUserCaPresenter');
 
 export default class CmShowUserCaPresenter {
   private static sInstance: CmShowUserCaPresenter;
@@ -58,7 +59,7 @@ export default class CmShowUserCaPresenter {
         });
         this.certList = certList;
       } else {
-        console.error(TAG + 'updateUserTrustedCertificateList fail,errCode is ' + errCode);
+        logger.error('updateUserTrustedCertificateList fail,errCode is ' + errCode);
         this.certList = [];
       }
     });
@@ -68,11 +69,11 @@ export default class CmShowUserCaPresenter {
     certManagerModel.getCertOrCred(CMModelOptType.CM_MODEL_OPT_USER_CA, uri,
       (errCode: CMModelErrorCode, certInfo: CertInfoVo) => {
       if (errCode === CMModelErrorCode.CM_MODEL_ERROR_SUCCESS) {
-        console.info(TAG + 'getUserTrustedCertificate success, errCode is ' + errCode);
+        logger.info('getUserTrustedCertificate success, errCode is ' + errCode);
         this.certInfo = certInfo;
         callback();
       } else {
-        console.error(TAG + 'getUserTrustedCertificate fail, errCode is ' + errCode);
+        logger.error('getUserTrustedCertificate fail, errCode is ' + errCode);
         this.certInfo.clearCertInfoVo();
         callback();
       }
@@ -84,11 +85,11 @@ export default class CmShowUserCaPresenter {
       certManagerModel.setCertStatus(CMModelOptType.CM_MODEL_OPT_USER_CA, uri, status, (errCode: CMModelErrorCode) => {
         if (errCode === CMModelErrorCode.CM_MODEL_ERROR_SUCCESS) {
           this.getUserTrustedCertificate(uri, () => {
-            console.info(TAG + 'setCerStatus then getUserTrustedCertificate,errCode is' + errCode);
+            logger.info('setCerStatus then getUserTrustedCertificate,errCode is' + errCode);
           });
           return resolve(true);
         } else {
-          console.error(TAG + 'setUserCertificateStatus fail,errCode is ' + errCode);
+          logger.error('setUserCertificateStatus fail,errCode is ' + errCode);
           return resolve(false);
         }
       });
@@ -100,7 +101,7 @@ export default class CmShowUserCaPresenter {
       if (errCode === CMModelErrorCode.CM_MODEL_ERROR_SUCCESS) {
         this.updateUserTrustedCertificateList();
       } else {
-        console.error(TAG + 'deleteUserCertificate fail,errCode is ' + errCode);
+        logger.error('deleteUserCertificate fail,errCode is ' + errCode);
       }
       callback();
     });

@@ -18,26 +18,27 @@ import UIExtensionContentSession from '@ohos.app.ability.UIExtensionContentSessi
 import { GlobalContext, PwdStore } from '../common/GlobalContext';
 import UIExtensionAbility from '@ohos.app.ability.UIExtensionAbility';
 import { BusinessError } from '@ohos.base';
+import Logger from '../common/util/Logger';
 
+const logger: Logger = new Logger('CertPickerUiExtAbility');
 const PAGE_CA_INSTALL = 5;
 const PAGE_REQUEST_AUTHORIZE = 6;
 const PAGE_UKEY_AUTH = 7;
-const TAG = 'CertPickerUiExtAbility';
 
 export default class CertPickerUiExtAbility extends UIExtensionAbility {
   onCreate(): void {
-    console.info('[CertManager] CertPickerUiExtAbility onCreate');
+    logger.info('CertPickerUiExtAbility onCreate');
   }
 
   onDestroy(): void {
-    console.info('[CertManager] CertPickerUiExtAbility onDestroy');
+    logger.info('CertPickerUiExtAbility onDestroy');
   }
 
   onSessionCreate(want: Want, session: UIExtensionContentSession): void {
-    console.info('[CertManager] CertPickerUiExtAbility onSessionCreate');
+    logger.info('CertPickerUiExtAbility onSessionCreate');
 
     if (want === null || want === undefined) {
-      console.error('[CertManager] invalid want param');
+      logger.error('invalid want param');
       return;
     }
     let param: Record<string, Object> = {
@@ -60,7 +61,7 @@ export default class CertPickerUiExtAbility extends UIExtensionAbility {
       }
     } catch (err) {
       let error = err as BusinessError;
-      console.error(TAG, `onSessionCreat load content failed: ${error?.code}, msg:${error?.message}`);
+      logger.error(`onSessionCreat load content failed: ${error?.code}, msg:${error?.message}`);
       session.terminateSelf();
       return;
     }
@@ -68,7 +69,7 @@ export default class CertPickerUiExtAbility extends UIExtensionAbility {
     try {
       session.setWindowBackgroundColor('#00000000');
     } catch (err) {
-      console.error('[CertManager] CertPickerUiExtAbility setWindowBackgroundColor');
+      logger.error('CertPickerUiExtAbility setWindowBackgroundColor');
     }
   }
 
@@ -96,16 +97,16 @@ export default class CertPickerUiExtAbility extends UIExtensionAbility {
   onSessionDestroy(): void {
     // Main window is destroyed, release UI related resources
     GlobalContext.getContext().clearSession();
-    console.info('[CertManager] CertPickerUiExtAbility onSessionDestroy');
+    logger.info('CertPickerUiExtAbility onSessionDestroy');
   }
 
   onForeground(): void {
     // Ability has brought to foreground
-    console.info('[CertManager] CertPickerUiExtAbility onForeground');
+    logger.info('CertPickerUiExtAbility onForeground');
   }
 
   onBackground(): void {
     // Ability has back to background
-    console.info('[CertManager] CertPickerUiExtAbility onBackground');
+    logger.info('CertPickerUiExtAbility onBackground');
   }
 }

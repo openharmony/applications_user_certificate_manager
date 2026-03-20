@@ -22,8 +22,9 @@ import { GlobalContext } from '../common/GlobalContext';
 import { AppInfoVo } from '../model/CertManagerVo/AppInfoVo';
 import { BusinessError } from '@ohos.base';
 import Common from '@ohos.app.ability.common'
+import Logger from '../common/util/Logger';
 
-const TAG = 'CMAppCredAuthPresenter Presenter: ';
+const logger: Logger = new Logger('CmAppCredAuthPresenter');
 const SUCCESS = 0;
 const FAIL = -1;
 
@@ -52,14 +53,14 @@ export default class CmAppCredAuthPresenter {
       BundleModel.getAppInfoList(Number(uid), (errCode: CMModelErrorCode, appInfo: AppInfoVo) => {
         if (errCode === CMModelErrorCode.CM_MODEL_ERROR_SUCCESS) {
           this.appName = appInfo.appName;
-          console.info('getAppNameFromUid success, appName = ' + this.appName);
+          logger.info('getAppNameFromUid success, appName = ' + this.appName);
         } else {
-          console.error('getAppNameFromUid fail, uid = ' + uid);
+          logger.error('getAppNameFromUid fail, uid = ' + uid);
         }
       });
     } catch (err) {
       let e: BusinessError = err as BusinessError;
-      console.error('updateAppNameFromUid failed with err, message: ' + e.message + ', code: ' + e.code);
+      logger.error('updateAppNameFromUid failed with err, message: ' + e.message + ', code: ' + e.code);
     }
   }
 
@@ -68,9 +69,9 @@ export default class CmAppCredAuthPresenter {
       (errCode: CMModelErrorCode, credList: Array<CredentialAbstractVo>) => {
       if (errCode === CMModelErrorCode.CM_MODEL_ERROR_SUCCESS) {
         this.credList = credList;
-        console.info('updateAppCredList success.');
+        logger.info('updateAppCredList success.');
       } else {
-        console.error('updateAppCredList failed');
+        logger.error('updateAppCredList failed');
       }
       callback?.(errCode);
     });
@@ -90,7 +91,7 @@ export default class CmAppCredAuthPresenter {
       true, (errCode: CMModelErrorCode, result: string) => {
       router.clear();
       if (errCode === CMModelErrorCode.CM_MODEL_ERROR_SUCCESS) {
-        console.info('requestAuthorize success result: ' + result);
+        logger.info('requestAuthorize success result: ' + result);
         if (want.parameters != undefined) {
           want.parameters.authUri = result;
           let ret1: Common.AbilityResult = {
@@ -103,11 +104,11 @@ export default class CmAppCredAuthPresenter {
             resultCode: FAIL,
             want: want
           };
-          console.error(TAG + 'requestAuthorize failed, undefined');
+          logger.error('requestAuthorize failed, undefined');
           GlobalContext.getContext().getCmContext().terminateSelfWithResult(ret2);
         }
       } else {
-        console.error('requestAuthorize fail');
+        logger.error('requestAuthorize fail');
         let ret3: Common.AbilityResult = {
           resultCode: FAIL,
           want: want
@@ -118,7 +119,7 @@ export default class CmAppCredAuthPresenter {
   }
 
   cancelProcess(): void {
-    console.info('cancelProcess start');
+    logger.info('cancelProcess start');
     router.clear();
     let ret: Common.AbilityResult = {
       resultCode: FAIL,

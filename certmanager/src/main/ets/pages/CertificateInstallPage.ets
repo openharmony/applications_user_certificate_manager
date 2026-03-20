@@ -22,19 +22,12 @@ import certManagerModel from '../model/CertMangerModel';
 import util from '@ohos.util';
 import certMgrDialog from '@ohos.security.certManagerDialog';
 import { Want } from '@kit.AbilityKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import { deviceInfo } from '@kit.BasicServicesKit';
+import { ResourceUtil } from '../common/util/ResourceUtils';
+import Logger from '../common/util/Logger';
 
 /* instrument ignore file */
 
-const TAG = 'CertificateInstallPage';
-const DOMAIN = 0x0000;
-function hilogInfo(message: string): void {
-  hilog.info(DOMAIN, TAG, message);
-}
-function hilogError(message: string): void {
-  hilog.error(DOMAIN, TAG, message);
-}
+const logger: Logger = new Logger('CertificateInstallPage');
 
 let storage = LocalStorage.getShared();
 
@@ -106,14 +99,14 @@ struct CertificateInstallPage {
       primaryButton: {
         value: $r('app.string.root_certificate_cancel'),
         action: () => {
-          hilogInfo('USER_CA_STATUS_CONFIRM cancel');
+          logger.info('USER_CA_STATUS_CONFIRM cancel');
           this.session?.terminateSelf();
         }
       },
       secondaryButton: {
         value: $r('app.string.root_certificate_continue'),
         action: () => {
-          hilogInfo('USER_CA_STATUS_CONFIRM confirm');
+          logger.info('USER_CA_STATUS_CONFIRM confirm');
           this.checkUserAuth();
         }
       }
@@ -122,7 +115,7 @@ struct CertificateInstallPage {
 
   aboutToAppear(): void {
     if (this.want === undefined || this.want === null) {
-      hilogError('initData, want is undefined');
+      logger.error('initData, want is undefined');
       this.session?.terminateSelf();
       return;
     }
@@ -133,14 +126,14 @@ struct CertificateInstallPage {
       return;
     }
     if (this.params === undefined) {
-      hilogError('check parameters undefined');
+      logger.error('check parameters undefined');
       this.session.terminateSelfWithResult({resultCode: DialogErrorCode.DIALOG_ERROR_PARAM_INVALID});
       return;
     }
     this.operationType = Number(this.params['operationType']);
     this.certType = Number(this.params['certType']);
     if (this.operationType !== CmDialogOperationType.INSTALL) {
-      hilogError('check operation type unsupport');
+      logger.error('check operation type unsupport');
       this.session.terminateSelfWithResult({resultCode: DialogErrorCode.DIALOG_ERROR_NOT_ENTERPRISE_DEVICE});
       return;
     }
@@ -150,7 +143,7 @@ struct CertificateInstallPage {
       this.certType === certMgrDialog.CertificateType.CREDENTIAL_SYSTEM) {
       this.inputPwdDialog.open();
     } else {
-      hilogError('check cert type invalid');
+      logger.error('check cert type invalid');
       this.session.terminateSelfWithResult({resultCode: DialogErrorCode.DIALOG_ERROR_PARAM_INVALID});
       return;
     }
@@ -161,7 +154,7 @@ struct CertificateInstallPage {
   certPwd: string = '';
 
   cancelInstallCred(): void {
-    hilogInfo('install cred cancel');
+    logger.info('install cred cancel');
     this.inputPwdDialog.close();
     this.session.terminateSelfWithResult({resultCode: DialogErrorCode.DIALOG_OPERATION_CANCELS});
     return;
@@ -172,24 +165,24 @@ struct CertificateInstallPage {
       this.session?.sendData({'uri': uri});
       this.inputPwdDialog.close();
     } else if (resultCode === CMModelErrorCode.CM_MODEL_ERROR_INCORRECT_FORMAT) {
-      hilogError('install cred data incorrect format');
+      logger.error('install cred data incorrect format');
       this.inputPwdDialog.close();
       this.resultCode = DialogErrorCode.DIALOG_ERROR_INCORRECT_FORMAT;
       this.installFailedDialogMessage = $r('app.string.Install_ERROR_INCORRECT_FORMAT');
       this.installFailedDialog.open();
     } else if (resultCode === CMModelErrorCode.CM_MODEL_ERROR_MAX_QUANTITY_REACHED) {
-      hilogError('install cred max quantity reached');
+      logger.error('install cred max quantity reached');
       this.inputPwdDialog.close();
       this.resultCode = DialogErrorCode.DIALOG_ERROR_MAX_QUANTITY_REACHED;
       this.installFailedDialogMessage = $r('app.string.Install_Error_MAX_QUANTITY_REACHED');
       this.installFailedDialog.open();
     } else if (resultCode === CMModelErrorCode.CM_MODEL_ERROR_PASSWORD_ERR) {
-      hilogInfo('install cred pwd incorrect');
+      logger.info('install cred pwd incorrect');
       this.isPasswordError = true;
       this.textInputController.setTextSelection(0, this.certPwd.length, { menuPolicy: MenuPolicy.HIDE })
     }else {
       this.inputPwdDialog.close();
-      hilogError(`result code ${resultCode}, need not show result`);
+      logger.error(`result code ${resultCode}, need not show result`);
       this.session?.terminateSelfWithResult({
         resultCode: resultCode
       });
@@ -203,7 +196,7 @@ struct CertificateInstallPage {
     } else if (this.certType === certMgrDialog.CertificateType.CREDENTIAL_USER) {
       optType = CMModelOptType.CM_MODEL_OPT_SYSTEM_CRED;
     } else {
-      hilogError('check cert type unsupport');
+      logger.error('check cert type unsupport');
       this.session.terminateSelfWithResult({resultCode: DialogErrorCode.DIALOG_ERROR_PARAM_INVALID});
       return;
     }
@@ -312,12 +305,12 @@ struct CertificateInstallPage {
 
   private getCallerName(): boolean {
     if (this.params === undefined || this.params === null) {
-      hilogError('initData, parameters is undefined');
+      logger.error('initData, parameters is undefined');
       return false;
     }
     let callerName = this.params['bundleName']?.toString();
     if (callerName === undefined || callerName === null) {
-      hilogError('getCallerName, callerName is undefined');
+      logger.error('getCallerName, callerName is undefined');
       return false;
     }
     this.callerName = String(callerName);
@@ -337,7 +330,7 @@ struct CertificateInstallPage {
       this.installFailedDialogMessage = $r('app.string.Install_Error_MAX_QUANTITY_REACHED');
       this.installFailedDialog.open();
     } else {
-      hilogInfo(`result code ${resultCode}, need not show result`);
+      logger.info(`result code ${resultCode}, need not show result`);
       this.session?.terminateSelfWithResult({
         resultCode: resultCode
       });
@@ -345,14 +338,14 @@ struct CertificateInstallPage {
   }
 
   checkUserAuth() {
-    let titleStr = this.context?.resourceManager.getStringSync($r('app.string.Identity_Authentication'));
+    let titleStr = ResourceUtil.getResourceString(this.context, $r('app.string.Identity_Authentication'));
     checkUserAuthModel.auth(titleStr, (authResult: boolean) => {
       if (!authResult) {
-        hilogInfo('userAuth cancel!');
+        logger.info('userAuth cancel!');
         this.session?.terminateSelf();
         return;
       }
-      hilogInfo('userAuth success!');
+      logger.info('userAuth success!');
       this.installCaCertificate();
     })
   }
@@ -361,13 +354,13 @@ struct CertificateInstallPage {
     return new Promise<Uint8Array | undefined>(resolve => {
       let certificateDataObj = parameters['cert'];
       if (certificateDataObj === undefined || certificateDataObj === null) {
-        hilogError('getCertificateData, certificate data is undefined');
+        logger.error('getCertificateData, certificate data is undefined');
         return resolve(undefined);
       }
       new util.Base64Helper().decode(certificateDataObj as string).then((value) => {
         return resolve(value);
       }).catch((error: BusinessError) => {
-        hilogError(`decode certificate data err: ${error?.code}, msg: ${error?.message}`);
+        logger.error(`decode certificate data err: ${error?.code}, msg: ${error?.message}`);
         return resolve(undefined);
       });
     });
@@ -375,22 +368,22 @@ struct CertificateInstallPage {
 
   private installCaCertificate(): void {
     if (this.want === undefined || this.want === null) {
-      hilogError('initData, want is undefined');
+      logger.error('initData, want is undefined');
       return;
     }
     if (this.params === undefined || this.params === null) {
-      hilogError('initData, parameters is undefined');
+      logger.error('initData, parameters is undefined');
       return;
     }
     this.getCertificateData(this.params).then(data => {
       if (data === undefined) {
-        hilogError('installCaCertificate, certificate data is undefined');
+        logger.error('installCaCertificate, certificate data is undefined');
         this.session?.terminateSelf();
         return;
       }
       certManagerModel.installCertOrCred(CMModelOptType.CM_MODEL_OPT_USER_CA, data,
         '', (resultCode: CMModelErrorCode, uri: string) => {
-          hilogInfo(`installCertOrCred result: ${resultCode}`);
+          logger.info(`installCertOrCred result: ${resultCode}`);
           this.handleInstallResult(resultCode, uri);
         });
     })

@@ -18,6 +18,10 @@ import { CMModelErrorCode, CMModelOptType } from '../model/CertMangerModel';
 import { CredentialAbstractVo } from '../model/CertManagerVo/CredentialAbstractVo';
 import { CredentialVo } from '../model/CertManagerVo/CredentialVo';
 import { AppAuthorVo } from '../model/CertManagerVo/AppAuthorVo';
+import Logger from '../common/util/Logger';
+
+const logger: Logger = new Logger('CmShowSysCredPresenter');
+
 @Observed
 export default class CmShowSysCredPresenter {
   private static sInstance: CmShowSysCredPresenter;
@@ -54,7 +58,7 @@ export default class CmShowSysCredPresenter {
           this.credList = credList;
           callback();
         } else {
-          console.error('updateAppCredList error :' + JSON.stringify(errCode));
+          logger.error('updateAppCredList error :' + JSON.stringify(errCode));
           this.credList = [];
           callback();
         }
@@ -76,7 +80,7 @@ export default class CmShowSysCredPresenter {
           });
           this.credList = credList;
         } else {
-          console.error('updateSystemCredList error :' + JSON.stringify(errCode));
+          logger.error('updateSystemCredList error :' + JSON.stringify(errCode));
           this.credList = [];
         }
       });
@@ -88,7 +92,7 @@ export default class CmShowSysCredPresenter {
         if (errCode === CMModelErrorCode.CM_MODEL_ERROR_SUCCESS) {
           this.credInfo = credInfo;
         } else {
-          console.error('getAppCred error :' + JSON.stringify(errCode));
+          logger.error('getAppCred error :' + JSON.stringify(errCode));
           this.credInfo.clearCredentialVo();
         }
         callback();
@@ -100,7 +104,7 @@ export default class CmShowSysCredPresenter {
       if (errCode === CMModelErrorCode.CM_MODEL_ERROR_SUCCESS) {
         this.updateSystemCredList();
       } else {
-        console.error('deleteAppCred error :' + JSON.stringify(errCode));
+        logger.error('deleteAppCred error :' + JSON.stringify(errCode));
       }
     });
   }
