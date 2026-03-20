@@ -26,8 +26,9 @@ import { AlertDialog } from '@ohos.arkui.advanced.Dialog';
 import { BusinessError } from '@ohos.base';
 import { SheetParam } from '../../common/util/SheetParam';
 import { NavEntryKey } from '../../common/NavEntryKey';
+import Logger from '../../common/util/Logger';
 
-const TAG: string = 'CaUserDetailPage: ';
+const logger: Logger = new Logger('CaUserDetailParam');
 
 export class CaUserDetailParam {
   public showUserCaPresenter: CmShowUserCaPresenter;
@@ -183,7 +184,7 @@ export struct CaUserDetailPage {
         this.toggleStatus = this.showUserCaPresenter.certInfo.status;
       } catch (err) {
         let error = err as BusinessError;
-        console.error(TAG + 'Get presenter failed: ' + error?.code + ', message: ' + error?.message);
+        logger.error('Get presenter failed: ' + error?.code + ', message: ' + error?.message);
       }
     })
   }

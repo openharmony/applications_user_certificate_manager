@@ -13,21 +13,13 @@
  * limitations under the License.
  */
 
-import hilog from '@ohos.hilog';
 import { StringUtil } from '../common/util/StringUtil';
 import { UIExtensionContentSession } from '@kit.AbilityKit';
 import { DialogErrorCode } from '../model/CertMangerModel';
 import { SYSCAP_HUKS_CRYPTO_EXTENTION } from '../common/constants/CertManagerConstants';
+import Logger from '../common/util/Logger';
 
-const DOMAIN = 0x0000;
-const TAG = 'UKeyAuthSheet';
-
-function hilogInfo(message: string): void {
-  hilog.info(DOMAIN, TAG, message);
-}
-function hilogError(message: string): void {
-  hilog.error(DOMAIN, TAG, message);
-}
+const logger: Logger = new Logger('UKeyAuthSheet');
 
 let storage = LocalStorage.getShared();
 
@@ -45,7 +37,7 @@ struct UKeyAuthSheet {
   aboutToAppear() {
     let parameters = this.want.parameters;
     if (parameters === undefined || parameters === null) {
-      hilogError(`parameters is undefinde`);
+      logger.error(`parameters is undefinde`);
       this.session.terminateSelfWithResult({resultCode: DialogErrorCode.DIALOG_ERROR_PARAM_INVALID});
       return;
     }
@@ -59,7 +51,7 @@ struct UKeyAuthSheet {
     this.appUid = (parameters['appUid'] ?? CM_GETAPPUID_ERR_DEFAULT) as number;
 
     if (StringUtil.isEmpty(this.keyUri)) {
-      hilogError(`check keyUri isEmpty`);
+      logger.error(`check keyUri isEmpty`);
       this.session.terminateSelfWithResult({resultCode: DialogErrorCode.DIALOG_ERROR_PARAM_INVALID});
       return;
     }

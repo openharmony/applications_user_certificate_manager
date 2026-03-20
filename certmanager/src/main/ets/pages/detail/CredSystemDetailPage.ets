@@ -20,8 +20,9 @@ import { BusinessError } from '@ohos.base';
 import CmShowSysCredPresenter from '../../presenter/CmShowSysCredPresenter';
 import { SheetParam } from '../../common/util/SheetParam';
 import { NavEntryKey } from '../../common/NavEntryKey';
+import Logger from '../../common/util/Logger';
 
-const TAG: string = 'CredSystemDetailPage: ';
+const logger: Logger = new Logger('CredSystemDetailParam');
 
 export class CredSystemDetailParam {
   public presenter: CmShowSysCredPresenter;
@@ -140,7 +141,7 @@ export struct CredSystemDetailPage {
         this.presenter = (ctx.pathInfo.param as CredSystemDetailParam).presenter;
       } catch (err) {
         let error = err as BusinessError;
-        console.error(TAG + 'Get presenter failed: ' + error?.code + ', message: ' + error?.message);
+        logger.error('Get presenter failed: ' + error?.code + ', message: ' + error?.message);
       }
     })
   }

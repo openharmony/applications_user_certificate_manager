@@ -15,8 +15,9 @@
 import ComponentConfig from './ComponentConfig';
 import Router from '@ohos.router';
 import { GlobalContext } from '../GlobalContext';
+import Logger from '../util/Logger';
 
-const TAG = 'CertManager HeadComponent: ';
+const logger: Logger = new Logger('HeadComponent');
 
 /**
  * head custom component
@@ -48,7 +49,7 @@ export default struct HeadComponent {
           return;
         }
         let length = Router.getLength();
-        console.info(TAG + 'router length: ' + Number(length));
+        logger.info('router length: ' + Number(length));
         if (GlobalContext.getContext().getFlag()) {
           Number(length) == 1 ? GlobalContext.getContext().getSession().sendData({'action': 'exit'}) : Router.back();
         } else {

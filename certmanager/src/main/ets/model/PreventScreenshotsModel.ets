@@ -18,8 +18,9 @@ import { BusinessError } from '@ohos.base';
 import { GlobalContext } from '../common/GlobalContext';
 import type UIAbilityContext from 'application/UIAbilityContext';
 import UIExtensionContentSession from '@ohos.app.ability.UIExtensionContentSession';
+import Logger from '../common/util/Logger';
 
-const TAG: string = 'PreventScreenshotsModel';
+const logger: Logger = new Logger('PreventScreenshotsModel');
 
 export default class PreventScreenshotsModel {
   private static sInstance: PreventScreenshotsModel;
@@ -41,18 +42,18 @@ export default class PreventScreenshotsModel {
     let windowClass: window.Window | undefined = undefined;
     let context: UIAbilityContext = GlobalContext.getContext().getCmContext();
     if (context === undefined) {
-      console.error(TAG, 'context is undefined!');
+      logger.error('context is undefined!');
       return;
     }
 
     window.getLastWindow(context).then((window) => {
       windowClass = window;
-      console.info(TAG, 'Success in obtaining the top window data');
+      logger.info('Success in obtaining the top window data');
       windowClass.setWindowPrivacyMode(isPrivacyMode).catch((err: BusinessError) => {
-        console.error(TAG, 'setWindowPrivacyMode failed: ' + JSON.stringify(err));
+        logger.error('setWindowPrivacyMode failed: ' + JSON.stringify(err));
       })
     }).catch((err: BusinessError) => {
-      console.info(TAG + 'getLastWindow failed: ' + JSON.stringify(err));
+      logger.info('getLastWindow failed: ' + JSON.stringify(err));
     })
   }
 }

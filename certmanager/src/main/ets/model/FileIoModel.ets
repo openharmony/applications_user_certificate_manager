@@ -16,21 +16,24 @@
 import fileUri from '@ohos.file.fileuri';
 import fs from '@ohos.file.fs';
 import { BusinessError } from '@ohos.base';
+import Logger from '../common/util/Logger';
+
+const logger: Logger = new Logger('FileIoModel');
 
 export class FileIoModel {
   getMediaFileData(mediaUri: string, callback: Function): void {
-    console.info('CertManager FA getMediaFile start');
+    logger.info('CertManager FA getMediaFile start');
     let file: fs.File | undefined = undefined;
     try {
       file = fs.openSync(mediaUri, fs.OpenMode.READ_ONLY);
       let stat = fs.statSync(file.fd);
       let buf = new ArrayBuffer(Number(stat.size));
       let num = fs.readSync(file.fd, buf);
-      console.info('CertManager FA getMediaFile success');
+      logger.info('CertManager FA getMediaFile success');
       callback(new Uint8Array(buf));
     } catch (err) {
       let e: BusinessError = err as BusinessError;
-      console.error('CertManager FA getMediaFileData failed with err, message: ' + e.message + ', code: ' + e.code);
+      logger.error('CertManager FA getMediaFileData failed with err, message: ' + e.message + ', code: ' + e.code);
       callback(undefined);
     } finally {
       try {
@@ -39,21 +42,21 @@ export class FileIoModel {
         }
       } catch (err) {
         let e: BusinessError = err as BusinessError;
-        console.error('CertManager FA close io stream failed with err, message: ' + e.message + ', code: ' + e.code);
+        logger.error('CertManager FA close io stream failed with err, message: ' + e.message + ', code: ' + e.code);
       }
     }
   }
 
   getMediaFileSuffix(mediaUri: string, callback: Function): void {
     try {
-      console.info('CertManager FA getMediaFileSuffix start');
+      logger.info('CertManager FA getMediaFileSuffix start');
       let uri = new fileUri.FileUri(mediaUri);
       let suffix = uri.name.substring(uri.name.lastIndexOf('.') + 1);
       let suffixLowerCase = suffix.toLowerCase();
       callback(suffixLowerCase);
     } catch (err) {
       let e: BusinessError = err as BusinessError;
-      console.error('CertManager FA getMediaFileSuffix failed with err, message: ' + e.message + ', code: ' + e.code);
+      logger.error('CertManager FA getMediaFileSuffix failed with err, message: ' + e.message + ', code: ' + e.code);
       callback(undefined);
     }
   }

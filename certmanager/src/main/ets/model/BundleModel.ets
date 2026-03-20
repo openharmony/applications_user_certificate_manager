@@ -18,12 +18,13 @@ import bundleResManager from '@ohos.bundle.bundleResourceManager';
 import { CMModelErrorCode } from '../model/CertMangerModel';
 import { AppInfoVo } from './CertManagerVo/AppInfoVo';
 import { BusinessError } from '@ohos.base';
+import Logger from '../common/util/Logger';
 
-const TAG = 'certManager BUNDLE:';
+const logger: Logger = new Logger('BundleNameModel');
 
 export class BundleNameModel {
   async getAppInfoList(appUid: number, callback: Function): Promise<void> {
-    console.info(TAG + 'getAppInfoList enter uid: ' + appUid);
+    logger.info('getAppInfoList enter uid: ' + appUid);
     try {
       let appInfo: AppInfoVo = {
         appImage: '',
@@ -31,19 +32,19 @@ export class BundleNameModel {
       };
 
       let appCloneIdentity = await bundleManager.getAppCloneIdentity(appUid);
-      console.info(TAG + 'appBundleName: ' + appCloneIdentity.bundleName + ', appIndex: ' + appCloneIdentity.appIndex);
+      logger.info('appBundleName: ' + appCloneIdentity.bundleName + ', appIndex: ' + appCloneIdentity.appIndex);
 
       let bundleFlags = bundleResManager.ResourceFlag.GET_RESOURCE_INFO_ALL;
       let resourceInfo = bundleResManager.getBundleResourceInfo(appCloneIdentity.bundleName, bundleFlags,
         appCloneIdentity.appIndex);
       appInfo.appName = resourceInfo.label;
       appInfo.appImage = resourceInfo.icon;
-      console.info(TAG + 'get bundle info success');
+      logger.info('get bundle info success');
 
       callback(CMModelErrorCode.CM_MODEL_ERROR_SUCCESS, appInfo);
     } catch (err) {
       let e: BusinessError = err as BusinessError;
-      console.error(TAG + 'getAppInfoList failed, message: ' + e.message + ', code: ' + e.code);
+      logger.error('getAppInfoList failed, message: ' + e.message + ', code: ' + e.code);
       callback(CMModelErrorCode.CM_MODEL_ERROR_EXCEPTION, undefined);
     }
   }

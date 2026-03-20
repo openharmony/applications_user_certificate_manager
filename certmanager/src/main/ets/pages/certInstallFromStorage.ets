@@ -32,10 +32,11 @@ import { SheetParam } from '../common/util/SheetParam';
 import FilterParams from '../common/constants/FileFilterParams';
 import { UIContext } from '@kit.ArkUI';
 import { common } from '@kit.AbilityKit';
+import Logger from '../common/util/Logger';
+import { ResourceUtil } from '../common/util/ResourceUtils';
 
+const logger: Logger = new Logger('CertInstallFromStorage');
 const COPIES_NUM: number = 12;
-
-const TAG: string = 'CertInstallFromStorage: ';
 
 @Entry
 @Component
@@ -119,10 +120,10 @@ export struct CertInstallFromStorage {
   }
 
   checkUserAuth() {
-    let titleStr = getContext().resourceManager.getStringSync($r('app.string.Identity_Authentication'));
+    let titleStr = ResourceUtil.getResourceString(getContext(), $r('app.string.Identity_Authentication'));
     checkUserAuthModel.auth(titleStr, (authResult: boolean) => {
       if (authResult) {
-        console.info('checkUserAuth success');
+        logger.info('checkUserAuth success');
         if (this.installCertFlag) {
           if (this.isStartBySheet) {
             this.startInstallCertBySheet();
@@ -146,26 +147,26 @@ export struct CertInstallFromStorage {
       documentSelectOptions.maxSelectNumber = FilterParams.MAX_SELECT_FILE_NUM;
       documentSelectOptions.fileSuffixFilters = FilterParams.CERT_FILE_SUFFIX;
       let documentPicker = new picker.DocumentViewPicker(this.context);
-      console.info(TAG + 'start documentPicker.select');
+      logger.info('start documentPicker.select');
       documentPicker.select(documentSelectOptions).then((documentSelectResult) => {
         if (documentSelectResult.length >= 1) {
           this.routeToNextInstallCert(String(documentSelectResult[0]))
         } else {
-          console.error(TAG + 'documentPicker.select length invalid:' + documentSelectResult.length);
+          logger.error('documentPicker.select length invalid:' + documentSelectResult.length);
         }
       }).catch((err: BusinessError) => {
-        console.error(TAG + 'documentPicker.select failed with err, message: ' + err.message + ', code: ' + err.code);
+        logger.error('documentPicker.select failed with err, message: ' + err.message + ', code: ' + err.code);
       });
     } catch (err) {
       let e: BusinessError = err as BusinessError;
-      console.error(TAG + 'DocumentViewPicker failed with err, message: ' + e.message + ', code: ' + e.code);
+      logger.error('DocumentViewPicker failed with err, message: ' + e.message + ', code: ' + e.code);
     }
   }
 
   routeToNextInstallCert(fileUri: string): void {
     FileIoModel.getMediaFileSuffix(fileUri, (suffix: string | undefined) => {
       if (suffix !== undefined) {
-        console.debug(TAG, 'suffix = ', suffix);
+        logger.debug(`suffix = ${suffix}`);
         if ((suffix === 'cer') || (suffix === 'pem') || (suffix === 'crt') || (suffix === 'der') ||
             (suffix === 'p7b') || (suffix === 'spc')) {
           CmInstallPresenter.getInstance().installCert(fileUri, suffix, false);
@@ -182,26 +183,26 @@ export struct CertInstallFromStorage {
       documentSelectOptions.maxSelectNumber = FilterParams.MAX_SELECT_FILE_NUM;
       documentSelectOptions.fileSuffixFilters = FilterParams.CREDENTIAL_FILE_SUFFIX;
       let documentPicker = new picker.DocumentViewPicker(this.context);
-      console.info(TAG + 'start documentPicker.select');
+      logger.info('start documentPicker.select');
       documentPicker.select(documentSelectOptions).then((documentSelectResult) => {
         if (documentSelectResult.length >= 1) {
           this.routeToNextInstallEvidence(String(documentSelectResult[0]))
         } else {
-          console.error(TAG + 'documentPicker.select length invalid:' + documentSelectResult.length);
+          logger.error('documentPicker.select length invalid:' + documentSelectResult.length);
         }
       }).catch((err: BusinessError) => {
-        console.error(TAG + 'documentPicker.select failed with err, message: ' + err.message + ', code: ' + err.code);
+        logger.error('documentPicker.select failed with err, message: ' + err.message + ', code: ' + err.code);
       });
     } catch (err) {
       let e: BusinessError = err as BusinessError;
-      console.error(TAG + 'DocumentViewPicker failed with err, message: ' + e.message + ', code: ' + e.code);
+      logger.error('DocumentViewPicker failed with err, message: ' + e.message + ', code: ' + e.code);
     }
   }
 
   routeToNextInstallEvidence(fileUri: string): void {
     FileIoModel.getMediaFileSuffix(fileUri, (suffix: string | undefined) => {
       if (suffix !== undefined) {
-        console.debug(TAG, 'suffix = ', suffix);
+        logger.debug(`suffix = ${suffix}`);
         if ((suffix === 'p12') || (suffix === 'pfx')) {
           this.selected?.(NavEntryKey.CRED_PWD_INPUT_ENTRY, new CredPwdInputParam(new RouterFileVo(fileUri, suffix)));
         } else {
@@ -411,7 +412,7 @@ export struct CertInstallFromStorage {
       let fileUri = GlobalContext.getContext().getAbilityWant().parameters?.fileUri as string;
       this.mFaPresenter.startInstall(installType, fileUri);
     } else {
-      console.error('The want type is not supported');
+      logger.error('The want type is not supported');
     }
   }
 }

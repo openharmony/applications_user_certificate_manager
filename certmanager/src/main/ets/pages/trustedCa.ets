@@ -33,8 +33,11 @@ import {
   DialogSubjectComponent
 } from './detail/CaSystemDetailPage';
 import { AlignUtils } from '../common/util/AlignUtils';
+import Logger from '../common/util/Logger';
 
 const COPIES_NUM: number = 12;
+
+const logger: Logger = new Logger('ComponentSystem');
 
 @Component
 struct ComponentSystem {
@@ -556,7 +559,7 @@ struct ComponentUser {
   }
 
   aboutToAppear() {
-    console.info('in ComponentUser aboutToAppear');
+    logger.info('in ComponentUser aboutToAppear');
     if (this.setStatus.certList[this.indexNum].status == true) {
       this.statusText = $r('app.string.CustomDialogExampleUser_Status_true');
     } else {
@@ -684,7 +687,7 @@ export struct TrustedEvidence {
     } else if (uri === 'requestAuthorize') {
       this.mFaPresenter.startRequestAuth(GlobalContext.getContext().getAbilityWant().parameters?.appUid as string);
     } else {
-      console.error('The want type is not supported');
+      logger.error('The want type is not supported');
     }
   }
 
