@@ -12,12 +12,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Context } from "@kit.AbilityKit";
-import Logger from "./Logger";
+import { Context } from '@kit.AbilityKit';
+import Logger from './Logger';
 
 const logger: Logger = new Logger('ResourceUtil');
 
-export class ResourceUtil {
+export class ResourceUtils {
   static getResourceString(context: Context, resource: Resource): string {
     try {
       let retStr = context.resourceManager.getStringSync(resource.id);

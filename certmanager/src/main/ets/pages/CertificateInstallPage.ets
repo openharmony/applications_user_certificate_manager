@@ -22,7 +22,7 @@ import certManagerModel from '../model/CertMangerModel';
 import util from '@ohos.util';
 import certMgrDialog from '@ohos.security.certManagerDialog';
 import { Want } from '@kit.AbilityKit';
-import { ResourceUtil } from '../common/util/ResourceUtils';
+import { ResourceUtils } from '../common/util/ResourceUtils';
 import Logger from '../common/util/Logger';
 
 /* instrument ignore file */
@@ -338,7 +338,7 @@ struct CertificateInstallPage {
   }
 
   checkUserAuth() {
-    let titleStr = ResourceUtil.getResourceString(this.context, $r('app.string.Identity_Authentication'));
+    let titleStr = ResourceUtils.getResourceString(this.context, $r('app.string.Identity_Authentication'));
     checkUserAuthModel.auth(titleStr, (authResult: boolean) => {
       if (!authResult) {
         logger.info('userAuth cancel!');
