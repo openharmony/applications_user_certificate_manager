@@ -39,7 +39,7 @@ export default class Logger {
     hilog.error(Logger.DOMAIN, this.tag, format, ...args);
   }
 
-  public (format: string, ...args: Object[]): void {
+  public fatal(format: string, ...args: Object[]): void {
     hilog.fatal(Logger.DOMAIN, this.tag, format, ...args);
   }
 }
