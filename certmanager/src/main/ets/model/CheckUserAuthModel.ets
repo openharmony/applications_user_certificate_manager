@@ -45,7 +45,7 @@ export class CheckUserAuthModel {
       const dataBlob: cryptoFramework.DataBlob = rand.generateRandomSync(RANDOM_DATA_LENGTH);
       randData = dataBlob.data;
     } catch (err) {
-      logger.info('generate random failed');
+      logger.error('generate random failed');
       throw new Error('getRandomData failed.');
     }
     return randData;
