@@ -193,7 +193,7 @@ struct CertificateInstallPage {
     let optType: CMModelOptType = CMModelOptType.CM_MODEL_OPT_UNKNOWN;
     if (this.certType === certMgrDialog.CertificateType.CREDENTIAL_USER) {
       optType = CMModelOptType.CM_MODEL_OPT_APP_CRED;
-    } else if (this.certType === certMgrDialog.CertificateType.CREDENTIAL_USER) {
+    } else if (this.certType === certMgrDialog.CertificateType.CREDENTIAL_SYSTEM) {
       optType = CMModelOptType.CM_MODEL_OPT_SYSTEM_CRED;
     } else {
       logger.error('check cert type unsupport');
