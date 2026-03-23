@@ -147,6 +147,8 @@ struct CertPwdInput {
               if (resultCode === CMModelErrorCode.CM_MODEL_ERROR_PASSWORD_ERR) {
                 this.isPasswordError = true;
               }
+            }).catch((err: BusinessError) => {
+              logger.error(`install cred failed, code: ${err?.code}, message: ${err?.message}`);
             });
           })
         }
