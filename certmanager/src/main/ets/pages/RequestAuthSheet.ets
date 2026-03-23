@@ -74,7 +74,7 @@ struct RequestAuthSheet {
     })
   }
 
-  getAppCredLIstByUid(): Promise<void> {
+  getAppCredListByUid(): Promise<void> {
     return new Promise<void>(async (resolve, reject) => {
       try {
         let credList = await certMangerModel.getAllAppPrivateCertificates(Number(this.appUid));
@@ -82,7 +82,7 @@ struct RequestAuthSheet {
         return resolve();
       } catch (e) {
         let err = e as BusinessError;
-        logger.error(`getAppCredLIstByUid err, message: ${err.message}, code: ${err.code}`);
+        logger.error(`getAppCredListByUid err, message: ${err.message}, code: ${err.code}`);
         return reject(err);
       }
     })
@@ -117,7 +117,7 @@ struct RequestAuthSheet {
           this.pubCredListErrorCode = err.code;
         })
       } else if (certType === certMgrDialog.CertificateType.CREDENTIAL_APP) {
-        await this.getAppCredLIstByUid().catch((err: BusinessError) => {
+        await this.getAppCredListByUid().catch((err: BusinessError) => {
           this.appCredListErrorCode = err.code;
         })
       } else if (certType === certMgrDialog.CertificateType.CREDENTIAL_UKEY) {

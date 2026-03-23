@@ -33,7 +33,7 @@ import FilterParams from '../common/constants/FileFilterParams';
 import { UIContext } from '@kit.ArkUI';
 import { common } from '@kit.AbilityKit';
 import Logger from '../common/util/Logger';
-import { ResourceUtil } from '../common/util/ResourceUtils';
+import { ResourceUtils } from '../common/util/ResourceUtils';
 
 const logger: Logger = new Logger('CertInstallFromStorage');
 const COPIES_NUM: number = 12;
@@ -120,7 +120,7 @@ export struct CertInstallFromStorage {
   }
 
   checkUserAuth() {
-    let titleStr = ResourceUtil.getResourceString(getContext(), $r('app.string.Identity_Authentication'));
+    let titleStr = ResourceUtils.getResourceString(getContext(), $r('app.string.Identity_Authentication'));
     checkUserAuthModel.auth(titleStr, (authResult: boolean) => {
       if (authResult) {
         logger.info('checkUserAuth success');

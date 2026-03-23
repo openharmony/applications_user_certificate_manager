@@ -23,7 +23,7 @@ import { RouterFileVo, RouterAppUidVo } from '../model/CertManagerVo/RouterInfoV
 import checkUserAuthModel from '../model/CheckUserAuthModel';
 import CmInstallPresenter from './CmInstallPresenter';
 import FilterParams from '../common/constants/FileFilterParams';
-import { ResourceUtil } from '../common/util/ResourceUtils';
+import { ResourceUtils } from '../common/util/ResourceUtils';
 import Logger from '../common/util/Logger';
 
 const logger: Logger = new Logger('CmFaPresenter');
@@ -175,7 +175,7 @@ export default class CmFaPresenter {
 
   startInstall(installType: string, fileUri: string) {
     if (installType === 'CACert') {
-      let titleStr = ResourceUtil.getResourceString(getContext(), $r('app.string.Identity_Authentication'));
+      let titleStr = ResourceUtils.getResourceString(getContext(), $r('app.string.Identity_Authentication'));
       checkUserAuthModel.auth(titleStr, (authResult: boolean) => {
         if (authResult) {
           logger.info('checkUserAuth success');
