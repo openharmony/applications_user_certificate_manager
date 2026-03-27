@@ -17,21 +17,24 @@ import Want from '@ohos.app.ability.Want';
 import UIExtensionContentSession from '@ohos.app.ability.UIExtensionContentSession';
 import { GlobalContext, PwdStore } from '../common/GlobalContext';
 import UIExtensionAbility from '@ohos.app.ability.UIExtensionAbility';
+import Logger from '../common/util/Logger';
+
+const logger: Logger = new Logger('MainExtensionAbility');
 
 export default class MainExtensionAbility extends UIExtensionAbility {
   onCreate(): void {
-    console.info('[CertManager] MainExtensionAbility onCreate');
+    logger.info('MainExtensionAbility onCreate');
   }
 
   onDestroy(): void {
-    console.info('[CertManager] MainExtensionAbility onDestroy');
+    logger.info('MainExtensionAbility onDestroy');
   }
 
   onSessionCreate(want: Want, session: UIExtensionContentSession): void {
-    console.info('[CertManager] MainExtensionAbility onSessionCreate');
+    logger.info('MainExtensionAbility onSessionCreate');
 
     if (want === null || want === undefined) {
-      console.error('[CertManager] invalid want param');
+      logger.error('invalid want param');
       return;
     }
     let param: Record<string, Object> = {
@@ -39,7 +42,7 @@ export default class MainExtensionAbility extends UIExtensionAbility {
       'want': want
     };
     let storage: LocalStorage = new LocalStorage(param);
-    let pullType: string = want.parameters.pullType as string;
+    let pullType: string = want.parameters?.pullType?.toString() ?? '';
 
     if (pullType === 'systemCredInstall' || pullType === 'specifyInstall') {
       session.loadContent('pages/certInstallFromStorage', storage);
@@ -56,16 +59,16 @@ export default class MainExtensionAbility extends UIExtensionAbility {
   onSessionDestroy(): void {
     // Main window is destroyed, release UI related resources
     GlobalContext.getContext().clearSession();
-    console.info('[CertManager] MainExtensionAbility onSessionDestroy');
+    logger.info('MainExtensionAbility onSessionDestroy');
   }
 
   onForeground(): void {
     // Ability has brought to foreground
-    console.info('[CertManager] MainExtensionAbility onForeground');
+    logger.info('MainExtensionAbility onForeground');
   }
 
   onBackground(): void {
     // Ability has back to background
-    console.info('[CertManager] MainExtensionAbility onBackground');
+    logger.info('MainExtensionAbility onBackground');
   }
 }

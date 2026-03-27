@@ -23,6 +23,7 @@ import promptAction from '@ohos.promptAction';
 import { CustomContentDialog } from '@ohos.arkui.advanced.Dialog';
 import { NavEntryKey } from '../common/NavEntryKey';
 import { SheetParam } from '../common/util/SheetParam';
+import Logger from '../common/util/Logger';
 
 const DISPLAY_DURATION: number = 2000;
 const COPIES_NUM: number = 12;
@@ -31,6 +32,8 @@ class CertListItem {
   public targetPage: string = '';
   public title: Resource = $r('app.string.CA_cert');
 };
+
+const logger: Logger = new Logger('CertificateComponent');
 
 @Entry
 @Component
@@ -192,7 +195,7 @@ export struct CertificateComponent {
     } else if (uri === 'requestAuthorize') {
       this.mFaPresenter.startRequestAuth(GlobalContext.getContext().getAbilityWant().parameters?.appUid as string);
     } else {
-      console.error('The want type is not supported');
+      logger.error('The want type is not supported');
     }
   }
 }

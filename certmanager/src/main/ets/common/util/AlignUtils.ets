@@ -14,10 +14,9 @@
  */
 
 import Configuration, { LocaleResponse } from '@system.configuration'
-import hilog from '@ohos.hilog';
+import Logger from './Logger';
 
-const DOMAIN = 0x0000;
-const TAG = 'AlignUtils';
+const logger: Logger = new Logger('AlignUtils');
 
 export class AlignUtils {
     public static isRtl(): boolean {
@@ -28,7 +27,7 @@ export class AlignUtils {
                 isRtl = localInfo.dir === 'rtl';
             }
         } catch (error) {
-            hilog.error(DOMAIN, TAG, `get local error, code: ${error?.code}, message: ${error?.message}`);
+            logger.error(`get local error, code: ${error?.code}, message: ${error?.message}`);
         }
         return isRtl;
     }

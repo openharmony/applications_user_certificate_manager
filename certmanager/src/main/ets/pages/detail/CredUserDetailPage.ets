@@ -21,8 +21,9 @@ import CmShowAppCredPresenter from '../../presenter/CmShowAppCredPresenter';
 import { NavEntryKey } from '../../common/NavEntryKey';
 import { AuthorizedAppManagementParam } from './AuthorizedAppManagementPage';
 import { SheetParam } from '../../common/util/SheetParam';
+import Logger from '../../common/util/Logger';
 
-const TAG: string = 'CredUserDetailPage: ';
+const logger: Logger = new Logger('CredUserDetailParam');
 
 export class CredUserDetailParam {
   public presenter: CmShowAppCredPresenter;
@@ -145,7 +146,7 @@ export struct CredUserDetailPage {
         this.presenter = (ctx.pathInfo.param as CredUserDetailParam).presenter;
       } catch (err) {
         let error = err as BusinessError;
-        console.error(TAG + 'Get presenter failed: ' + error?.code + ', message: ' + error?.message);
+        logger.error('Get presenter failed: ' + error?.code + ', message: ' + error?.message);
       }
     })
   }

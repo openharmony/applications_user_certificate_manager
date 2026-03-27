@@ -20,8 +20,9 @@ import CmShowAppCredPresenter from '../../presenter/CmShowAppCredPresenter';
 import { BusinessError } from '@ohos.base';
 import { SheetParam } from '../../common/util/SheetParam';
 import { NavEntryKey } from '../../common/NavEntryKey';
+import Logger from '../../common/util/Logger';
 
-const TAG: string = 'AuthorizedAppManagementPage: ';
+const logger: Logger = new Logger('AuthorizedAppManagementParam');
 
 export class AuthorizedAppManagementParam {
   public presenter: CmShowAppCredPresenter;
@@ -158,7 +159,7 @@ export struct AuthorizedAppManagementPage {
         this.presenter = (ctx.pathInfo.param as AuthorizedAppManagementParam).presenter;
       } catch (err) {
         let error = err as BusinessError;
-        console.error(TAG + 'Get presenter failed: ' + error?.code + ', message: ' + error?.message);
+        logger.error('Get presenter failed: ' + error?.code + ', message: ' + error?.message);
       }
     })
   }

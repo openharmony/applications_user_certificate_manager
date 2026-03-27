@@ -18,8 +18,9 @@ import { CMModelErrorCode, CMModelOptType } from '../model/CertMangerModel';
 import { CertAbstractVo } from '../model/CertManagerVo/CertAbstractVo';
 import { CertInfoVo } from '../model/CertManagerVo/CertInfoVo';
 import { CmCertDataSource } from './CmCertDataSource';
+import Logger from '../common/util/Logger';
 
-const TAG = 'CMShowSysCa Presenter: ';
+const logger: Logger = new Logger('CmShowSysCaPresenter');
 
 export default class CmShowSysCaPresenter {
   private static sInstance: CmShowSysCaPresenter;
@@ -61,7 +62,7 @@ export default class CmShowSysCaPresenter {
         this.certList = certList;
         this.certDataSource.reloadData(this.certList);
       } else {
-        console.error(TAG + 'updateSystemTrustedCertificateList fail,errCode is' + errCode);
+        logger.error('updateSystemTrustedCertificateList fail,errCode is' + errCode);
         this.certList = [];
       }
     });
@@ -71,11 +72,11 @@ export default class CmShowSysCaPresenter {
     certManagerModel.getCertOrCred(CMModelOptType.CM_MODEL_OPT_SYSTEM_CA, uri,
       (errCode: CMModelErrorCode, certInfo: CertInfoVo) => {
       if (errCode === CMModelErrorCode.CM_MODEL_ERROR_SUCCESS) {
-        console.info(TAG + 'getSystemTrustedCertificate success,errCode is ' + errCode);
+        logger.info('getSystemTrustedCertificate success,errCode is ' + errCode);
         this.certInfo = certInfo;
         callback();
       } else {
-        console.error(TAG + 'getSystemTrustedCertificate fail,errCode is' + errCode);
+        logger.error('getSystemTrustedCertificate fail,errCode is' + errCode);
         this.certInfo.clearCertInfoVo();
         callback();
       }
@@ -86,10 +87,10 @@ export default class CmShowSysCaPresenter {
     certManagerModel.setCertStatus(CMModelOptType.CM_MODEL_OPT_SYSTEM_CA, uri, status,
       (errCode: CMModelErrorCode) => {
       if (errCode === CMModelErrorCode.CM_MODEL_ERROR_SUCCESS) {
-        console.info(TAG + 'setSystemCertificateStatus success,errCode is' + errCode);
+        logger.info('setSystemCertificateStatus success,errCode is' + errCode);
         this.updateSystemTrustedCertificateList();
       } else {
-        console.error(TAG + 'setSystemCertificateStatus fail,errCode is' + errCode);
+        logger.error('setSystemCertificateStatus fail,errCode is' + errCode);
       }
     });
   }
