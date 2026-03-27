@@ -21,6 +21,9 @@ import { CredentialVo } from '../model/CertManagerVo/CredentialVo';
 import { AppAuthorVo } from '../model/CertManagerVo/AppAuthorVo';
 import { AppInfoVo } from '../model/CertManagerVo/AppInfoVo';
 import { BusinessError } from '@ohos.base';
+import Logger from '../common/util/Logger';
+
+const logger: Logger = new Logger('CmShowAppCredPresenter');
 
 export default class CmShowAppCredPresenter {
   private static sInstance: CmShowAppCredPresenter;
@@ -57,7 +60,7 @@ export default class CmShowAppCredPresenter {
         this.credList = credList;
         callback();
       } else {
-        console.error('updateAppCredList error :' + JSON.stringify(errCode));
+        logger.error('updateAppCredList error :' + JSON.stringify(errCode));
         this.credList = [];
         callback();
       }
@@ -79,7 +82,7 @@ export default class CmShowAppCredPresenter {
         });
         this.credList = credList;
       } else {
-        console.error('updateAppCredList error :' + JSON.stringify(errCode));
+        logger.error('updateAppCredList error :' + JSON.stringify(errCode));
         this.credList = [];
       }
     });
@@ -91,7 +94,7 @@ export default class CmShowAppCredPresenter {
       if (errCode === CMModelErrorCode.CM_MODEL_ERROR_SUCCESS) {
         this.credInfo = credInfo;
       } else {
-        console.error('getAppCred error :' + JSON.stringify(errCode));
+        logger.error('getAppCred error :' + JSON.stringify(errCode));
         this.credInfo.clearCredentialVo();
       }
       callback();
@@ -103,7 +106,7 @@ export default class CmShowAppCredPresenter {
       if (errCode === CMModelErrorCode.CM_MODEL_ERROR_SUCCESS) {
         this.updateAppCredList();
       } else {
-        console.error('deleteAppCred error :' + JSON.stringify(errCode));
+        logger.error('deleteAppCred error :' + JSON.stringify(errCode));
       }
     });
   }
@@ -122,26 +125,26 @@ export default class CmShowAppCredPresenter {
           });
         }
       } else {
-        console.error('getAuthorizedAppList error :' + JSON.stringify(errCode));
+        logger.error('getAuthorizedAppList error :' + JSON.stringify(errCode));
         this.appInfoList = [];
       }
     });
   }
 
   async removeGrantedAppList(uri: string): Promise<void> {
-    console.info('enter removeGrantedAppList');
+    logger.info('enter removeGrantedAppList');
     for (let i = 0; i < this.appInfoList.length; i++) {
       if (!this.appInfoList[i].status) {
         try {
           let res = await certManagerModel.setAppAuthPromise(CMModelOptType.CM_MODEL_OPT_APP_CRED, uri,
             this.appInfoList[i].uid, false);
-          console.info('removeGrantedAppList succeed');
+          logger.info('removeGrantedAppList succeed');
         } catch (error) {
           let e: BusinessError = error as BusinessError;
-          console.error('removeGrantedAppList error, message: ' + e.message + ', code: ' + e.code);
+          logger.error('removeGrantedAppList error, message: ' + e.message + ', code: ' + e.code);
         }
       }
     }
-    console.info('leave removeGrantedAppList');
+    logger.info('leave removeGrantedAppList');
   }
 }

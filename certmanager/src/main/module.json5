@@ -37,7 +37,7 @@
     "abilities": [
       {
         "name": "MainAbility",
-        "srcEntry": "./ets/MainAbility/MainAbility.ts",
+        "srcEntry": "./ets/MainAbility/MainAbility.ets",
         "description": "$string:mainability_description",
         "icon": "$media:icon",
         "label": "$string:entry_MainAbility",
@@ -61,7 +61,7 @@
     "extensionAbilities": [
       {
         "name": "MainExtensionAbility",
-        "srcEntry": "./ets/MainAbility/MainExtensionAbility.ts",
+        "srcEntry": "./ets/MainAbility/MainExtensionAbility.ets",
         "description": "$string:mainability_description",
         "icon": "$media:icon",
         "label": "$string:entry_MainAbility",

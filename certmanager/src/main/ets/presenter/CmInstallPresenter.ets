@@ -20,8 +20,9 @@ import router from '@ohos.router';
 import { GlobalContext } from '../common/GlobalContext';
 import promptAction from '@ohos.promptAction';
 import { BusinessError } from '@ohos.base';
+import Logger from '../common/util/Logger';
 
-const TAG = 'CMInstallPresenter: ';
+const logger: Logger = new Logger('CmInstallPresenter');
 const DURATION = 2000;
 const gridCountNum: number = 4;
 const bottomNum: number = 100;
@@ -48,7 +49,7 @@ export default class CmInstallPresenter {
   }
 
   updateCertFileType(suffix: string): void {
-    console.debug(TAG + 'updateCertFileType suffix: ' + suffix);
+    logger.debug('updateCertFileType suffix: ' + suffix);
     if ((suffix === 'cer') || (suffix === 'pem') || (suffix === 'crt') || (suffix === 'der')) {
       this.optType = CMModelOptType.CM_MODEL_OPT_USER_CA;
     } else if ((suffix === 'p7b') || (suffix === 'spc')) {
@@ -60,7 +61,7 @@ export default class CmInstallPresenter {
       AppStorage.get('installSystemCred') === true) {
       this.optType = CMModelOptType.CM_MODEL_OPT_SYSTEM_CRED;
     } else {
-      console.debug(TAG, 'The file type is not supported. suffix: ' + suffix);
+      logger.debug('The file type is not supported. suffix: ' + suffix);
     }
   }
 
@@ -95,7 +96,7 @@ export default class CmInstallPresenter {
       })
     } catch (err) {
       let e: BusinessError = err as BusinessError;
-      console.error(TAG, 'show result failed, message: ' + e.message + ', code: ' + e.code)
+      logger.error('show result failed, message: ' + e.message + ', code: ' + e.code)
     }
   }
 
@@ -146,7 +147,7 @@ export default class CmInstallPresenter {
       })
     } catch (err) {
       let e: BusinessError = err as BusinessError;
-      console.error(TAG, 'show result failed, message: ' + e.message + ', code: ' + e.code)
+      logger.error('show result failed, message: ' + e.message + ', code: ' + e.code)
     }
   }
 
@@ -165,7 +166,7 @@ export default class CmInstallPresenter {
   }
 
   private handleInstallResult(errCode: CMModelErrorCode, isNeedJumpBack: boolean) {
-    console.info(TAG + 'installCertOrCred result: ' + JSON.stringify(errCode));
+    logger.info('installCertOrCred result: ' + JSON.stringify(errCode));
     let isNeedJumpHomePage = true;
     switch (errCode) {
       case CMModelErrorCode.CM_MODEL_ERROR_SUCCESS:
@@ -192,8 +193,12 @@ export default class CmInstallPresenter {
       return;
     }
     router.clear();
-    router.replaceUrl({
-      url: 'pages/certManagerFa'
-    });
+    try {
+      router.replaceUrl({
+        url: 'pages/certManagerFa'
+      });
+    } catch (e) {
+      logger.info(`ruter replace url error, code: ${e?.code}, message: ${e?.message}`)
+    }
   }
 }

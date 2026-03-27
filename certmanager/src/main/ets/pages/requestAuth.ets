@@ -19,6 +19,9 @@ import { WidthPercent, ConfigValue } from '../common/util/ConfigData';
 import { CredentialAbstractVo } from '../model/CertManagerVo/CredentialAbstractVo';
 import { RouterAppUidVo } from '../model/CertManagerVo/RouterInfoVo';
 import { CustomContentDialog } from '@ohos.arkui.advanced.Dialog';
+import Logger from '../common/util/Logger';
+
+const logger: Logger = new Logger('RadioAuth');
 
 @Entry
 @Component
@@ -49,14 +52,14 @@ struct RadioAuth {
           value: $r('app.string.requestAuthFinish'),
           buttonStyle: ButtonStyleMode.TEXTUAL,
           action: () => {
-            console.debug('requestAuthorize uri: ' + this.selectUri);
+            logger.debug('requestAuthorize uri: ' + this.selectUri);
             let appUidInfo: RouterAppUidVo = router.getParams() as RouterAppUidVo;
             if (appUidInfo !== undefined && appUidInfo.appUid != undefined) {
-              console.debug('requestAuthorize appUid: ' + appUidInfo.appUid);
+              logger.debug('requestAuthorize appUid: ' + appUidInfo.appUid);
               this.mAppCredAuthPresenter.requestAuthorize(this.selectUri, appUidInfo.appUid);
               this.dialogController?.close();
             } else {
-              console.info('requestAuthorize fail');
+              logger.info('requestAuthorize fail');
             }
           }
         }
@@ -109,7 +112,7 @@ struct RadioAuth {
                         Radio({ value: item.alias, group: 'appCredGroup' })
                           .checked(false)
                           .onChange((value: boolean) => {
-                            console.info(item.alias + ' status is ' + value);
+                            logger.info(item.alias + ' status is ' + value);
                             if (value) {
                               this.selectUri = item.keyUri;
                             }
@@ -175,7 +178,7 @@ struct RadioAuth {
                     Radio({ value: item.alias, group: 'appCredGroup' })
                       .checked(false)
                       .onChange((value: boolean) => {
-                        console.info(item.alias + ' status is ' + value);
+                        logger.info(item.alias + ' status is ' + value);
                         if (value) {
                           this.selectUri = item.keyUri;
                         }
@@ -231,14 +234,14 @@ struct RadioAuth {
   }
 
   aboutToAppear() {
-    console.debug('enter requestAuth page');
+    logger.debug('enter requestAuth page');
     let appUidInfo: RouterAppUidVo = router.getParams() as RouterAppUidVo;
     if (appUidInfo !== undefined && appUidInfo.appUid != undefined) {
       this.mAppCredAuthPresenter.updateAppNameFromUid(appUidInfo.appUid as string);
       this.mAppCredAuthPresenter.updateAppCredList();
       this.dialogController.open();
     } else {
-      console.error('requestAuth appear failed');
+      logger.error('requestAuth appear failed');
       router.pushUrl({ url: 'pages/certManagerFa' });
     }
   }

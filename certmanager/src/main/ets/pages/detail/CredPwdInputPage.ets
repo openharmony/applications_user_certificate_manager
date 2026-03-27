@@ -22,8 +22,9 @@ import { GlobalContext } from '../../common/GlobalContext';
 import CmInstallPresenter from '../../presenter/CmInstallPresenter';
 import { SheetParam } from '../../common/util/SheetParam';
 import { NavEntryKey } from '../../common/NavEntryKey';
+import Logger from '../../common/util/Logger';
 
-const TAG: string = 'CredPwdInputPage: ';
+const logger: Logger = new Logger('CredPwdInputParam');
 
 export class CredPwdInputParam {
   public credFile: RouterFileVo;
@@ -106,14 +107,14 @@ export struct CredPwdInputPage {
           })
           .onClick(() => {
             if (this.credFile === undefined || this.credFile === null) {
-              console.error(TAG + 'Cred file is undefined');
+              logger.error('Cred file is undefined');
               return;
             }
             this.isPasswordError = false;
             GlobalContext.getContext().getPwdStore().setCertPwd(this.certPwd);
             CmInstallPresenter.getInstance().installCert(this.credFile.uri, this.credFile.suffix, false).then((resultCode) => {
               this.passWordWarn = resultCode;
-              console.log(TAG + 'install cred result code = ' + resultCode);
+              logger.info('install cred result code = ' + resultCode);
               if (resultCode === CMModelErrorCode.CM_MODEL_ERROR_PASSWORD_ERR) {
                 this.isPasswordError = true;
               } else {
@@ -143,7 +144,7 @@ export struct CredPwdInputPage {
         this.credFile = (ctx.pathInfo.param as CredPwdInputParam).credFile;
       } catch (err) {
         let error = err as BusinessError;
-        console.error(TAG + 'Get cred file failed: ' + error?.code + ', message: ' + error?.message);
+        logger.error('Get cred file failed: ' + error?.code + ', message: ' + error?.message);
       }
     })
   }

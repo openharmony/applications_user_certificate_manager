@@ -29,8 +29,11 @@ import { CredUserDetailParam } from './detail/CredUserDetailPage';
 import { SheetParam } from '../common/util/SheetParam';
 import { DialogComponent } from './detail/AuthorizedAppManagementPage';
 import { AlignUtils } from '../common/util/AlignUtils';
+import Logger from '../common/util/Logger';
 
 const COPIES_NUM: number = 12;
+
+const logger: Logger = new Logger('componentPublic');
 
 @Component
 export struct componentPublic {
@@ -625,10 +628,10 @@ export struct evidenceList {
 
   aboutToAppear() {
     this.mShowAppCaPresenter.updateAppCredListCallback(() => {
-      console.info('get AppCredList first');
+      logger.info('get AppCredList first');
     })
     this.mShowSysCredPresenter.updateSystemCredListCallback(() => {
-      console.info('get systemCredList start');
+      logger.info('get systemCredList start');
     })
   }
 
@@ -643,7 +646,7 @@ export struct evidenceList {
     } else if (uri === 'requestAuthorize') {
       this.mFaPresenter.startRequestAuth(GlobalContext.getContext().getAbilityWant().parameters?.appUid as string);
     } else {
-      console.error('The want type is not supported.');
+      logger.error('The want type is not supported.');
     }
   }
 

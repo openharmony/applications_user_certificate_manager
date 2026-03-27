@@ -14,9 +14,12 @@
  */
 
 import AbilityStage from '@ohos.app.ability.AbilityStage';
+import Logger from '../common/util/Logger';
+
+const logger: Logger = new Logger('MyAbilityStage');
 
 export default class MyAbilityStage extends AbilityStage {
   onCreate(): void {
-    console.info('[CertManager] MyAbilityStage onCreate');
+    logger.info('MyAbilityStage onCreate');
   }
 }

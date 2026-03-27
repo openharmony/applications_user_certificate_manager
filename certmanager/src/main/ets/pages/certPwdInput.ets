@@ -23,6 +23,9 @@ import CmInstallPresenter from '../presenter/CmInstallPresenter';
 import { CMModelErrorCode } from '../model/CertMangerModel';
 import ComponentConfig from '../common/component/ComponentConfig';
 import PreventScreenshotsPresenter from '../model/PreventScreenshotsModel';
+import Logger from '../common/util/Logger';
+
+const logger: Logger = new Logger('CertPwdInput');
 
 @Entry
 @Component
@@ -46,7 +49,7 @@ struct CertPwdInput {
     } else if (uri === 'requestAuthorize') {
       this.mFaPresenter.startRequestAuth(GlobalContext.getContext().getAbilityWant().parameters?.appUid as string);
     } else {
-      console.error('The want type is not supported');
+      logger.error('The want type is not supported');
     }
   }
 
@@ -144,6 +147,8 @@ struct CertPwdInput {
               if (resultCode === CMModelErrorCode.CM_MODEL_ERROR_PASSWORD_ERR) {
                 this.isPasswordError = true;
               }
+            }).catch((err: BusinessError) => {
+              logger.error(`install cred failed, code: ${err?.code}, message: ${err?.message}`);
             });
           })
         }
