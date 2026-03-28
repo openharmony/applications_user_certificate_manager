@@ -117,11 +117,9 @@ export default class CmShowAppCredPresenter {
       (errCode: CMModelErrorCode, appUidList: Array<string>) => {
       if (errCode === CMModelErrorCode.CM_MODEL_ERROR_SUCCESS) {
         for (let i = 0; i < appUidList.length; i++) {
-          bundleModel.getAppInfoList(Number(appUidList[i]), (errCode: CMModelErrorCode, appInfo: AppInfoVo) => {
-            if (errCode === CMModelErrorCode.CM_MODEL_ERROR_SUCCESS) {
-              this.appInfoList.push(
-                new AppAuthorVo(String(appInfo.appImage), String(appUidList[i]), String(appInfo.appName), true));
-            }
+          bundleModel.getAppInfoList(Number(appUidList[i])).then((appInfo) => {
+            this.appInfoList.push(
+              new AppAuthorVo(String(appInfo.appImage), String(appUidList[i]), String(appInfo.appName), true))
           });
         }
       } else {

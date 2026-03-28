@@ -21,6 +21,7 @@ import { BusinessError } from '@ohos.base';
 import CertManager from '@ohos.security.certManager';
 import certMgrDialog from '@ohos.security.certManagerDialog';
 import Logger from '../common/util/Logger';
+import certificateManagerDialog from '@ohos.security.certManagerDialog';
 
 export enum CMModelErrorCode {
   CM_MODEL_ERROR_SUCCESS = 0,
@@ -55,7 +56,7 @@ export enum DialogErrorCode {
   DIALOG_ERROR_SA_INTERNAL_ERROR = -1007,
   DIALOG_ERROR_PARAM_INVALID = -1010,
   DIALOG_ERROR_CAPACITY_NOT_SUPPORT = -1012,
-  DIALOG_ERROR_NO_CERTS_AVAILIBLE = -1013,
+  DIALOG_ERROR_NO_CERTS_AVAILABLE = -1013,
 }
 
 export enum CmDialogOperationType {
@@ -93,8 +94,11 @@ export class CertMangerModel {
         });
         break;
       case CMModelOptType.CM_MODEL_OPT_APP_CRED:
-        this.getAppCredList((errCode: CMModelErrorCode, credList: Array<CredentialAbstractVo>) => {
-          callback(errCode, credList);
+        this.getAppCredList().then((credList) => {
+          callback(CMModelErrorCode.CM_MODEL_ERROR_SUCCESS, credList);
+        }).catch((err: BusinessError) => {
+          logger.error(`get app cred list failed, code: ${err?.code}.`);
+          callback(err?.code);
         });
         break;
       case CMModelOptType.CM_MODEL_OPT_SYSTEM_CRED:
@@ -505,27 +509,29 @@ export class CertMangerModel {
     }
   }
 
-  private async getAppCredList(callback: Function): Promise<void> {
-    logger.info('getAppCredList start');
-    try {
-      let result = await CertManager.getAllPublicCertificates();
-      let credList: CredentialAbstractVo[] = [];
-      if (result && result.credentialList !== undefined) {
-        for (let i = 0; i < result.credentialList.length; i++) {
-          credList.push(new CredentialAbstractVo(String(result.credentialList[i].type),
-            String(result.credentialList[i].alias), String(result.credentialList[i].keyUri)));
+  public async getAppCredList(): Promise<Array<CredentialAbstractVo>> {
+    return new Promise<Array<CredentialAbstractVo>>(async (resolve, reject) => {
+      logger.info('getAppCredList start');
+      try {
+        let result = await CertManager.getAllPublicCertificates();
+        let credList: CredentialAbstractVo[] = [];
+        if (result && result.credentialList !== undefined) {
+          for (let i = 0; i < result.credentialList.length; i++) {
+            credList.push(new CredentialAbstractVo(String(result.credentialList[i].type),
+              String(result.credentialList[i].alias), String(result.credentialList[i].keyUri),
+              certificateManagerDialog.CertificateType.CREDENTIAL_USER));
+          }
+          logger.info(`getAppCredList end, length: ${ credList.length }`);
+          return resolve(credList);
+        } else {
+          logger.error('getAppCredList failed, undefined.');
+          return reject({ code: CMModelErrorCode.CM_MODEL_ERROR_FAILED, message: 'There is no credential.' });
         }
-        logger.info('getAppCredList end');
-        callback(CMModelErrorCode.CM_MODEL_ERROR_SUCCESS, credList);
-      } else {
-        logger.error('getAppCredList failed, undefined.');
-        callback(CMModelErrorCode.CM_MODEL_ERROR_FAILED, undefined);
+      } catch (err) {
+        logger.error('getAppCredList failed with err, message: ' + err?.message + ', code: ' + err?.code);
+        return reject(err);
       }
-    } catch (err) {
-      let e: BusinessError = err as BusinessError;
-      logger.error('getAppCredList failed with err, message: ' + e.message + ', code: ' + e.code);
-      callback(CMModelErrorCode.CM_MODEL_ERROR_EXCEPTION);
-    }
+    });
   }
 
   private async getSystemCredList(callback: Function): Promise<void> {
@@ -711,8 +717,6 @@ export class CertMangerModel {
         callback(CMModelErrorCode.CM_MODEL_ERROR_INCORRECT_FORMAT)
       } else if (e.code === CertManager.CMErrorCode.CM_ERROR_MAX_CERT_COUNT_REACHED) {
         callback(CMModelErrorCode.CM_MODEL_ERROR_MAX_QUANTITY_REACHED)
-      } else if (e.code === CertManager.CMErrorCode.CM_ERROR_ALIAS_LENGTH_REACHED_LIMIT) {
-        callback(CMModelErrorCode.CM_MODEL_ERROR_ALIAS_LENGTH_REACHED_LIMIT)
       } else {
         logger.error('installUserCertificate failed with err, message: ' + e.message + ', code: ' + e.code);
         callback(CMModelErrorCode.CM_MODEL_ERROR_EXCEPTION);
@@ -736,8 +740,6 @@ export class CertMangerModel {
         callback(CMModelErrorCode.CM_MODEL_ERROR_INCORRECT_FORMAT, '')
       } else if (e.code === CertManager.CMErrorCode.CM_ERROR_MAX_CERT_COUNT_REACHED) {
         callback(CMModelErrorCode.CM_MODEL_ERROR_MAX_QUANTITY_REACHED, '')
-      } else if (e.code === CertManager.CMErrorCode.CM_ERROR_ALIAS_LENGTH_REACHED_LIMIT) {
-        callback(CMModelErrorCode.CM_MODEL_ERROR_ALIAS_LENGTH_REACHED_LIMIT, '')
       } else if (e.code === CertManager.CMErrorCode.CM_ERROR_PASSWORD_IS_ERR) {
         callback(CMModelErrorCode.CM_MODEL_ERROR_PASSWORD_ERR, '');
       } else {
@@ -803,18 +805,20 @@ export class CertMangerModel {
         let cmResult: CertManager.CMResult | undefined = await CertManager.getUkeyCertificateList('', { certPurpose: certPurpose });
         let result: CredentialAbstractVo[] = [];
         if (cmResult !== undefined) {
-          let credAbsList: CertManager.CredentialAbstract[] = cmResult.credentialList ?? [];
+          let credAbsList: CertManager.Credential[] = cmResult.credentialDetailList ?? [];
           for (let i = 0; i < credAbsList.length; i++) {
             let cred = credAbsList[i];
-            result.push(new CredentialAbstractVo(String(cred.type), String(cred.alias), String(cred.keyUri),
-              certMgrDialog.CertificateType.CREDENTIAL_UKEY));
+            let credAbs = new CredentialAbstractVo(String(cred.type), String(cred.alias), String(cred.keyUri),
+              certMgrDialog.CertificateType.CREDENTIAL_UKEY);
+            credAbs.credData = cred.credentialData;
+            result.push(credAbs);
           }
         }
-        logger.info(`getAllAppPrivateCertificatesByUid end credList length: ${result.length}`);
+        logger.info(`getUkeyCertificateList end credList length: ${result.length}`);
         return resolve(result);
       } catch(err) {
         let error = err as BusinessError;
-        logger.error(`getAllAppPrivateCertificatesByUid err, message: ${error.message}, code: ${error.code}`);
+        logger.error(`getUkeyCertificateList err, message: ${error.message}, code: ${error.code}`);
         return reject({code: CMModelErrorCode.CM_MODEL_ERROR_EXCEPTION, message: error.message});
       }
     });

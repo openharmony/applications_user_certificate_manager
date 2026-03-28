@@ -14,7 +14,9 @@
  */
 
 import abilityTest from './Ability.test';
+import credentialFilterTest from './CredentialFilter.test';
 
 export default function testsuite() {
   abilityTest();
+  credentialFilterTest()
 }

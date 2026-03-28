@@ -13,214 +13,40 @@
  * limitations under the License.
  */
 import { WidthPercent } from '../common/util/ConfigData';
-import CmAppCredAuthPresenter from '../presenter/CmAppCredAuthPresenter';
 import { UIExtensionContentSession } from '@kit.AbilityKit';
-import certMangerModel, { CMModelErrorCode, DialogErrorCode } from '../model/CertMangerModel';
+import { DialogErrorCode } from '../model/CertMangerModel';
 import { CredentialAbstractVo } from '../model/CertManagerVo/CredentialAbstractVo';
 import { LengthMetrics, LengthUnit, SubHeader } from '@kit.ArkUI';
 import certMgrDialog from '@ohos.security.certManagerDialog';
-import { BusinessError } from '@ohos.base';
-import certMgr from '@ohos.security.certManager'
-import { SYSCAP_HUKS_CRYPTO_EXTENTION } from '../common/constants/CertManagerConstants';
 import Logger from '../common/util/Logger';
-
-const logger: Logger = new Logger('RequestAuthSheet');
+import RequestAuthViewModel from '../feature/requestAuth/viewModel/RequestAuthViewModel';
+import { AuthIntent } from '../feature/requestAuth/intent/AuthIntent';
+import { StringUtil } from '../common/util/StringUtil';
 
 let storage = LocalStorage.getShared();
-
-enum RequestAuthPageVersion {
-  VERSION_DEFAULT = 0,
-  VERSION_WITH_CERT_TYPES = 1,
-}
 
 @Entry(storage)
 @Component
 struct RequestAuthSheet {
-  private version: RequestAuthPageVersion = RequestAuthPageVersion.VERSION_DEFAULT;
+  private logger: Logger = new Logger('RequestAuthSheet');
   private session: UIExtensionContentSession =
     storage?.get<UIExtensionContentSession>('session') as UIExtensionContentSession;
   private want: Want = storage?.get<Want>('want') as Want;
   private resultCode: number = DialogErrorCode.DIALOG_OPERATION_CANCELS;
-  private appUid: string = '';
   certTypes: certMgrDialog.CertificateType[] = [certMgrDialog.CertificateType.CREDENTIAL_USER];
-  certPurpose: certMgr.CertificatePurpose = certMgr.CertificatePurpose.PURPOSE_DEFAULT;
-  @State private selectUri: string = ''
-  @State private mAppCredAuthPresenter: CmAppCredAuthPresenter = CmAppCredAuthPresenter.getInstance();
-  @State private isDisplaySheet: boolean = false;
-  @State private bottomRectHeight: Length = 0;
-  @State private buttonHeight: Length = 40;
-  @State private isExtraLargeFontMode: boolean = false;
-  @State private isAuthBtnOverflow: boolean = false;
-  @State private hoverItemUri: string = '';
-  @State private listPadding: Resource = $r('sys.float.padding_level4');
-  @State private installCredList: CredentialAbstractVo[] = [];
-  @State private ukeyCredList: CredentialAbstractVo[] = [];
-  @State private selectCertType: certMgrDialog.CertificateType = certMgrDialog.CertificateType.CREDENTIAL_USER;
 
-  pubCredListErrorCode: number = CMModelErrorCode.CM_MODEL_ERROR_SUCCESS;
-  appCredListErrorCode: number = CMModelErrorCode.CM_MODEL_ERROR_SUCCESS;
-  ukeyListErrorCode: number = CMModelErrorCode.CM_MODEL_ERROR_SUCCESS;
-
-  getPublicCredList(): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      this.mAppCredAuthPresenter.updateAppNameFromUid(this.appUid);
-      this.mAppCredAuthPresenter.updateAppCredList((code: CMModelErrorCode) => {
-        if (code === CMModelErrorCode.CM_MODEL_ERROR_EXCEPTION) {
-          return reject({ code: code });
-        }
-        this.installCredList = this.installCredList.concat(this.mAppCredAuthPresenter.credList);
-        return resolve();
-      });
-    })
-  }
-
-  getAppCredListByUid(): Promise<void> {
-    return new Promise<void>(async (resolve, reject) => {
-      try {
-        let credList = await certMangerModel.getAllAppPrivateCertificates(Number(this.appUid));
-        this.installCredList = this.installCredList.concat(credList);
-        return resolve();
-      } catch (e) {
-        let err = e as BusinessError;
-        logger.error(`getAppCredListByUid err, message: ${err.message}, code: ${err.code}`);
-        return reject(err);
-      }
-    })
-  }
-
-  getUkeyList(): Promise<void> {
-    return new Promise<void>(async (resolve, reject) => {
-      try {
-        if (!canIUse(SYSCAP_HUKS_CRYPTO_EXTENTION)) {
-          // When the certificate type specific only ukey, 
-          // an error code indicating that the device is not supported is returned.
-          if (this.certTypes.length === 1) {
-            this.session.terminateSelfWithResult({resultCode: DialogErrorCode.DIALOG_ERROR_CAPACITY_NOT_SUPPORT});
-          }
-          return resolve();
-        }
-        let credList = await certMangerModel.getUkeyCertificateList(this.certPurpose);
-        this.installCredList = this.installCredList.concat(credList);
-        return resolve();
-      } catch (e) {
-        let err = e as BusinessError;
-        logger.error(`getUkeyList err, message: ${err.message}, code: ${err.code}`);
-        return reject(err);
-      }
-    })
-  }
-
-  async getCredListByCertType(certType: number) {
-    try {
-      if (certType === certMgrDialog.CertificateType.CREDENTIAL_USER) {
-        await this.getPublicCredList().catch((err: BusinessError) => {
-          this.pubCredListErrorCode = err.code;
-        })
-      } else if (certType === certMgrDialog.CertificateType.CREDENTIAL_APP) {
-        await this.getAppCredListByUid().catch((err: BusinessError) => {
-          this.appCredListErrorCode = err.code;
-        })
-      } else if (certType === certMgrDialog.CertificateType.CREDENTIAL_UKEY) {
-        await this.getUkeyList().catch((err: BusinessError) => {
-          this.ukeyListErrorCode = err.code;
-        })
-      }
-    } catch (e) {
-      let err = e as BusinessError;
-      logger.error(`get certificateList failed, certType: ${certType}, errCode: ${err.code}`);
-    }
-  }
-
-  async getCredList() {
-    this.installCredList = [];
-    this.ukeyCredList = [];
-    for (let certType of this.certTypes) {
-      try {
-        await this.getCredListByCertType(certType);
-      } catch (e) {
-        let err = e as BusinessError;
-        logger.error(`getCredList failed, certType: ${certType}, errCode: ${err.code}`);
-      }
-    }
-  }
+  @State viewModel: RequestAuthViewModel = new RequestAuthViewModel();
 
   async aboutToAppear() {
-    let parameters = this.want.parameters;
-    if (parameters === undefined || parameters === null) {
-      logger.error(`parameters is undefinde`);
-      return;
-    }
-    let callerBundleName: string = parameters['bundleName'] as string;
-    if (callerBundleName == null || callerBundleName.length === 0) {
-      logger.error(`bundleName is empty`);
-      return;
-    }
-    logger.info(`USER_CERD_GRANT_APP ${callerBundleName}`);
-    this.appUid = parameters['appUid'].toString();
-    if (this.appUid == null || this.appUid.length === 0) {
-      logger.error(`request auth appear failed`);
-      this.session.terminateSelfWithResult({resultCode: DialogErrorCode.DIALOG_ERROR_PARAM_INVALID});
-    }
     try {
-      this.version = parameters['certTypes'] ? RequestAuthPageVersion.VERSION_WITH_CERT_TYPES :
-        RequestAuthPageVersion.VERSION_DEFAULT;
-      this.certTypes = (parameters['certTypes'] ?? [certMgrDialog.CertificateType.CREDENTIAL_USER]) as
-        certMgrDialog.CertificateType[];
-      this.mAppCredAuthPresenter.updateAppNameFromUid(this.appUid);
-
-      logger.info(`certTypes: ${JSON.stringify(this.certTypes)}`);
-
-      await this.getCredList();
-      if ((this.installCredList.length + this.ukeyCredList.length) > 0) {
-        this.isDisplaySheet = true;
-        return;
-      }
-      if (this.pubCredListErrorCode | this.appCredListErrorCode | this.ukeyListErrorCode) {
-        this.session?.terminateSelfWithResult({ resultCode: DialogErrorCode.DIALOG_ERROR_INTERNAL });
-        return;
-      }
-      if (this.version === RequestAuthPageVersion.VERSION_DEFAULT) {
-        this.session?.terminateSelfWithResult({ resultCode: DialogErrorCode.DIALOG_OPERATION_CANCELS });
-        return;
-      } else {
-        this.session?.terminateSelfWithResult({ resultCode: DialogErrorCode.DIALOG_ERROR_NO_CERTS_AVAILIBLE });
-        return;
-      }
-    } catch (e) {
-      let err = e as BusinessError;
-      logger.error(`getCredList failed, errCode: ${err.code}, message: ${err.message}`);
-      this.session?.terminateSelfWithResult({ resultCode: DialogErrorCode.DIALOG_ERROR_INTERNAL });
-    }
-  }
-
-  private requestAuth() {
-    if (this.selectUri == null || this.selectUri.length === 0) {
-      return;
-    }
-    logger.info(`USER_CERD_GRANT_APP_SEL_CONFIRM authorize`);
-    if (this.selectCertType === certMgrDialog.CertificateType.CREDENTIAL_APP ||
-      this.selectCertType === certMgrDialog.CertificateType.CREDENTIAL_UKEY) {
-      this.session?.sendData({
-        'certType': this.selectCertType,
-        'uri': this.selectUri
-      })
-      return;
-    }
-    if (this.appUid != null && this.appUid.length > 0) {
-      this.mAppCredAuthPresenter.sheetRequestAuthorize(this.selectUri, this.appUid,
-        (errCode: CMModelErrorCode, data: string) => {
-          if (errCode === CMModelErrorCode.CM_MODEL_ERROR_SUCCESS) {
-            this.session?.sendData({
-              'certType': this.selectCertType,
-              'uri': data
-            });
-          } else {
-            this.resultCode = DialogErrorCode.DIALOG_ERROR_INTERNAL;
-            this.isDisplaySheet = false;
-          }
-        });
-    } else {
-      this.session.terminateSelfWithResult({resultCode: DialogErrorCode.DIALOG_ERROR_PARAM_INVALID});
+      await this.viewModel.dispatch(AuthIntent.LOAD_CREDENTIALS, {
+        session: this.session,
+        want: this.want
+      });
+      this.viewModel.isDisplaySheet = true;
+    } catch (err) {
+      this.logger.error(`process intent LOAD_CREDENTIALS failed, code: ${err?.code}, message: ${err?.message}`);
+      this.session.terminateSelfWithResult({ resultCode: err?.code ?? DialogErrorCode.DIALOG_ERROR_INTERNAL });
     }
   }
 
@@ -259,8 +85,16 @@ struct RequestAuthSheet {
       .constraintSize({
         minHeight: $r('app.float.wh_value_40')
       })
-      .onClick(() => {
-        this.requestAuth();
+      .onClick(async () => {
+        try {
+          await this.viewModel.dispatch(AuthIntent.REQUEST_AUTH, {});
+          this.session.sendData({
+            'certType': this.viewModel.selectCertType,
+            'uri': this.viewModel.authedUri
+          })
+        } catch (err) {
+          this.logger.error(`click confirm error, code: ${err?.code}, message: ${err?.message}`);
+        }
       })
     }
     .width('100%')
@@ -292,16 +126,23 @@ struct RequestAuthSheet {
                     .textAlign(TextAlign.Start);
                 }
                 .alignItems(HorizontalAlign.Start)
-                .padding({ top: this.listPadding, bottom: this.listPadding })
+                .padding({ top: this.viewModel.listPadding, bottom: this.viewModel.listPadding })
 
                 Row() {
                   Blank().width(8)
                   Radio({ value: item.alias, group: 'appCredGroup' })
-                    .checked(this.selectUri === item.keyUri)
-                    .onChange((value: boolean) => {
-                      if (value && this.selectUri !== item.keyUri) {
-                        this.selectUri = item.keyUri;
-                        this.selectCertType = item.certType ?? certMgrDialog.CertificateType.CREDENTIAL_UKEY;
+                    .checked(this.viewModel.selectUri === item.keyUri)
+                    .onChange(async (value: boolean) => {
+                      if (!value) {
+                        return;
+                      }
+                      try {
+                        await this.viewModel.dispatch(AuthIntent.CHANGE_SELECTED_CRED, {
+                          selectUri: item.keyUri,
+                          selectType: item.certType
+                        });
+                      } catch (err) {
+                        this.logger.error(`process intent CHANGE_SELECTED_CRED failed.`)
                       }
                     })
                 }
@@ -312,17 +153,21 @@ struct RequestAuthSheet {
           .constraintSize({
             minHeight: 48
           })
-          .onClick(() => {
-            if (this.selectUri !== item.keyUri) {
-              this.selectUri = item.keyUri;
-              this.selectCertType = item.certType ?? certMgrDialog.CertificateType.CREDENTIAL_UKEY;
+          .onClick(async () => {
+            try {
+              await this.viewModel.dispatch(AuthIntent.CHANGE_SELECTED_CRED, {
+                selectUri: item.keyUri,
+                selectType: item.certType
+              });
+            } catch (err) {
+              this.logger.error(`process intent CHANGE_SELECTED_CRED failed.`)
             }
           })
           .padding({ left: 8, right: 8 })
           .borderRadius(16)
           .stateStyles({
             normal: {
-              .backgroundColor(this.hoverItemUri === item.keyUri ? $r('sys.color.interactive_hover') :
+              .backgroundColor(this.viewModel.hoverItemUri === item.keyUri ? $r('sys.color.interactive_hover') :
               Color.Transparent)
             },
             pressed: {
@@ -331,9 +176,9 @@ struct RequestAuthSheet {
           })
           .onHover((isHover: boolean) => {
             if (isHover) {
-              this.hoverItemUri = item.keyUri;
+              this.viewModel.hoverItemUri = item.keyUri;
             } else {
-              this.hoverItemUri = '';
+              this.viewModel.hoverItemUri = '';
             }
           })
           .focusBox({
@@ -366,13 +211,20 @@ struct RequestAuthSheet {
     }          
   }
 
+  getRequestAuthMsg(): ResourceStr {
+    if (StringUtil.isNotEmpty(this.viewModel.serverUrl)) {
+      return $r('app.string.requestAuthMsgWithUrl', this.viewModel.appName, this.viewModel.serverUrl);
+    }
+    return $r('app.string.requestAuthMsg', this.viewModel.appName);
+  }
+
   @Builder
   private buildSheetContentComp() {
     Column() {
       Scroll() {
         Column() {
           Column() {
-            Text($r('app.string.requestAuthMsg', this.mAppCredAuthPresenter.appName))
+            Text(this.getRequestAuthMsg())
               .fontSize($r('sys.float.ohos_id_text_size_body1'))
               .fontColor($r('sys.color.ohos_id_color_text_primary'))
               .fontWeight(FontWeight.Regular)
@@ -382,11 +234,11 @@ struct RequestAuthSheet {
           .padding({ left: 12, right: 12 })
           .margin({ top: 8, bottom: 8 })
 
-          if (this.installCredList.length > 0) {
-            this.buildCredListComp(this.installCredList, $r('app.string.installed_certs'))
+          if (this.viewModel.installCredList.length > 0) {
+            this.buildCredListComp(this.viewModel.installCredList, $r('app.string.installed_certs'))
           }
-          if (this.ukeyCredList.length > 0) {
-            this.buildCredListComp(this.ukeyCredList, $r('app.string.ukey_certs'))
+          if (this.viewModel.ukeyCredList.length > 0) {
+            this.buildCredListComp(this.viewModel.ukeyCredList, $r('app.string.ukey_certs'))
           }
         }
         .width('100%')
@@ -395,17 +247,17 @@ struct RequestAuthSheet {
       .scrollBar(BarState.Auto)
       .align(Alignment.Top)
       .width('100%')
-      .height(`calc(100% - ${this.buttonHeight}vp)`)
+      .height(`calc(100% - ${this.viewModel.buttonHeight}vp)`)
 
       Column() {
         this.buildOptBtn()
       }
       .width('100%')
       .onAreaChange((oldValue: Area, newValue: Area) => {
-        this.buttonHeight = newValue.height;
+        this.viewModel.buttonHeight = newValue.height;
       })
     }
-    .padding({ left: 16, right: 16, bottom: this.bottomRectHeight })
+    .padding({ left: 16, right: 16, bottom: this.viewModel.bottomRectHeight })
     .height('100%')
     .justifyContent(FlexAlign.SpaceBetween)
   }
@@ -414,7 +266,7 @@ struct RequestAuthSheet {
     Column() {
       Column() {
       }
-      .bindSheet(this.isDisplaySheet, this.buildSheetContentComp, {
+      .bindSheet(this.viewModel.isDisplaySheet, this.buildSheetContentComp, {
         height: '100%',
         title: this.buildSheetTitle,
         showClose: true,

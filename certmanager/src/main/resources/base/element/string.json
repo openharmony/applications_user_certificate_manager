@@ -74,11 +74,11 @@
     },
     {
       "name": "pickCredToAuth",
-      "value": "选择证书授权"
+      "value": "选择凭据"
     },
     {
       "name": "requestAuthMsg",
-      "value": "应用\"%s\"请求使用证书。选择一个证书可让该应用对服务器使用此身份凭证。该应用已将请求服务标识为\"localhost\"，您只应向信任的应用授予使用证书的权限。"
+      "value": "应用\"%s\"正在请求使用用户凭据。您选择凭据后，该应用即可使用此凭据向服务器进行验证。请仅向您信任的应用授予使用凭据的权限。"
     },
     {
       "name": "requestAuthCancel",
@@ -447,6 +447,14 @@
     {
       "name": "install_system_cred_subtitle",
       "value": "“%s”请求安装系统凭据"
+    },
+    {
+      "name": "btn_delete_credential",
+      "value": "删除凭据"
+    },
+    {
+      "name": "requestAuthMsgWithUrl",
+      "value": "应用\"%1$s\"正在请求使用用户凭据。您选择凭据后，该应用即可使用此凭据向服务器（%2$s）进行验证。请仅向您信任的应用授予使用凭据的权限。"
     }
   ]
 }

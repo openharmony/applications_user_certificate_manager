@@ -92,8 +92,6 @@ declare namespace certificateManager {
          */
         CM_ERROR_NO_AUTHORIZATION = 17500005,
 
-        CM_ERROR_ALIAS_LENGTH_REACHED_LIMIT = 17500006,
-
         /**
          * Indicates that the device enters advanced security mode.
          *
