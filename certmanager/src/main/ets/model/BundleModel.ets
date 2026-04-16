@@ -23,30 +23,31 @@ import Logger from '../common/util/Logger';
 const logger: Logger = new Logger('BundleNameModel');
 
 export class BundleNameModel {
-  async getAppInfoList(appUid: number, callback: Function): Promise<void> {
+  async getAppInfoList(appUid: number): Promise<AppInfoVo> {
     logger.info('getAppInfoList enter uid: ' + appUid);
-    try {
-      let appInfo: AppInfoVo = {
-        appImage: '',
-        appName: '',
-      };
+    return new Promise<AppInfoVo>(async (resolve, reject) => {
+      try {
+        let appInfo: AppInfoVo = {
+          appImage: '',
+          appName: '',
+        };
 
-      let appCloneIdentity = await bundleManager.getAppCloneIdentity(appUid);
-      logger.info('appBundleName: ' + appCloneIdentity.bundleName + ', appIndex: ' + appCloneIdentity.appIndex);
+        let appCloneIdentity = await bundleManager.getAppCloneIdentity(appUid);
+        logger.info('appBundleName: ' + appCloneIdentity.bundleName + ', appIndex: ' + appCloneIdentity.appIndex);
 
-      let bundleFlags = bundleResManager.ResourceFlag.GET_RESOURCE_INFO_ALL;
-      let resourceInfo = bundleResManager.getBundleResourceInfo(appCloneIdentity.bundleName, bundleFlags,
-        appCloneIdentity.appIndex);
-      appInfo.appName = resourceInfo.label;
-      appInfo.appImage = resourceInfo.icon;
-      logger.info('get bundle info success');
-
-      callback(CMModelErrorCode.CM_MODEL_ERROR_SUCCESS, appInfo);
-    } catch (err) {
-      let e: BusinessError = err as BusinessError;
-      logger.error('getAppInfoList failed, message: ' + e.message + ', code: ' + e.code);
-      callback(CMModelErrorCode.CM_MODEL_ERROR_EXCEPTION, undefined);
-    }
+        let bundleFlags = bundleResManager.ResourceFlag.GET_RESOURCE_INFO_ALL;
+        let resourceInfo = bundleResManager.getBundleResourceInfo(appCloneIdentity.bundleName, bundleFlags,
+          appCloneIdentity.appIndex);
+        appInfo.appName = resourceInfo.label;
+        appInfo.appImage = resourceInfo.icon;
+        logger.info('get bundle info success');
+        return resolve(appInfo);
+      } catch (err) {
+        let e: BusinessError = err as BusinessError;
+        logger.error('getAppInfoList failed, message: ' + e.message + ', code: ' + e.code);
+        return reject({ code: CMModelErrorCode.CM_MODEL_ERROR_EXCEPTION, message: e.message });
+      }
+    })
   }
 }
 

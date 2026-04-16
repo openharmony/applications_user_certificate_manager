@@ -50,17 +50,13 @@ export default class CmAppCredAuthPresenter {
 
   updateAppNameFromUid(uid: string): void {
     try {
-      BundleModel.getAppInfoList(Number(uid), (errCode: CMModelErrorCode, appInfo: AppInfoVo) => {
-        if (errCode === CMModelErrorCode.CM_MODEL_ERROR_SUCCESS) {
-          this.appName = appInfo.appName;
-          logger.info('getAppNameFromUid success, appName = ' + this.appName);
-        } else {
-          logger.error('getAppNameFromUid fail, uid = ' + uid);
-        }
+      BundleModel.getAppInfoList(Number(uid)).then((appInfo) => {
+        this.appName = appInfo.appName;
+      }).catch((err: BusinessError) => {
+        logger.error(`updateAppNameFromUid failed with err, message: ${err?.message}, code: ${err?.code}`);
       });
     } catch (err) {
-      let e: BusinessError = err as BusinessError;
-      logger.error('updateAppNameFromUid failed with err, message: ' + e.message + ', code: ' + e.code);
+      logger.error(`updateAppNameFromUid failed with err, message: ${err?.message}, code: ${err?.code}`);
     }
   }
 

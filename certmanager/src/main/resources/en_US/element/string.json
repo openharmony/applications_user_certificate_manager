@@ -78,7 +78,7 @@
     },
     {
       "name": "requestAuthMsg",
-      "value": "Application \"%s\" Request a certificate. Selecting a certificate allows the app to use this identity credential for the server. The app has identified the requested service as \"localhost\", You should only grant permission to use certificates to trusted apps."
+      "value": "The application '%s' is requesting the use of user credentials. After you select the credentials, the application can use them to verify with the server. Please only grant permission to use credentials to applications that you trust."
     },
     {
       "name": "requestAuthCancel",
@@ -447,6 +447,14 @@
     {
       "name": "install_system_cred_subtitle",
       "value": "%s has requested to install a system credential."
+    },
+    {
+      "name": "btn_delete_credential",
+      "value": "Delete credentials"
+    },
+    {
+      "name": "requestAuthMsgWithUrl",
+      "value": "The application '%1$s' is requesting the use of user credentials. After you select the credentials, the application can use them to access the server (%2$s) Verify. Please only grant permission to use credentials to applications that you trust."
     }
   ]
 }

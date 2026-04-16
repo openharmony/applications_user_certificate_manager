@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2026-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,19 +13,7 @@
  * limitations under the License.
  */
 
-import certMgrDialog from '@ohos.security.certManagerDialog';
-
-export class CredentialAbstractVo {
-  public credType: string;
-  public alias: string;
-  public keyUri: string;
-  public certType?: certMgrDialog.CertificateType;
-  public credData?: Uint8Array;
-
-  constructor(credType: string, alias: string, keyUri: string, certType?: certMgrDialog.CertificateType) {
-    this.credType = credType;
-    this.alias = alias;
-    this.keyUri = keyUri;
-    this.certType = certType;
-  }
+export enum RequestAuthPageVersion {
+  VERSION_DEFAULT = 0,
+  VERSION_WITH_CERT_TYPES = 1,
 }
