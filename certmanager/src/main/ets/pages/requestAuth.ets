@@ -135,7 +135,6 @@ struct RadioAuth {
               }, (item: CredentialAbstractVo) => JSON.stringify(item))
             }
             .scrollBar(BarState.Off)
-            .backgroundColor($r('sys.color.ohos_id_color_dialog_bg'))
             .visibility(this.mAppCredAuthPresenter.credList.length > 0 ? Visibility.Visible : Visibility.None)
           }
           .scrollBar(BarState.Off)
@@ -224,13 +223,11 @@ struct RadioAuth {
           right: $r('app.float.wh_value_24')
         })
         .scrollBar(BarState.Off)
-        .backgroundColor($r('sys.color.ohos_id_color_dialog_bg'))
         .visibility(this.mAppCredAuthPresenter.credList.length > 0 ? Visibility.Visible : Visibility.None)
       }
     }
     .width(WidthPercent.WH_100_100)
     .borderRadius($r('app.float.user_list_divider_borderRadius_value'))
-    .backgroundColor($r('sys.color.ohos_id_color_dialog_bg'))
   }
 
   aboutToAppear() {
