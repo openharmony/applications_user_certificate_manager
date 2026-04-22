@@ -188,7 +188,6 @@ struct ComponentSystem {
     })
     .width(WidthPercent.WH_100_100)
     .borderRadius($r('app.float.user_list_divider_borderRadius_value'))
-    .backgroundColor($r('sys.color.ohos_id_color_dialog_bg'))
   }
 
   build() {
@@ -380,7 +379,6 @@ struct ComponentUser {
     }
     .width(WidthPercent.WH_100_100)
     .borderRadius($r('app.float.user_list_divider_borderRadius_value'))
-    .backgroundColor($r('sys.color.ohos_id_color_dialog_bg'))
   }
 
   @Builder
@@ -409,7 +407,6 @@ struct ComponentUser {
     }
     .width(WidthPercent.WH_100_100)
     .borderRadius($r('app.float.user_list_divider_borderRadius_value'))
-    .backgroundColor($r('sys.color.ohos_id_color_dialog_bg'))
   }
 
   @Builder
@@ -545,7 +542,6 @@ struct ComponentUser {
     })
     .width(WidthPercent.WH_100_100)
     .borderRadius($r('app.float.user_list_divider_borderRadius_value'))
-    .backgroundColor($r('sys.color.ohos_id_color_dialog_bg'))
   }
 
   onShowRootCertificateDialog() {

@@ -215,7 +215,6 @@ export struct componentPublic {
     }
     .width(WidthPercent.WH_100_100)
     .borderRadius($r('app.float.user_list_divider_borderRadius_value'))
-    .backgroundColor($r('sys.color.ohos_id_color_dialog_bg'))
   }
 
   @Builder
@@ -295,7 +294,6 @@ export struct componentPublic {
       right: $r('app.float.wh_value_24')
     })
     .borderRadius($r('app.float.user_list_divider_borderRadius_value'))
-    .backgroundColor($r('sys.color.ohos_id_color_dialog_bg'))
   }
 
   @Builder
@@ -325,7 +323,6 @@ export struct componentPublic {
     .width(WidthPercent.WH_100_100)
     .alignItems(HorizontalAlign.Start)
     .borderRadius($r('app.float.user_list_divider_borderRadius_value'))
-    .backgroundColor($r('sys.color.ohos_id_color_dialog_bg'))
   }
 
   onShowAuthMngChange() {
@@ -505,7 +502,6 @@ export struct componentSystem {
       right: $r('app.float.wh_value_24')
     })
     .borderRadius($r('app.float.user_list_divider_borderRadius_value'))
-    .backgroundColor($r('sys.color.ohos_id_color_dialog_bg'))
   }
 
   @Builder
@@ -535,7 +531,6 @@ export struct componentSystem {
     .width(WidthPercent.WH_100_100)
     .alignItems(HorizontalAlign.Start)
     .borderRadius($r('app.float.user_list_divider_borderRadius_value'))
-    .backgroundColor($r('sys.color.ohos_id_color_dialog_bg'))
   }
 
   build() {
