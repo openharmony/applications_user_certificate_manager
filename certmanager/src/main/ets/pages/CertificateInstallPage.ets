@@ -112,9 +112,19 @@ struct CertificateInstallPage {
       }
     }),
   })
+  
+  validateAndGetNumber(value: object | undefined, defaultValue: number): number {
+    if (value === undefined) {
+      return defaultValue;
+    }
+    if (typeof value !== 'number') {
+      return defaultValue;
+    }
+    return value;
+  }
 
   private cehckScopeSupported(params: Record<string, object>): boolean {
-    let certScope = params['certScope'];
+    let certScope = this.validateAndGetNumber(params['certScope'], 0);
     switch(certScope) {
       case certMgrDialog.CertificateScope.NOT_SPECIFIED:
       case certMgrDialog.CertificateScope.CURRENT_USER:
@@ -122,9 +132,6 @@ struct CertificateInstallPage {
       default:
         logger.error('check certScope unsupport');
         return false;
-    }
-    if (certScope !== certMgrDialog.CertificateScope.CURRENT_USER) {
-      certMgrDialog.CertificateScope.CURRENT_USER
     }
   }
 
