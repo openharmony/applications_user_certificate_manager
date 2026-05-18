@@ -238,7 +238,7 @@ export default class RequestAuthModel {
     if (value === undefined || value === null) {
       return defaultValue;
     }
-    if (typeof value !== 'string') {
+    if (typeof value !== 'number') {
       this.logger.warn(`check object is not a number, using default`);
       return defaultValue;
     }

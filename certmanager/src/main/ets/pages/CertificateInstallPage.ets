@@ -112,6 +112,28 @@ struct CertificateInstallPage {
       }
     }),
   })
+  
+  validateAndGetNumber(value: object | undefined, defaultValue: number): number {
+    if (value === undefined) {
+      return defaultValue;
+    }
+    if (typeof value !== 'number') {
+      return defaultValue;
+    }
+    return value;
+  }
+
+  private cehckScopeSupported(params: Record<string, object>): boolean {
+    let certScope = this.validateAndGetNumber(params['certScope'], 0);
+    switch(certScope) {
+      case certMgrDialog.CertificateScope.NOT_SPECIFIED:
+      case certMgrDialog.CertificateScope.CURRENT_USER:
+        return true;
+      default:
+        logger.error('check certScope unsupport');
+        return false;
+    }
+  }
 
   aboutToAppear(): void {
     if (this.want === undefined || this.want === null) {
@@ -132,7 +154,7 @@ struct CertificateInstallPage {
     }
     this.operationType = Number(this.params['operationType']);
     this.certType = Number(this.params['certType']);
-    if (this.operationType !== CmDialogOperationType.INSTALL) {
+    if (this.operationType !== CmDialogOperationType.INSTALL || !this.cehckScopeSupported(this.params)) {
       logger.error('check operation type unsupport');
       this.session.terminateSelfWithResult({resultCode: DialogErrorCode.DIALOG_ERROR_NOT_ENTERPRISE_DEVICE});
       return;
