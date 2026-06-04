@@ -216,7 +216,7 @@ export default class RequestAuthModel {
     }
     let validIssuers: Uint8Array[] = [];
     for (const item of value as Array<object>) {
-      if (typeof item === 'string') {
+      if (typeof item === 'string' && StringUtil.isNotEmpty(item)) {
         validIssuers.push(new util.Base64Helper().decodeSync(item));
       }
     }
@@ -238,7 +238,7 @@ export default class RequestAuthModel {
     if (value === undefined || value === null) {
       return defaultValue;
     }
-    if (typeof value !== 'string') {
+    if (typeof value !== 'number') {
       this.logger.warn(`check object is not a number, using default`);
       return defaultValue;
     }
