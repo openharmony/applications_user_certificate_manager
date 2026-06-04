@@ -216,7 +216,7 @@ export default class RequestAuthModel {
     }
     let validIssuers: Uint8Array[] = [];
     for (const item of value as Array<object>) {
-      if (typeof item === 'string') {
+      if (typeof item === 'string' && StringUtil.isNotEmpty(item)) {
         validIssuers.push(new util.Base64Helper().decodeSync(item));
       }
     }
