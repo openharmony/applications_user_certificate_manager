@@ -98,9 +98,11 @@ export default class CmFaPresenter {
       return;
     }
     try {
+      let saveDefaultPath = 'file://docs/storage/Users/currentUser/Documents'
       let documentSelectOptions = new picker.DocumentSelectOptions();
       documentSelectOptions.maxSelectNumber = FilterParams.MAX_SELECT_FILE_NUM;
       documentSelectOptions.fileSuffixFilters = FilterParams.CERT_FILE_SUFFIX;
+      documentSelectOptions.defaultFilePathUri = saveDefaultPath
       let documentPicker = new picker.DocumentViewPicker(context);
       console.info(TAG + 'start documentPicker.select');
       documentPicker.select(documentSelectOptions).then((documentSelectResult) => {
@@ -123,11 +125,11 @@ export default class CmFaPresenter {
       console.error(TAG + 'startInstallEvidence, context is undefined');
       return;
     }
+    let saveDefaultPath = 'file://docs/storage/Users/currentUser/Documents'
     try {
       let documentSelectOptions = new picker.DocumentSelectOptions();
-      documentSelectOptions.maxSelectNumber = FilterParams.MAX_SELECT_FILE_NUM;
-      documentSelectOptions.fileSuffixFilters = FilterParams.CREDENTIAL_FILE_SUFFIX;
       let documentPicker = new picker.DocumentViewPicker(context);
+      documentSelectOptions.defaultFilePathUri = saveDefaultPath
       console.info(TAG + 'start documentPicker.select');
       documentPicker.select(documentSelectOptions).then((documentSelectResult) => {
         if (documentSelectResult.length >= 1) {
