@@ -148,7 +148,7 @@ export struct CertInstallFromStorage {
       documentSelectOptions.fileSuffixFilters = FilterParams.CERT_FILE_SUFFIX;
       documentSelectOptions.defaultFilePathUri = saveDefaultPath
       let documentPicker = new picker.DocumentViewPicker(this.context);
-      console.info(TAG + 'start44444 documentPicker.select');
+      console.info(TAG + 'start documentPicker.select');
       documentPicker.select(documentSelectOptions).then((documentSelectResult) => {
         if (documentSelectResult.length >= 1) {
           this.routeToNextInstallCert(String(documentSelectResult[0]))
