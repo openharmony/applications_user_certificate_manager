@@ -35,13 +35,17 @@ export default struct HeadComponent {
     Row() {
       Stack({ alignContent: Alignment.Center }) {
         Image($r('app.media.ic_back'))
-          .width($r('app.float.wh_value_24'))
-          .height($r('app.float.wh_value_24'))
           .fillColor($r('sys.color.ohos_id_color_primary'))
+          .objectFit(ImageFit.Contain)
+          .height($r('app.float.wh_value_32'))
+          .width($r('app.float.wh_value_32'))
+          .draggable(false)
       }
-      .margin({ right: $r('app.float.wh_value_16') })
+      .height(34)
+      .width(34)
+      .borderRadius(17)
       .backgroundColor(this.isTouch ? $r('sys.color.ohos_id_color_click_effect')
-        : $r('sys.color.ohos_id_color_sub_background'))
+        : "#d9e2e2e2")
       .visibility(this.icBackIsVisibility ? Visibility.Visible : Visibility.None)
       .onClick(() => {
         if (this.isStartBySheet) {
@@ -66,16 +70,16 @@ export default struct HeadComponent {
       });
 
       Text(this.headName)
+        .align(Alignment.Start)
         .fontSize($r('app.float.head_font_20'))
-        .lineHeight($r('app.float.wh_value_33'))
         .fontFamily('HarmonyHeiTi-Bold')
-        .fontWeight(FontWeight.Regular)
+        .fontWeight(FontWeight.Medium)
         .maxFontScale(1)
         .fontColor($r('sys.color.ohos_id_color_text_primary'))
         .maxLines(ComponentConfig.MAX_LINES_1)
         .textOverflow({ overflow: TextOverflow.Ellipsis })
-        .textAlign(TextAlign.Start)
-        .margin({ top: $r('app.float.wh_value_13'), bottom: $r('app.float.wh_value_15') });
+        .textAlign(TextAlign.Center)
+        .margin({ left: 4 })
     }
     .width(ComponentConfig.WH_100_100)
     .padding({ left: $r('app.float.wh_value_12') })
