@@ -25,7 +25,7 @@ export struct SubEntryComponent {
   onItemClicked?: (targetRouter: string) => void;
 
   @Styles normalStyle() {
-    .backgroundColor($r('sys.color.ohos_id_color_card_bg'))
+    .backgroundColor('')
   };
 
   @Styles pressedStyle() {
@@ -64,7 +64,6 @@ export struct SubEntryComponent {
       this.onItemClicked?.(this.targetPage);
     })
     .height($r('app.float.wh_value_48'))
-    .backgroundColor($r('sys.color.ohos_id_color_foreground_contrary'));
   }
 }
 

@@ -53,7 +53,10 @@ export struct CertInstallFromStorage {
   @State private headRectHeightReal: number = 0;
   private scroller: Scroller = new Scroller();
   @State private scrollerHeight: number = 0;
-
+  @State statusBarHeight: number = 0
+  aboutToAppear(): void {
+    this.statusBarHeight = AppStorage.get('STATUS_BAR_HEIGHT') as number
+  }
   @Styles normalStyle() {
     .backgroundColor($r('sys.color.ohos_id_color_card_bg'))
     .borderRadius($r('app.float.user_list_divider_borderRadius_value'))
@@ -383,7 +386,8 @@ export struct CertInstallFromStorage {
     }
     .backgroundColor($r('sys.color.ohos_id_color_sub_background'))
     .width(WidthPercent.WH_100_100)
-    .height(this.isStartBySheet ? WidthPercent.WH_AUTO : WidthPercent.WH_100_100);
+    .height(this.isStartBySheet ? WidthPercent.WH_AUTO : WidthPercent.WH_100_100)
+    .padding({top:this.statusBarHeight})
   }
 
   getScrollMinHeight() {

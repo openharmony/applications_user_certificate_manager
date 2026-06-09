@@ -600,6 +600,7 @@ export struct evidenceList {
   @State headRectHeightReal: number = 0;
   @State systemScrollerHeight: number = 0;
   @State publicScrollerHeight: number = 0;
+  @State statusBarHeight: number = 0
 
   @Builder
   TabBuilder(index: number) {
@@ -630,6 +631,7 @@ export struct evidenceList {
     this.mShowSysCredPresenter.updateSystemCredListCallback(() => {
       console.info('get systemCredList start');
     })
+    this.statusBarHeight = AppStorage.get('STATUS_BAR_HEIGHT') as number
   }
 
   onPageShow() {
@@ -839,6 +841,7 @@ export struct evidenceList {
     .backgroundColor($r('sys.color.ohos_id_color_sub_background'))
     .width(WidthPercent.WH_100_100)
     .height(this.isStartBySheet ? WidthPercent.WH_AUTO : WidthPercent.WH_100_100)
+    .padding({top:this.statusBarHeight});
   }
 
   getScrollMinHeight() {
