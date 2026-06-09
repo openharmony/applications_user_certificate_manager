@@ -142,9 +142,11 @@ export struct CertInstallFromStorage {
 
   startInstallCertBySheet(): void {
     try {
+      let saveDefaultPath = 'file://docs/storage/Users/currentUser/Documents'
       let documentSelectOptions = new picker.DocumentSelectOptions();
       documentSelectOptions.maxSelectNumber = FilterParams.MAX_SELECT_FILE_NUM;
       documentSelectOptions.fileSuffixFilters = FilterParams.CERT_FILE_SUFFIX;
+      documentSelectOptions.defaultFilePathUri = saveDefaultPath
       let documentPicker = new picker.DocumentViewPicker(this.context);
       console.info(TAG + 'start documentPicker.select');
       documentPicker.select(documentSelectOptions).then((documentSelectResult) => {
@@ -178,9 +180,11 @@ export struct CertInstallFromStorage {
 
   startInstallEvidenceBySheet(): void {
     try {
+      let saveDefaultPath = 'file://docs/storage/Users/currentUser/Documents'
       let documentSelectOptions = new picker.DocumentSelectOptions();
       documentSelectOptions.maxSelectNumber = FilterParams.MAX_SELECT_FILE_NUM;
       documentSelectOptions.fileSuffixFilters = FilterParams.CREDENTIAL_FILE_SUFFIX;
+      documentSelectOptions.defaultFilePathUri = saveDefaultPath
       let documentPicker = new picker.DocumentViewPicker(this.context);
       console.info(TAG + 'start documentPicker.select');
       documentPicker.select(documentSelectOptions).then((documentSelectResult) => {
