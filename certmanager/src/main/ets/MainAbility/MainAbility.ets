@@ -19,7 +19,7 @@ import { GlobalContext, PwdStore } from '../common/GlobalContext';
 import { AbilityConstant, ConfigurationConstant, UIAbility } from '@kit.AbilityKit';
 import Logger from '../common/util/Logger';
 
-const logger: Logger = new Logger('');
+const logger: Logger = new Logger('MainAbility');
 
 export default class MainAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {

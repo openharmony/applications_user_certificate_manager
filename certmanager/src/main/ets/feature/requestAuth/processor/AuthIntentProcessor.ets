@@ -25,7 +25,7 @@ import bundleNameModel from '../../../model/BundleModel';
 import { util } from '@kit.ArkTS';
 
 export default class AuthIntentProcessor {
-  private logger: Logger = new Logger('logger');
+  private logger: Logger = new Logger('AuthIntentProcessor');
 
   private processLoadCredentials(intentParams: AuthIntentParams): Promise<RequestAuthModel> {
     return new LoadCredentialsProcessor(intentParams).process();
