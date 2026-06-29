@@ -81,7 +81,7 @@ export default class CmFaPresenter {
   routeToNextInstallEvidence(fileUri: string): void {
     FileIoModel.getMediaFileSuffix(fileUri, (suffix: string | undefined) => {
       if (suffix !== undefined) {
-        logger.debug(`suffix = ${suffix}`, );
+        logger.debug(`suffix = ${suffix}`);
         if ((suffix === 'p12') || (suffix === 'pfx')) {
           let fileInfo = new RouterFileVo(fileUri, suffix);
           router.pushUrl({
