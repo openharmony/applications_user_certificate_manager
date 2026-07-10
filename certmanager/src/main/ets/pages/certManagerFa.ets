@@ -58,7 +58,10 @@ export struct CertificateComponent {
   @Prop sheetParam: SheetParam;
   private scroller: Scroller = new Scroller();
   @State private scrollerHeight: number = 0;
-
+  @State statusBarHeight: number = 0
+  aboutToAppear(): void {
+    this.statusBarHeight = AppStorage.get('STATUS_BAR_HEIGHT') as number
+  }
   build() {
     Column() {
       GridRow({
@@ -100,10 +103,7 @@ export struct CertificateComponent {
                             }
                           } })
                       }
-                      .stateStyles({
-                        normal: this.normalStyle,
-                        pressed: this.pressedStyle
-                      });
+
                     }, (item: CertListItem) => JSON.stringify(item))
                   }
                   .padding($r('app.float.wh_value_4'))
@@ -114,7 +114,7 @@ export struct CertificateComponent {
                     endMargin: $r('app.float.wh_value_8')
                   })
                   .borderRadius($r('app.float.user_list_divider_borderRadius_value'))
-                  .backgroundColor($r('sys.color.ohos_id_color_list_card_bg'))
+                  .backgroundColor($r('sys.color.ohos_id_color_card_bg'));
 
                   CertInstallComponent({ mFaPresenter: $mFaPresenter, onItemClicked: () => {
                     if (this.isStartBySheet) {
@@ -174,6 +174,7 @@ export struct CertificateComponent {
     .backgroundColor($r('sys.color.ohos_id_color_sub_background'))
     .width(WidthPercent.WH_100_100)
     .height(this.isStartBySheet ? WidthPercent.WH_AUTO : WidthPercent.WH_100_100)
+    .padding({top:this.statusBarHeight})
   }
 
   getScrollMinHeight() {
@@ -291,7 +292,7 @@ struct DeleteAll {
     .height($r('app.float.wh_value_56'))
     .width(WidthPercent.WH_100_100)
     .borderRadius($r('app.float.radius_24'))
-    .backgroundColor($r('sys.color.ohos_id_color_foreground_contrary'))
+    .backgroundColor($r('sys.color.ohos_id_color_card_bg'))
     .onClick(() => {
       this.deleteWarnDialog.open();
     })
@@ -339,7 +340,7 @@ export struct CertInstallComponent {
         pressed: this.pressedStyle
       })
     }
-    .backgroundColor($r('sys.color.ohos_id_color_foreground_contrary'))
+    .backgroundColor($r('sys.color.ohos_id_color_card_bg'))
     .padding($r('app.float.distance_4'))
     .height($r('app.float.wh_value_56'))
     .borderRadius($r('app.float.radius_24'))
