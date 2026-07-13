@@ -41,11 +41,11 @@ export default struct HeadComponent {
           .width($r('app.float.wh_value_32'))
           .draggable(false)
       }
-      .height(34)
-      .width(34)
-      .borderRadius(17)
+      .height($r('app.float.wh_value_34'))
+      .width($r('app.float.wh_value_34'))
+      .borderRadius($r('app.float.wh_value_17'))
       .backgroundColor(this.isTouch ? $r('sys.color.ohos_id_color_click_effect')
-        : "#d9e2e2e2")
+        : $r('app.color.color_D9E2E2E2_grey'))
       .visibility(this.icBackIsVisibility ? Visibility.Visible : Visibility.None)
       .onClick(() => {
         if (this.isStartBySheet) {
@@ -79,10 +79,10 @@ export default struct HeadComponent {
         .maxLines(ComponentConfig.MAX_LINES_1)
         .textOverflow({ overflow: TextOverflow.Ellipsis })
         .textAlign(TextAlign.Center)
-        .margin({ left: 4 })
+        .margin({ left: $r('app.float.wh_value_4') })
     }
     .width(ComponentConfig.WH_100_100)
-    .padding({ left: $r('app.float.wh_value_12') })
+    // .padding({ left: $r('app.float.wh_value_12') })
     .height($r('app.float.wh_value_56'))
     .alignItems(VerticalAlign.Center)
     .align(Alignment.Start)
