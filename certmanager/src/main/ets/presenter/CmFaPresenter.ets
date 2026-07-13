@@ -23,11 +23,8 @@ import { RouterFileVo, RouterAppUidVo } from '../model/CertManagerVo/RouterInfoV
 import checkUserAuthModel from '../model/CheckUserAuthModel';
 import CmInstallPresenter from './CmInstallPresenter';
 import FilterParams from '../common/constants/FileFilterParams';
-import { ResourceUtils } from '../common/util/ResourceUtils';
-import Logger from '../common/util/Logger';
 
-const logger: Logger = new Logger('CmFaPresenter');
-
+const TAG = 'CMFaPresenter: ';
 const gridCountNum: number = 4;
 
 export default class CmFaPresenter {
@@ -67,10 +64,10 @@ export default class CmFaPresenter {
   routeToNextInstallCert(fileUri: string): void {
     FileIoModel.getMediaFileSuffix(fileUri, (suffix: string | undefined) => {
       if (suffix !== undefined) {
-        logger.debug(`suffix = ${suffix}`);
+        console.debug(TAG, 'suffix = ', suffix);
         if ((suffix === 'cer') || (suffix === 'pem') || (suffix === 'crt') || (suffix === 'der') ||
           (suffix === 'p7b') || (suffix === 'spc')) {
-          CmInstallPresenter.getInstance().installCert(fileUri, suffix, true);
+          CmInstallPresenter.getInstance().installCert(fileUri, '', suffix, true);
         } else {
           this.unrecognizedFileTips();
         }
@@ -81,7 +78,7 @@ export default class CmFaPresenter {
   routeToNextInstallEvidence(fileUri: string): void {
     FileIoModel.getMediaFileSuffix(fileUri, (suffix: string | undefined) => {
       if (suffix !== undefined) {
-        logger.debug(`suffix = ${suffix}`);
+        console.debug(TAG, 'suffix = ', suffix);
         if ((suffix === 'p12') || (suffix === 'pfx')) {
           let fileInfo = new RouterFileVo(fileUri, suffix);
           router.pushUrl({
@@ -97,53 +94,55 @@ export default class CmFaPresenter {
 
   startInstallCert(context: Context): void {
     if (context === undefined || context === null) {
-      logger.error('startInstallCert, context is undefined');
+      console.error(TAG + 'startInstallCert, context is undefined');
       return;
     }
     try {
+      let saveDefaultPath = 'file://docs/storage/Users/currentUser/Documents'
       let documentSelectOptions = new picker.DocumentSelectOptions();
       documentSelectOptions.maxSelectNumber = FilterParams.MAX_SELECT_FILE_NUM;
       documentSelectOptions.fileSuffixFilters = FilterParams.CERT_FILE_SUFFIX;
+      documentSelectOptions.defaultFilePathUri = saveDefaultPath
       let documentPicker = new picker.DocumentViewPicker(context);
-      logger.info('start documentPicker.select');
+      console.info(TAG + 'start documentPicker.select');
       documentPicker.select(documentSelectOptions).then((documentSelectResult) => {
         if (documentSelectResult.length >= 1) {
           this.routeToNextInstallCert(String(documentSelectResult[0]))
         } else {
-          logger.error('documentPicker.select length invalid:' + documentSelectResult.length);
+          console.error(TAG + 'documentPicker.select length invalid:' + documentSelectResult.length);
         }
       }).catch((err: BusinessError) => {
-        logger.error('documentPicker.select failed with err, message: ' + err.message + ', code: ' + err.code);
+        console.error(TAG + 'documentPicker.select failed with err, message: ' + err.message + ', code: ' + err.code);
       });
     } catch (err) {
       let e: BusinessError = err as BusinessError;
-      logger.error('DocumentViewPicker failed with err, message: ' + e.message + ', code: ' + e.code);
+      console.error(TAG + 'DocumentViewPicker failed with err, message: ' + e.message + ', code: ' + e.code);
     }
   }
 
   startInstallEvidence(context: Context): void {
     if (context === undefined || context === null) {
-      logger.error('startInstallEvidence, context is undefined');
+      console.error(TAG + 'startInstallEvidence, context is undefined');
       return;
     }
+    let saveDefaultPath = 'file://docs/storage/Users/currentUser/Documents'
     try {
       let documentSelectOptions = new picker.DocumentSelectOptions();
-      documentSelectOptions.maxSelectNumber = FilterParams.MAX_SELECT_FILE_NUM;
-      documentSelectOptions.fileSuffixFilters = FilterParams.CREDENTIAL_FILE_SUFFIX;
       let documentPicker = new picker.DocumentViewPicker(context);
-      logger.info('start documentPicker.select');
+      documentSelectOptions.defaultFilePathUri = saveDefaultPath
+      console.info(TAG + 'start documentPicker.select');
       documentPicker.select(documentSelectOptions).then((documentSelectResult) => {
         if (documentSelectResult.length >= 1) {
           this.routeToNextInstallEvidence(String(documentSelectResult[0]))
         } else {
-          logger.error('documentPicker.select length invalid:' + documentSelectResult.length);
+          console.error(TAG + 'documentPicker.select length invalid:' + documentSelectResult.length);
         }
       }).catch((err: BusinessError) => {
-        logger.error('documentPicker.select failed with err, message: ' + err.message + ', code: ' + err.code);
+        console.error(TAG + 'documentPicker.select failed with err, message: ' + err.message + ', code: ' + err.code);
       });
     } catch (err) {
       let e: BusinessError = err as BusinessError;
-      logger.error('DocumentViewPicker failed with err, message: ' + e.message + ', code: ' + e.code);
+      console.error(TAG + 'DocumentViewPicker failed with err, message: ' + e.message + ', code: ' + e.code);
     }
   }
 
@@ -158,27 +157,27 @@ export default class CmFaPresenter {
   uninstallAllCert(): void {
     certManagerModel.delAllCertOrCred(CMModelOptType.CM_MODEL_OPT_USER_CA, (errCode: CMModelErrorCode) => {
       if (errCode === CMModelErrorCode.CM_MODEL_ERROR_SUCCESS) {
-        logger.info('uninstallAllCert CM_MODEL_OPT_USER_CA success');
+        console.info(TAG + 'uninstallAllCert CM_MODEL_OPT_USER_CA success');
       } else {
-        logger.error('uninstallAllCert CM_MODEL_OPT_USER_CA failed');
+        console.error(TAG + 'uninstallAllCert CM_MODEL_OPT_USER_CA failed');
       }
     });
 
     certManagerModel.delAllCertOrCred(CMModelOptType.CM_MODEL_OPT_APP_CRED, (errCode: CMModelErrorCode) => {
       if (errCode === CMModelErrorCode.CM_MODEL_ERROR_SUCCESS) {
-        logger.info('uninstallAllCert CM_MODEL_OPT_APP_CRED success');
+        console.info(TAG + 'uninstallAllCert CM_MODEL_OPT_APP_CRED success');
       } else {
-        logger.error('uninstallAllCert CM_MODEL_OPT_APP_CRED failed');
+        console.error(TAG + 'uninstallAllCert CM_MODEL_OPT_APP_CRED failed');
       }
     });
   }
 
   startInstall(installType: string, fileUri: string) {
     if (installType === 'CACert') {
-      let titleStr = ResourceUtils.getResourceString(getContext(), $r('app.string.Identity_Authentication'));
+      let titleStr = getContext().resourceManager.getStringSync($r('app.string.Identity_Authentication'));
       checkUserAuthModel.auth(titleStr, (authResult: boolean) => {
         if (authResult) {
-          logger.info('checkUserAuth success');
+          console.info('checkUserAuth success');
           this.routeToNextInstallCert(fileUri);
         }
       })
@@ -191,7 +190,7 @@ export default class CmFaPresenter {
       AppStorage.setOrCreate('installUserCred', false);
       this.routeToNextInstallEvidence(fileUri);
     } else {
-      logger.error('The installType is not supported');
+      console.error(TAG, 'The installType is not supported');
     }
   }
 }
