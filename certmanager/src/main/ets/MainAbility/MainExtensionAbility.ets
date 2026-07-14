@@ -48,10 +48,10 @@ export default class MainExtensionAbility extends UIExtensionAbility {
       const extensionWindow =  session.getUIExtensionWindowProxy();
       const  area = extensionWindow.getWindowAvoidArea(window.AvoidAreaType.TYPE_SYSTEM)
       const statusBarHeight = px2vp(area.topRect.height)
-      console.info('[CertManager] onSessionCreate statusBarHeight'+statusBarHeight);
+      logger.info('onSessionCreate statusBarHeight' + statusBarHeight);
       AppStorage.setOrCreate('STATUS_BAR_HEIGHT',statusBarHeight)
     } catch (error) {
-      console.info('[CertManager] onSessionCreate error.code:'+error?.code+' error.message:'+error?.message)
+      logger.error('onSessionCreate error.code:' + error?.code + ' error.message:' + error?.message);
     }
     if (pullType === 'systemCredInstall' || pullType === 'specifyInstall') {
       session.loadContent('pages/certInstallFromStorage', storage);
