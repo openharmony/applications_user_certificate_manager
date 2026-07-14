@@ -644,7 +644,7 @@ export struct TrustedEvidence {
   @State headRectHeightReal: number = 0;
   @State private sysScrollerHeight: number = 0;
   @State private userScrollerHeight: number = 0;
-
+  @State statusBarHeight: number = 0
   @Builder
   TabBuilder(index: number) {
     Column() {
@@ -670,6 +670,7 @@ export struct TrustedEvidence {
   aboutToAppear() {
     this.mShowSysCaPresenter.updateSystemTrustedCertificateList();
     this.mShowUserCaPresenter.updateUserTrustedCertificateList();
+    this.statusBarHeight = AppStorage.get('STATUS_BAR_HEIGHT') as number
   }
 
   onPageShow() {
@@ -873,7 +874,8 @@ export struct TrustedEvidence {
       }
       .backgroundColor($r('sys.color.ohos_id_color_sub_background'))
       .width(WidthPercent.WH_100_100)
-      .height(this.isStartBySheet ? WidthPercent.WH_AUTO : WidthPercent.WH_100_100);
+      .height(this.isStartBySheet ? WidthPercent.WH_AUTO : WidthPercent.WH_100_100)
+      .padding({top:this.statusBarHeight});
     }
   }
 
