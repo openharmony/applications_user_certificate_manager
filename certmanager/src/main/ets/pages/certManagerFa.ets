@@ -24,6 +24,7 @@ import { CustomContentDialog } from '@ohos.arkui.advanced.Dialog';
 import { NavEntryKey } from '../common/NavEntryKey';
 import { SheetParam } from '../common/util/SheetParam';
 import Logger from '../common/util/Logger';
+import { updateStatusBarPaddingByImmersive } from '../common/util/StatusBarPaddingUtil';
 
 const DISPLAY_DURATION: number = 2000;
 const COPIES_NUM: number = 12;
@@ -58,10 +59,18 @@ export struct CertificateComponent {
   @Prop sheetParam: SheetParam;
   private scroller: Scroller = new Scroller();
   @State private scrollerHeight: number = 0;
-  @State statusBarHeight: number = 0
+  @State statusBarHeight: number = 0;
+
   aboutToAppear(): void {
-    this.statusBarHeight = AppStorage.get('STATUS_BAR_HEIGHT') as number
+    if (this.isStartBySheet) {
+      this.statusBarHeight = 0;
+      return;
+    }
+    updateStatusBarPaddingByImmersive(getContext(this), (topPadding: number) => {
+      this.statusBarHeight = topPadding;
+    });
   }
+
   build() {
     Column() {
       GridRow({

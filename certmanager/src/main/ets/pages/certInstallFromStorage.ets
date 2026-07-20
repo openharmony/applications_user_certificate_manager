@@ -33,6 +33,7 @@ import FilterParams from '../common/constants/FileFilterParams';
 import { UIContext } from '@kit.ArkUI';
 import { common } from '@kit.AbilityKit';
 import Logger from '../common/util/Logger';
+import { updateStatusBarPaddingByImmersive } from '../common/util/StatusBarPaddingUtil';
 
 const COPIES_NUM: number = 12;
 const logger: Logger = new Logger('CertInstallFromStorage');
@@ -53,6 +54,17 @@ export struct CertInstallFromStorage {
   @State private headRectHeightReal: number = 0;
   private scroller: Scroller = new Scroller();
   @State private scrollerHeight: number = 0;
+  @State statusBarHeight: number = 0;
+
+  aboutToAppear(): void {
+    if (this.isStartBySheet) {
+      this.statusBarHeight = 0;
+      return;
+    }
+    updateStatusBarPaddingByImmersive(this.context, (topPadding: number) => {
+      this.statusBarHeight = topPadding;
+    });
+  }
 
   @Styles normalStyle() {
     .backgroundColor($r('sys.color.ohos_id_color_card_bg'))
@@ -169,7 +181,7 @@ export struct CertInstallFromStorage {
       if (suffix !== undefined) {
         logger.debug(`suffix = ${suffix}`);
         if ((suffix === 'cer') || (suffix === 'pem') || (suffix === 'crt') || (suffix === 'der') ||
-            (suffix === 'p7b') || (suffix === 'spc')) {
+          (suffix === 'p7b') || (suffix === 'spc')) {
           CmInstallPresenter.getInstance().installCert(fileUri, suffix, false);
         } else {
           this.mFaPresenter.unrecognizedFileTips();
@@ -383,7 +395,8 @@ export struct CertInstallFromStorage {
     }
     .backgroundColor($r('sys.color.ohos_id_color_sub_background'))
     .width(WidthPercent.WH_100_100)
-    .height(this.isStartBySheet ? WidthPercent.WH_AUTO : WidthPercent.WH_100_100);
+    .height(this.isStartBySheet ? WidthPercent.WH_AUTO : WidthPercent.WH_100_100)
+    .padding({ top: this.statusBarHeight });
   }
 
   getScrollMinHeight() {
