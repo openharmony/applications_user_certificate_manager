@@ -17,6 +17,7 @@ import Want from '@ohos.app.ability.Want';
 import UIExtensionContentSession from '@ohos.app.ability.UIExtensionContentSession';
 import { GlobalContext, PwdStore } from '../common/GlobalContext';
 import UIExtensionAbility from '@ohos.app.ability.UIExtensionAbility';
+import { window } from '@kit.ArkUI';
 import Logger from '../common/util/Logger';
 
 const logger: Logger = new Logger('MainExtensionAbility');
@@ -43,7 +44,15 @@ export default class MainExtensionAbility extends UIExtensionAbility {
     };
     let storage: LocalStorage = new LocalStorage(param);
     let pullType: string = want.parameters?.pullType?.toString() ?? '';
-
+    try {
+      const extensionWindow =  session.getUIExtensionWindowProxy();
+      const  area = extensionWindow.getWindowAvoidArea(window.AvoidAreaType.TYPE_SYSTEM)
+      const statusBarHeight = px2vp(area.topRect.height)
+      logger.info('onSessionCreate statusBarHeight' + statusBarHeight);
+      AppStorage.setOrCreate('STATUS_BAR_HEIGHT',statusBarHeight)
+    } catch (error) {
+      logger.error('onSessionCreate error.code:' + error?.code + ' error.message:' + error?.message);
+    }
     if (pullType === 'systemCredInstall' || pullType === 'specifyInstall') {
       session.loadContent('pages/certInstallFromStorage', storage);
     } else {

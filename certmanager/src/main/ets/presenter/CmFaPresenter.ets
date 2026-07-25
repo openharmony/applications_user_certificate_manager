@@ -23,11 +23,9 @@ import { RouterFileVo, RouterAppUidVo } from '../model/CertManagerVo/RouterInfoV
 import checkUserAuthModel from '../model/CheckUserAuthModel';
 import CmInstallPresenter from './CmInstallPresenter';
 import FilterParams from '../common/constants/FileFilterParams';
-import { ResourceUtils } from '../common/util/ResourceUtils';
 import Logger from '../common/util/Logger';
 
 const logger: Logger = new Logger('CmFaPresenter');
-
 const gridCountNum: number = 4;
 
 export default class CmFaPresenter {
@@ -101,9 +99,11 @@ export default class CmFaPresenter {
       return;
     }
     try {
+      let saveDefaultPath = 'file://docs/storage/Users/currentUser/Documents'
       let documentSelectOptions = new picker.DocumentSelectOptions();
       documentSelectOptions.maxSelectNumber = FilterParams.MAX_SELECT_FILE_NUM;
       documentSelectOptions.fileSuffixFilters = FilterParams.CERT_FILE_SUFFIX;
+      documentSelectOptions.defaultFilePathUri = saveDefaultPath
       let documentPicker = new picker.DocumentViewPicker(context);
       logger.info('start documentPicker.select');
       documentPicker.select(documentSelectOptions).then((documentSelectResult) => {
@@ -126,11 +126,11 @@ export default class CmFaPresenter {
       logger.error('startInstallEvidence, context is undefined');
       return;
     }
+    let saveDefaultPath = 'file://docs/storage/Users/currentUser/Documents'
     try {
       let documentSelectOptions = new picker.DocumentSelectOptions();
-      documentSelectOptions.maxSelectNumber = FilterParams.MAX_SELECT_FILE_NUM;
-      documentSelectOptions.fileSuffixFilters = FilterParams.CREDENTIAL_FILE_SUFFIX;
       let documentPicker = new picker.DocumentViewPicker(context);
+      documentSelectOptions.defaultFilePathUri = saveDefaultPath
       logger.info('start documentPicker.select');
       documentPicker.select(documentSelectOptions).then((documentSelectResult) => {
         if (documentSelectResult.length >= 1) {
@@ -175,7 +175,7 @@ export default class CmFaPresenter {
 
   startInstall(installType: string, fileUri: string) {
     if (installType === 'CACert') {
-      let titleStr = ResourceUtils.getResourceString(getContext(), $r('app.string.Identity_Authentication'));
+      let titleStr = getContext().resourceManager.getStringSync($r('app.string.Identity_Authentication'));
       checkUserAuthModel.auth(titleStr, (authResult: boolean) => {
         if (authResult) {
           logger.info('checkUserAuth success');
