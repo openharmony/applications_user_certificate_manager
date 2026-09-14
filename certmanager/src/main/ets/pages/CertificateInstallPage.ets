@@ -123,6 +123,17 @@ struct CertificateInstallPage {
     return value;
   }
 
+  parseWantWholeTokenInt(value: object | undefined, defaultValue: number): number {
+    if (typeof value === 'number' && Number.isFinite(value)) {
+      return value;
+    }
+    const valueText: string = String(value ?? '');
+    if (/^\d+$/.test(valueText)) {
+      return Number.parseInt(valueText, 10);
+    }
+    return defaultValue;
+  }
+
   private cehckScopeSupported(params: Record<string, object>): boolean {
     let certScope = this.validateAndGetNumber(params['certScope'], 0);
     switch(certScope) {
@@ -152,8 +163,8 @@ struct CertificateInstallPage {
       this.session.terminateSelfWithResult({resultCode: DialogErrorCode.DIALOG_ERROR_PARAM_INVALID});
       return;
     }
-    this.operationType = Number(this.params['operationType']);
-    this.certType = Number(this.params['certType']);
+    this.operationType = this.parseWantWholeTokenInt(this.params['operationType'], NaN);
+    this.certType = this.parseWantWholeTokenInt(this.params['certType'], NaN);
     if (this.operationType !== CmDialogOperationType.INSTALL || !this.cehckScopeSupported(this.params)) {
       logger.error('check operation type unsupport');
       this.session.terminateSelfWithResult({resultCode: DialogErrorCode.DIALOG_ERROR_NOT_ENTERPRISE_DEVICE});
