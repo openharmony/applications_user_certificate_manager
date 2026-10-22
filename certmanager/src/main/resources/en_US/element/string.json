@@ -353,6 +353,10 @@
       "value": "Enter the certificate password."
     },
     {
+      "name": "certPwdProvidedTitle",
+      "value": "The certificate password has been provided by the app."
+    },
+    {
       "name": "inputConfirm",
       "value": "Confirm"
     },

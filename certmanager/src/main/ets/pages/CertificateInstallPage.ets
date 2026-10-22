@@ -163,6 +163,7 @@ struct CertificateInstallPage {
       this.rootCertificateDialog.open();
     } else if (this.certType === certMgrDialog.CertificateType.CREDENTIAL_USER ||
       this.certType === certMgrDialog.CertificateType.CREDENTIAL_SYSTEM) {
+      this.parseKeystorePwd();
       this.inputPwdDialog.open();
     } else {
       logger.error('check cert type invalid');
@@ -173,7 +174,20 @@ struct CertificateInstallPage {
 
   textInputController: TextInputController = new TextInputController()
   @State isPasswordError: boolean = false;
+  @State hasCallerPwd: boolean = false;
   certPwd: string = '';
+  keystorePwd: string = '';
+
+  private parseKeystorePwd(): void {
+    let keystorePwd = this.params['keystorePwd']?.toString();
+    if (keystorePwd === undefined || keystorePwd === null) {
+      return;
+    }
+    /* the property being present (even an empty string) means the app provided
+     * the password; the input box stays hidden and the value is used directly */
+    this.keystorePwd = keystorePwd;
+    this.hasCallerPwd = true;
+  }
 
   cancelInstallCred(): void {
     logger.info('install cred cancel');
@@ -199,6 +213,16 @@ struct CertificateInstallPage {
       this.installFailedDialogMessage = $r('app.string.Install_Error_MAX_QUANTITY_REACHED');
       this.installFailedDialog.open();
     } else if (resultCode === CMModelErrorCode.CM_MODEL_ERROR_PASSWORD_ERR) {
+      if (this.hasCallerPwd) {
+        /* the caller-provided password cannot be retried in the dialog;
+         * terminate with -1022, mapped by the kit to 29700008 */
+        logger.info('install cred keystore pwd incorrect');
+        this.inputPwdDialog.close();
+        this.session?.terminateSelfWithResult({
+          resultCode: DialogErrorCode.DIALOG_ERROR_KEYSTORE_PWD_INCORRECT
+        });
+        return;
+      }
       logger.info('install cred pwd incorrect');
       this.isPasswordError = true;
       this.textInputController.setTextSelection(0, this.certPwd.length, { menuPolicy: MenuPolicy.HIDE })
@@ -224,9 +248,10 @@ struct CertificateInstallPage {
     }
     let credString: string = this.params['cert']?.toString() ?? '';
     let credData: Uint8Array = new util.Base64Helper().decodeSync(credString);
+    let certPwd: string = this.hasCallerPwd ? this.keystorePwd : this.certPwd;
 
     certManagerModel.installCertOrCred(optType, credData,
-      this.certPwd, (errCode: CMModelErrorCode, uri: string) => {
+      certPwd, (errCode: CMModelErrorCode, uri: string) => {
         this.handleCredInstallResult(errCode, uri ?? '');
       });
   }
@@ -234,69 +259,84 @@ struct CertificateInstallPage {
   @Builder
   buildInputPwdComp() {
     Column() {
-      Row() {
-        TextInput({ controller: this.textInputController })
-          .type(InputType.Password)
-          .fontColor($r('sys.color.font_primary'))
-          .focusable(true)
-          .defaultFocus(true)
-          .border({
-            width: 1,
-            color: this.isPasswordError ? $r('sys.color.warning') : Color.Transparent
-          })
-          .onChange((value: string) => {
-            this.certPwd = value;
-          })
-          .onSubmit((eventKey: EnterKeyType, event: SubmitEvent) => {
-            this.installCred();
-            event.keepEditableState();
-          })
+      if (!this.hasCallerPwd) {
+        this.buildPwdInputRow()
+        this.buildPwdErrorRow()
       }
+      this.buildPwdButtonsRow()
+    }
+  }
 
-      Row() {
-        Text(this.isPasswordError ? $r('app.string.Password_Message') : ' ')
-          .fontSize($r('sys.float.Body_M'))
-          .fontWeight(FontWeight.Regular)
-          .width('100%')
-          .textAlign(TextAlign.Center)
-          .fontColor($r('sys.color.warning'))
-          .margin({
-            top: 8
-          })
-      }
+  @Builder
+  buildPwdInputRow() {
+    Row() {
+      TextInput({ controller: this.textInputController })
+        .type(InputType.Password)
+        .fontColor($r('sys.color.font_primary'))
+        .focusable(true)
+        .defaultFocus(true)
+        .border({
+          width: 1,
+          color: this.isPasswordError ? $r('sys.color.warning') : Color.Transparent
+        })
+        .onChange((value: string) => {
+          this.certPwd = value;
+        })
+        .onSubmit((eventKey: EnterKeyType, event: SubmitEvent) => {
+          this.installCred();
+          event.keepEditableState();
+        })
+    }
+  }
 
-      Row() {
-        GridRow({columns: 2, gutter: {x: 16}}) {
-          GridCol({span: 1}) {
-            Button($r('app.string.warning_cancel'))
-              .buttonStyle(ButtonStyleMode.NORMAL)
-              .type(ButtonType.ROUNDED_RECTANGLE)
-              .labelStyle({
-                maxLines: 1
-              })
-              .width('100%')
-              .onClick(() => {
-                this.cancelInstallCred();
-              })
-          }
-          GridCol({span: 1}) {
-            Button($r('app.string.inputConfirm'))
-              .buttonStyle(ButtonStyleMode.NORMAL)
-              .type(ButtonType.ROUNDED_RECTANGLE)
-              .labelStyle({
-                maxLines: 1
-              })
-              .width('100%')
-              .onClick(() => {
-                this.installCred();
-              })
-          }
+  @Builder
+  buildPwdErrorRow() {
+    Row() {
+      Text(this.isPasswordError ? $r('app.string.Password_Message') : ' ')
+        .fontSize($r('sys.float.Body_M'))
+        .fontWeight(FontWeight.Regular)
+        .width('100%')
+        .textAlign(TextAlign.Center)
+        .fontColor($r('sys.color.warning'))
+        .margin({
+          top: 8
+        })
+    }
+  }
+
+  @Builder
+  buildPwdButtonsRow() {
+    Row() {
+      GridRow({columns: 2, gutter: {x: 16}}) {
+        GridCol({span: 1}) {
+          Button($r('app.string.warning_cancel'))
+            .buttonStyle(ButtonStyleMode.NORMAL)
+            .type(ButtonType.ROUNDED_RECTANGLE)
+            .labelStyle({
+              maxLines: 1
+            })
+            .width('100%')
+            .onClick(() => {
+              this.cancelInstallCred();
+            })
+        }
+        GridCol({span: 1}) {
+          Button($r('app.string.inputConfirm'))
+            .buttonStyle(ButtonStyleMode.NORMAL)
+            .type(ButtonType.ROUNDED_RECTANGLE)
+            .labelStyle({
+              maxLines: 1
+            })
+            .width('100%')
+            .onClick(() => {
+              this.installCred();
+            })
         }
       }
-      .padding({
-        top: 16
-      })
     }
+    .padding({
+      top: 16
+    })
   }
 
   private getInstallCredSubtitle(): ResourceStr {
@@ -316,7 +356,8 @@ struct CertificateInstallPage {
       this.cancelInstallCred();
     },
     builder: CustomContentDialog({
-      primaryTitle: $r('app.string.certInputPassword'),
+      primaryTitle: this.hasCallerPwd ? $r('app.string.certPwdProvidedTitle')
+        : $r('app.string.certInputPassword'),
       secondaryTitle: this.getInstallCredSubtitle(),
       contentBuilder: () => { this.buildInputPwdComp() },
     }),

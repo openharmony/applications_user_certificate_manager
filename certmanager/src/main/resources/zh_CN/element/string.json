@@ -353,6 +353,10 @@
       "value": "输入证书密码"
     },
     {
+      "name": "certPwdProvidedTitle",
+      "value": "证书密码已由应用提供"
+    },
+    {
       "name": "inputConfirm",
       "value": "确认"
     },
