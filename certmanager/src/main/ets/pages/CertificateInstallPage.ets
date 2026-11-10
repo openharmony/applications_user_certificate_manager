@@ -164,7 +164,11 @@ struct CertificateInstallPage {
     } else if (this.certType === certMgrDialog.CertificateType.CREDENTIAL_USER ||
       this.certType === certMgrDialog.CertificateType.CREDENTIAL_SYSTEM) {
       this.parseKeystorePwd();
-      this.inputPwdDialog.open();
+      if (this.hasCallerPwd) {
+        this.installCredConfirmDialog.open();
+      } else {
+        this.inputPwdDialog.open();
+      }
     } else {
       logger.error('check cert type invalid');
       this.session.terminateSelfWithResult({resultCode: DialogErrorCode.DIALOG_ERROR_PARAM_INVALID});
@@ -191,43 +195,53 @@ struct CertificateInstallPage {
 
   cancelInstallCred(): void {
     logger.info('install cred cancel');
-    this.inputPwdDialog.close();
+    this.closeCredDialog();
     this.session.terminateSelfWithResult({resultCode: DialogErrorCode.DIALOG_OPERATION_CANCELS});
     return;
+  }
+
+  private closeCredDialog(): void {
+    if (this.hasCallerPwd) {
+      this.installCredConfirmDialog.close();
+    } else {
+      this.inputPwdDialog.close();
+    }
   }
 
   private handleCredInstallResult(resultCode: CMModelErrorCode, uri: string) {
     if (resultCode === CMModelErrorCode.CM_MODEL_ERROR_SUCCESS) {
       this.session?.sendData({'uri': uri});
-      this.inputPwdDialog.close();
+      this.closeCredDialog();
     } else if (resultCode === CMModelErrorCode.CM_MODEL_ERROR_INCORRECT_FORMAT) {
       logger.error('install cred data incorrect format');
-      this.inputPwdDialog.close();
+      this.closeCredDialog();
       this.resultCode = DialogErrorCode.DIALOG_ERROR_INCORRECT_FORMAT;
       this.installFailedDialogMessage = $r('app.string.Install_ERROR_INCORRECT_FORMAT');
       this.installFailedDialog.open();
     } else if (resultCode === CMModelErrorCode.CM_MODEL_ERROR_MAX_QUANTITY_REACHED) {
       logger.error('install cred max quantity reached');
-      this.inputPwdDialog.close();
+      this.closeCredDialog();
       this.resultCode = DialogErrorCode.DIALOG_ERROR_MAX_QUANTITY_REACHED;
       this.installFailedDialogMessage = $r('app.string.Install_Error_MAX_QUANTITY_REACHED');
       this.installFailedDialog.open();
     } else if (resultCode === CMModelErrorCode.CM_MODEL_ERROR_PASSWORD_ERR) {
       if (this.hasCallerPwd) {
         /* the caller-provided password cannot be retried in the dialog;
-         * terminate with -1022, mapped by the kit to 29700008 */
+         * show the failure dialog first, then terminate with -1022,
+         * which the kit maps to 29700008 */
         logger.info('install cred keystore pwd incorrect');
-        this.inputPwdDialog.close();
-        this.session?.terminateSelfWithResult({
-          resultCode: DialogErrorCode.DIALOG_ERROR_KEYSTORE_PWD_INCORRECT
-        });
+        this.closeCredDialog();
+        this.resultCode = DialogErrorCode.DIALOG_ERROR_KEYSTORE_PWD_INCORRECT;
+        this.installFailedDialogMessage =
+          $r('app.string.Install_Error_KEYSTORE_PWD_INCORRECT', this.callerName);
+        this.installFailedDialog.open();
         return;
       }
       logger.info('install cred pwd incorrect');
       this.isPasswordError = true;
       this.textInputController.setTextSelection(0, this.certPwd.length, { menuPolicy: MenuPolicy.HIDE })
     }else {
-      this.inputPwdDialog.close();
+      this.closeCredDialog();
       logger.error(`result code ${resultCode}, need not show result`);
       this.session?.terminateSelfWithResult({
         resultCode: resultCode
@@ -259,10 +273,8 @@ struct CertificateInstallPage {
   @Builder
   buildInputPwdComp() {
     Column() {
-      if (!this.hasCallerPwd) {
-        this.buildPwdInputRow()
-        this.buildPwdErrorRow()
-      }
+      this.buildPwdInputRow()
+      this.buildPwdErrorRow()
       this.buildPwdButtonsRow()
     }
   }
@@ -356,10 +368,33 @@ struct CertificateInstallPage {
       this.cancelInstallCred();
     },
     builder: CustomContentDialog({
-      primaryTitle: this.hasCallerPwd ? $r('app.string.certPwdProvidedTitle')
-        : $r('app.string.certInputPassword'),
+      primaryTitle: $r('app.string.certInputPassword'),
       secondaryTitle: this.getInstallCredSubtitle(),
       contentBuilder: () => { this.buildInputPwdComp() },
+    }),
+  })
+
+  installCredConfirmDialog: CustomDialogController = new CustomDialogController({
+    alignment: DialogAlignment.Center,
+    showInSubWindow: false,
+    cancel: () => {
+      this.cancelInstallCred();
+    },
+    builder: AlertDialog({
+      primaryTitle: $r('app.string.install_cred_title'),
+      content: this.getInstallCredSubtitle(),
+      primaryButton: {
+        value: $r('app.string.warning_cancel'),
+        action: () => {
+          this.cancelInstallCred();
+        }
+      },
+      secondaryButton: {
+        value: $r('app.string.inputConfirm'),
+        action: () => {
+          this.installCred();
+        }
+      }
     }),
   })
 
