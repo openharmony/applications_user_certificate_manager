@@ -353,6 +353,10 @@
       "value": "Enter the certificate password."
     },
     {
+      "name": "install_cred_title",
+      "value": "Install credential"
+    },
+    {
       "name": "inputConfirm",
       "value": "Confirm"
     },
@@ -391,6 +395,10 @@
     {
       "name": "Install_Error_MAX_QUANTITY_REACHED",
       "value": "The number of certificates has reached the upper limit, Please clear the certificates."
+    },
+    {
+      "name": "Install_Error_KEYSTORE_PWD_INCORRECT",
+      "value": "The certificate credential password provided by \"%s\" is incorrect."
     },
     {
       "name": "OK",

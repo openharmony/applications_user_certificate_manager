@@ -353,6 +353,10 @@
       "value": "输入证书密码"
     },
     {
+      "name": "install_cred_title",
+      "value": "安装凭据"
+    },
+    {
       "name": "inputConfirm",
       "value": "确认"
     },
@@ -391,6 +395,10 @@
     {
       "name": "Install_Error_MAX_QUANTITY_REACHED",
       "value": "证书数量已达上限，请清理证书。"
+    },
+    {
+      "name": "Install_Error_KEYSTORE_PWD_INCORRECT",
+      "value": "“%s”提供的证书凭据密码不正确。"
     },
     {
       "name": "OK",
